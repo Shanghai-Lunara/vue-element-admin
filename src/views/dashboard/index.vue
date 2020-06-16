@@ -29,7 +29,7 @@ export default {
       this.currentRole = 'editorDashboard'
     }
 
-    this.initWebSocket()
+    // this.initWebSocket()
     // var arr = '{"service":"ping","data":"abc"}'
     // socket.sendsock(arr)
   },
