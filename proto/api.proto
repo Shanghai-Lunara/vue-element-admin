@@ -21,7 +21,7 @@ syntax = 'proto2';
 
 package github.com.nevercase.k8s_controller_custom_resource.api.proto;
 
-import "github.com/nevercase/k8s-controller-custom-resource/pkg/apis/mysqloperator/v1/generated.proto";
+import "github.com.nevercase.k8s-controller-custom-resource.pkg.apis.mysqloperator.v1.generated.proto";
 
 // Package-wide variables from generator "generated".
 option go_package = "proto";
