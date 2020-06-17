@@ -52,9 +52,9 @@ export const github = $root.github = (() => {
                                 if (message.Name != null && Object.hasOwnProperty.call(message, "Name"))
                                     writer.uint32(10).string(message.Name);
                                 if (message.master != null && Object.hasOwnProperty.call(message, "master"))
-                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.encode(message.master, writer.uint32(18).fork()).ldelim();
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim();
                                 if (message.slave != null && Object.hasOwnProperty.call(message, "slave"))
-                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.encode(message.slave, writer.uint32(26).fork()).ldelim();
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim();
                                 return writer;
                             };
 
@@ -73,10 +73,10 @@ export const github = $root.github = (() => {
                                         message.Name = reader.string();
                                         break;
                                     case 2:
-                                        message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.decode(reader, reader.uint32());
+                                        message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32());
                                         break;
                                     case 3:
-                                        message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.decode(reader, reader.uint32());
+                                        message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32());
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -99,12 +99,12 @@ export const github = $root.github = (() => {
                                     if (!$util.isString(message.Name))
                                         return "Name: string expected";
                                 if (message.master != null && message.hasOwnProperty("master")) {
-                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.verify(message.master);
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master);
                                     if (error)
                                         return "master." + error;
                                 }
                                 if (message.slave != null && message.hasOwnProperty("slave")) {
-                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.verify(message.slave);
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.slave);
                                     if (error)
                                         return "slave." + error;
                                 }
@@ -120,12 +120,12 @@ export const github = $root.github = (() => {
                                 if (object.master != null) {
                                     if (typeof object.master !== "object")
                                         throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.master: object expected");
-                                    message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.fromObject(object.master);
+                                    message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master);
                                 }
                                 if (object.slave != null) {
                                     if (typeof object.slave !== "object")
                                         throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.slave: object expected");
-                                    message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.fromObject(object.slave);
+                                    message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.slave);
                                 }
                                 return message;
                             };
@@ -142,9 +142,9 @@ export const github = $root.github = (() => {
                                 if (message.Name != null && message.hasOwnProperty("Name"))
                                     object.Name = message.Name;
                                 if (message.master != null && message.hasOwnProperty("master"))
-                                    object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.toObject(message.master, options);
+                                    object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options);
                                 if (message.slave != null && message.hasOwnProperty("slave"))
-                                    object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec.toObject(message.slave, options);
+                                    object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options);
                                 return object;
                             };
 
@@ -155,25 +155,25 @@ export const github = $root.github = (() => {
                             return MysqlCrd;
                         })();
 
-                        proto.MysqlSpec = (function() {
+                        proto.NodeSpec = (function() {
 
-                            function MysqlSpec(properties) {
+                            function NodeSpec(properties) {
                                 if (properties)
                                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
 
-                            MysqlSpec.prototype.Name = "";
-                            MysqlSpec.prototype.replicas = 0;
-                            MysqlSpec.prototype.image = "";
-                            MysqlSpec.prototype.imagePullSecrets = "";
+                            NodeSpec.prototype.Name = "";
+                            NodeSpec.prototype.replicas = 0;
+                            NodeSpec.prototype.image = "";
+                            NodeSpec.prototype.imagePullSecrets = "";
 
-                            MysqlSpec.create = function create(properties) {
-                                return new MysqlSpec(properties);
+                            NodeSpec.create = function create(properties) {
+                                return new NodeSpec(properties);
                             };
 
-                            MysqlSpec.encode = function encode(message, writer) {
+                            NodeSpec.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
                                 if (message.Name != null && Object.hasOwnProperty.call(message, "Name"))
@@ -187,14 +187,14 @@ export const github = $root.github = (() => {
                                 return writer;
                             };
 
-                            MysqlSpec.encodeDelimited = function encodeDelimited(message, writer) {
+                            NodeSpec.encodeDelimited = function encodeDelimited(message, writer) {
                                 return this.encode(message, writer).ldelim();
                             };
 
-                            MysqlSpec.decode = function decode(reader, length) {
+                            NodeSpec.decode = function decode(reader, length) {
                                 if (!(reader instanceof $Reader))
                                     reader = $Reader.create(reader);
-                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec();
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec();
                                 while (reader.pos < end) {
                                     let tag = reader.uint32();
                                     switch (tag >>> 3) {
@@ -218,13 +218,13 @@ export const github = $root.github = (() => {
                                 return message;
                             };
 
-                            MysqlSpec.decodeDelimited = function decodeDelimited(reader) {
+                            NodeSpec.decodeDelimited = function decodeDelimited(reader) {
                                 if (!(reader instanceof $Reader))
                                     reader = new $Reader(reader);
                                 return this.decode(reader, reader.uint32());
                             };
 
-                            MysqlSpec.verify = function verify(message) {
+                            NodeSpec.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
                                 if (message.Name != null && message.hasOwnProperty("Name"))
@@ -242,10 +242,10 @@ export const github = $root.github = (() => {
                                 return null;
                             };
 
-                            MysqlSpec.fromObject = function fromObject(object) {
-                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec)
+                            NodeSpec.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec)
                                     return object;
-                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlSpec();
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec();
                                 if (object.Name != null)
                                     message.Name = String(object.Name);
                                 if (object.replicas != null)
@@ -257,7 +257,7 @@ export const github = $root.github = (() => {
                                 return message;
                             };
 
-                            MysqlSpec.toObject = function toObject(message, options) {
+                            NodeSpec.toObject = function toObject(message, options) {
                                 if (!options)
                                     options = {};
                                 let object = {};
@@ -278,11 +278,253 @@ export const github = $root.github = (() => {
                                 return object;
                             };
 
-                            MysqlSpec.prototype.toJSON = function toJSON() {
+                            NodeSpec.prototype.toJSON = function toJSON() {
                                 return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                             };
 
-                            return MysqlSpec;
+                            return NodeSpec;
+                        })();
+
+                        proto.Param = (function() {
+
+                            function Param(properties) {
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            Param.prototype.service = "";
+                            Param.prototype.resourceType = "";
+                            Param.prototype.nameSpace = "";
+
+                            Param.create = function create(properties) {
+                                return new Param(properties);
+                            };
+
+                            Param.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.service != null && Object.hasOwnProperty.call(message, "service"))
+                                    writer.uint32(10).string(message.service);
+                                if (message.resourceType != null && Object.hasOwnProperty.call(message, "resourceType"))
+                                    writer.uint32(18).string(message.resourceType);
+                                if (message.nameSpace != null && Object.hasOwnProperty.call(message, "nameSpace"))
+                                    writer.uint32(26).string(message.nameSpace);
+                                return writer;
+                            };
+
+                            Param.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            Param.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.service = reader.string();
+                                        break;
+                                    case 2:
+                                        message.resourceType = reader.string();
+                                        break;
+                                    case 3:
+                                        message.nameSpace = reader.string();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            Param.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            Param.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.service != null && message.hasOwnProperty("service"))
+                                    if (!$util.isString(message.service))
+                                        return "service: string expected";
+                                if (message.resourceType != null && message.hasOwnProperty("resourceType"))
+                                    if (!$util.isString(message.resourceType))
+                                        return "resourceType: string expected";
+                                if (message.nameSpace != null && message.hasOwnProperty("nameSpace"))
+                                    if (!$util.isString(message.nameSpace))
+                                        return "nameSpace: string expected";
+                                return null;
+                            };
+
+                            Param.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param();
+                                if (object.service != null)
+                                    message.service = String(object.service);
+                                if (object.resourceType != null)
+                                    message.resourceType = String(object.resourceType);
+                                if (object.nameSpace != null)
+                                    message.nameSpace = String(object.nameSpace);
+                                return message;
+                            };
+
+                            Param.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.defaults) {
+                                    object.service = "";
+                                    object.resourceType = "";
+                                    object.nameSpace = "";
+                                }
+                                if (message.service != null && message.hasOwnProperty("service"))
+                                    object.service = message.service;
+                                if (message.resourceType != null && message.hasOwnProperty("resourceType"))
+                                    object.resourceType = message.resourceType;
+                                if (message.nameSpace != null && message.hasOwnProperty("nameSpace"))
+                                    object.nameSpace = message.nameSpace;
+                                return object;
+                            };
+
+                            Param.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return Param;
+                        })();
+
+                        proto.RedisCrd = (function() {
+
+                            function RedisCrd(properties) {
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            RedisCrd.prototype.Name = "";
+                            RedisCrd.prototype.master = null;
+                            RedisCrd.prototype.slave = null;
+
+                            RedisCrd.create = function create(properties) {
+                                return new RedisCrd(properties);
+                            };
+
+                            RedisCrd.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.Name != null && Object.hasOwnProperty.call(message, "Name"))
+                                    writer.uint32(10).string(message.Name);
+                                if (message.master != null && Object.hasOwnProperty.call(message, "master"))
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim();
+                                if (message.slave != null && Object.hasOwnProperty.call(message, "slave"))
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim();
+                                return writer;
+                            };
+
+                            RedisCrd.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            RedisCrd.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.Name = reader.string();
+                                        break;
+                                    case 2:
+                                        message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32());
+                                        break;
+                                    case 3:
+                                        message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            RedisCrd.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            RedisCrd.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    if (!$util.isString(message.Name))
+                                        return "Name: string expected";
+                                if (message.master != null && message.hasOwnProperty("master")) {
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master);
+                                    if (error)
+                                        return "master." + error;
+                                }
+                                if (message.slave != null && message.hasOwnProperty("slave")) {
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.slave);
+                                    if (error)
+                                        return "slave." + error;
+                                }
+                                return null;
+                            };
+
+                            RedisCrd.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd();
+                                if (object.Name != null)
+                                    message.Name = String(object.Name);
+                                if (object.master != null) {
+                                    if (typeof object.master !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.master: object expected");
+                                    message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master);
+                                }
+                                if (object.slave != null) {
+                                    if (typeof object.slave !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.slave: object expected");
+                                    message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.slave);
+                                }
+                                return message;
+                            };
+
+                            RedisCrd.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.defaults) {
+                                    object.Name = "";
+                                    object.master = null;
+                                    object.slave = null;
+                                }
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    object.Name = message.Name;
+                                if (message.master != null && message.hasOwnProperty("master"))
+                                    object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options);
+                                if (message.slave != null && message.hasOwnProperty("slave"))
+                                    object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options);
+                                return object;
+                            };
+
+                            RedisCrd.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return RedisCrd;
                         })();
 
                         proto.Request = (function() {
@@ -294,7 +536,7 @@ export const github = $root.github = (() => {
                                             this[keys[i]] = properties[keys[i]];
                             }
 
-                            Request.prototype.service = "";
+                            Request.prototype.param = null;
                             Request.prototype.data = "";
 
                             Request.create = function create(properties) {
@@ -304,8 +546,8 @@ export const github = $root.github = (() => {
                             Request.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
-                                if (message.service != null && Object.hasOwnProperty.call(message, "service"))
-                                    writer.uint32(10).string(message.service);
+                                if (message.param != null && Object.hasOwnProperty.call(message, "param"))
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.encode(message.param, writer.uint32(10).fork()).ldelim();
                                 if (message.data != null && Object.hasOwnProperty.call(message, "data"))
                                     writer.uint32(18).string(message.data);
                                 return writer;
@@ -323,7 +565,7 @@ export const github = $root.github = (() => {
                                     let tag = reader.uint32();
                                     switch (tag >>> 3) {
                                     case 1:
-                                        message.service = reader.string();
+                                        message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.decode(reader, reader.uint32());
                                         break;
                                     case 2:
                                         message.data = reader.string();
@@ -345,9 +587,11 @@ export const github = $root.github = (() => {
                             Request.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
-                                if (message.service != null && message.hasOwnProperty("service"))
-                                    if (!$util.isString(message.service))
-                                        return "service: string expected";
+                                if (message.param != null && message.hasOwnProperty("param")) {
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(message.param);
+                                    if (error)
+                                        return "param." + error;
+                                }
                                 if (message.data != null && message.hasOwnProperty("data"))
                                     if (!$util.isString(message.data))
                                         return "data: string expected";
@@ -358,8 +602,11 @@ export const github = $root.github = (() => {
                                 if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request)
                                     return object;
                                 let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request();
-                                if (object.service != null)
-                                    message.service = String(object.service);
+                                if (object.param != null) {
+                                    if (typeof object.param !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.param: object expected");
+                                    message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param);
+                                }
                                 if (object.data != null)
                                     message.data = String(object.data);
                                 return message;
@@ -370,11 +617,11 @@ export const github = $root.github = (() => {
                                     options = {};
                                 let object = {};
                                 if (options.defaults) {
-                                    object.service = "";
+                                    object.param = null;
                                     object.data = "";
                                 }
-                                if (message.service != null && message.hasOwnProperty("service"))
-                                    object.service = message.service;
+                                if (message.param != null && message.hasOwnProperty("param"))
+                                    object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options);
                                 if (message.data != null && message.hasOwnProperty("data"))
                                     object.data = message.data;
                                 return object;
@@ -387,6 +634,109 @@ export const github = $root.github = (() => {
                             return Request;
                         })();
 
+                        proto.Resources = (function() {
+
+                            function Resources(properties) {
+                                this.resources = [];
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            Resources.prototype.resources = $util.emptyArray;
+
+                            Resources.create = function create(properties) {
+                                return new Resources(properties);
+                            };
+
+                            Resources.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.resources != null && message.resources.length)
+                                    for (let i = 0; i < message.resources.length; ++i)
+                                        writer.uint32(10).string(message.resources[i]);
+                                return writer;
+                            };
+
+                            Resources.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            Resources.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.resources && message.resources.length))
+                                            message.resources = [];
+                                        message.resources.push(reader.string());
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            Resources.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            Resources.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.resources != null && message.hasOwnProperty("resources")) {
+                                    if (!Array.isArray(message.resources))
+                                        return "resources: array expected";
+                                    for (let i = 0; i < message.resources.length; ++i)
+                                        if (!$util.isString(message.resources[i]))
+                                            return "resources: string[] expected";
+                                }
+                                return null;
+                            };
+
+                            Resources.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources();
+                                if (object.resources) {
+                                    if (!Array.isArray(object.resources))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources.resources: array expected");
+                                    message.resources = [];
+                                    for (let i = 0; i < object.resources.length; ++i)
+                                        message.resources[i] = String(object.resources[i]);
+                                }
+                                return message;
+                            };
+
+                            Resources.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.arrays || options.defaults)
+                                    object.resources = [];
+                                if (message.resources && message.resources.length) {
+                                    object.resources = [];
+                                    for (let j = 0; j < message.resources.length; ++j)
+                                        object.resources[j] = message.resources[j];
+                                }
+                                return object;
+                            };
+
+                            Resources.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return Resources;
+                        })();
+
                         proto.Response = (function() {
 
                             function Response(properties) {
@@ -397,6 +747,7 @@ export const github = $root.github = (() => {
                             }
 
                             Response.prototype.code = 0;
+                            Response.prototype.param = null;
                             Response.prototype.result = "";
 
                             Response.create = function create(properties) {
@@ -408,8 +759,10 @@ export const github = $root.github = (() => {
                                     writer = $Writer.create();
                                 if (message.code != null && Object.hasOwnProperty.call(message, "code"))
                                     writer.uint32(8).int32(message.code);
+                                if (message.param != null && Object.hasOwnProperty.call(message, "param"))
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.encode(message.param, writer.uint32(18).fork()).ldelim();
                                 if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                                    writer.uint32(18).string(message.result);
+                                    writer.uint32(26).string(message.result);
                                 return writer;
                             };
 
@@ -428,6 +781,9 @@ export const github = $root.github = (() => {
                                         message.code = reader.int32();
                                         break;
                                     case 2:
+                                        message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.decode(reader, reader.uint32());
+                                        break;
+                                    case 3:
                                         message.result = reader.string();
                                         break;
                                     default:
@@ -450,6 +806,11 @@ export const github = $root.github = (() => {
                                 if (message.code != null && message.hasOwnProperty("code"))
                                     if (!$util.isInteger(message.code))
                                         return "code: integer expected";
+                                if (message.param != null && message.hasOwnProperty("param")) {
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(message.param);
+                                    if (error)
+                                        return "param." + error;
+                                }
                                 if (message.result != null && message.hasOwnProperty("result"))
                                     if (!$util.isString(message.result))
                                         return "result: string expected";
@@ -462,6 +823,11 @@ export const github = $root.github = (() => {
                                 let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response();
                                 if (object.code != null)
                                     message.code = object.code | 0;
+                                if (object.param != null) {
+                                    if (typeof object.param !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.param: object expected");
+                                    message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param);
+                                }
                                 if (object.result != null)
                                     message.result = String(object.result);
                                 return message;
@@ -473,10 +839,13 @@ export const github = $root.github = (() => {
                                 let object = {};
                                 if (options.defaults) {
                                     object.code = 0;
+                                    object.param = null;
                                     object.result = "";
                                 }
                                 if (message.code != null && message.hasOwnProperty("code"))
                                     object.code = message.code;
+                                if (message.param != null && message.hasOwnProperty("param"))
+                                    object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options);
                                 if (message.result != null && message.hasOwnProperty("result"))
                                     object.result = message.result;
                                 return object;

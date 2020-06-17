@@ -27,12 +27,12 @@ option go_package = "proto";
 message MysqlCrd {
   optional string Name = 1;
 
-  optional MysqlSpec master = 2;
+  optional NodeSpec master = 2;
 
-  optional MysqlSpec slave = 3;
+  optional NodeSpec slave = 3;
 }
 
-message MysqlSpec {
+message NodeSpec {
   optional string Name = 1;
 
   optional int32 replicas = 2;
@@ -42,15 +42,37 @@ message MysqlSpec {
   optional string imagePullSecrets = 4;
 }
 
-message Request {
+message Param {
   optional string service = 1;
 
+  optional string resourceType = 2;
+
+  optional string nameSpace = 3;
+}
+
+message RedisCrd {
+  optional string Name = 1;
+
+  optional NodeSpec master = 2;
+
+  optional NodeSpec slave = 3;
+}
+
+message Request {
+  optional Param param = 1;
+
   optional string data = 2;
+}
+
+message Resources {
+  repeated string resources = 1;
 }
 
 message Response {
   optional int32 code = 1;
 
-  optional string result = 2;
+  optional Param param = 2;
+
+  optional string result = 3;
 }
 
