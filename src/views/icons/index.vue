@@ -43,6 +43,7 @@
 import clipboard from '@/utils/clipboard'
 import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
+import proto from '../../../proto/proto'
 
 export default {
   name: 'Icons',
@@ -51,6 +52,10 @@ export default {
       svgIcons,
       elementIcons
     }
+  },
+  created() {
+    console.log(typeof proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data)
+    console.log(typeof proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.service)
   },
   methods: {
     generateIconCode(symbol) {
