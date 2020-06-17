@@ -155,6 +155,114 @@ export const github = $root.github = (() => {
                             return MysqlCrd;
                         })();
 
+                        proto.MysqlCrdList = (function() {
+
+                            function MysqlCrdList(properties) {
+                                this.items = [];
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            MysqlCrdList.prototype.items = $util.emptyArray;
+
+                            MysqlCrdList.create = function create(properties) {
+                                return new MysqlCrdList(properties);
+                            };
+
+                            MysqlCrdList.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.items != null && message.items.length)
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.encode(message.items[i], writer.uint32(10).fork()).ldelim();
+                                return writer;
+                            };
+
+                            MysqlCrdList.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            MysqlCrdList.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.items && message.items.length))
+                                            message.items = [];
+                                        message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            MysqlCrdList.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            MysqlCrdList.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.items != null && message.hasOwnProperty("items")) {
+                                    if (!Array.isArray(message.items))
+                                        return "items: array expected";
+                                    for (let i = 0; i < message.items.length; ++i) {
+                                        let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.verify(message.items[i]);
+                                        if (error)
+                                            return "items." + error;
+                                    }
+                                }
+                                return null;
+                            };
+
+                            MysqlCrdList.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList();
+                                if (object.items) {
+                                    if (!Array.isArray(object.items))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.items: array expected");
+                                    message.items = [];
+                                    for (let i = 0; i < object.items.length; ++i) {
+                                        if (typeof object.items[i] !== "object")
+                                            throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.items: object expected");
+                                        message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.fromObject(object.items[i]);
+                                    }
+                                }
+                                return message;
+                            };
+
+                            MysqlCrdList.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.arrays || options.defaults)
+                                    object.items = [];
+                                if (message.items && message.items.length) {
+                                    object.items = [];
+                                    for (let j = 0; j < message.items.length; ++j)
+                                        object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.toObject(message.items[j], options);
+                                }
+                                return object;
+                            };
+
+                            MysqlCrdList.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return MysqlCrdList;
+                        })();
+
                         proto.NodeSpec = (function() {
 
                             function NodeSpec(properties) {
@@ -525,6 +633,114 @@ export const github = $root.github = (() => {
                             };
 
                             return RedisCrd;
+                        })();
+
+                        proto.RedisCrdList = (function() {
+
+                            function RedisCrdList(properties) {
+                                this.items = [];
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            RedisCrdList.prototype.items = $util.emptyArray;
+
+                            RedisCrdList.create = function create(properties) {
+                                return new RedisCrdList(properties);
+                            };
+
+                            RedisCrdList.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.items != null && message.items.length)
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.encode(message.items[i], writer.uint32(10).fork()).ldelim();
+                                return writer;
+                            };
+
+                            RedisCrdList.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            RedisCrdList.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.items && message.items.length))
+                                            message.items = [];
+                                        message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            RedisCrdList.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            RedisCrdList.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.items != null && message.hasOwnProperty("items")) {
+                                    if (!Array.isArray(message.items))
+                                        return "items: array expected";
+                                    for (let i = 0; i < message.items.length; ++i) {
+                                        let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.verify(message.items[i]);
+                                        if (error)
+                                            return "items." + error;
+                                    }
+                                }
+                                return null;
+                            };
+
+                            RedisCrdList.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList();
+                                if (object.items) {
+                                    if (!Array.isArray(object.items))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.items: array expected");
+                                    message.items = [];
+                                    for (let i = 0; i < object.items.length; ++i) {
+                                        if (typeof object.items[i] !== "object")
+                                            throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.items: object expected");
+                                        message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.fromObject(object.items[i]);
+                                    }
+                                }
+                                return message;
+                            };
+
+                            RedisCrdList.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.arrays || options.defaults)
+                                    object.items = [];
+                                if (message.items && message.items.length) {
+                                    object.items = [];
+                                    for (let j = 0; j < message.items.length; ++j)
+                                        object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.toObject(message.items[j], options);
+                                }
+                                return object;
+                            };
+
+                            RedisCrdList.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return RedisCrdList;
                         })();
 
                         proto.Request = (function() {
