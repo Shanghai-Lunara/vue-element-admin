@@ -2,7 +2,7 @@ var websock = null
 var globalCalback = null
 
 function initWebSocket() {
-  websock = new WebSocket('ws://192.168.16.202:9090')
+  websock = new WebSocket('ws://39.99.229.222:9090')
   websock.onopen = function() {
     websocketopen()
   }
