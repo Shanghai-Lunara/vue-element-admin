@@ -753,7 +753,7 @@ export const github = $root.github = (() => {
                             }
 
                             Request.prototype.param = null;
-                            Request.prototype.data = "";
+                            Request.prototype.data = $util.newBuffer([]);
 
                             Request.create = function create(properties) {
                                 return new Request(properties);
@@ -765,7 +765,7 @@ export const github = $root.github = (() => {
                                 if (message.param != null && Object.hasOwnProperty.call(message, "param"))
                                     $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.encode(message.param, writer.uint32(10).fork()).ldelim();
                                 if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                                    writer.uint32(18).string(message.data);
+                                    writer.uint32(18).bytes(message.data);
                                 return writer;
                             };
 
@@ -784,7 +784,7 @@ export const github = $root.github = (() => {
                                         message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.decode(reader, reader.uint32());
                                         break;
                                     case 2:
-                                        message.data = reader.string();
+                                        message.data = reader.bytes();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -809,8 +809,8 @@ export const github = $root.github = (() => {
                                         return "param." + error;
                                 }
                                 if (message.data != null && message.hasOwnProperty("data"))
-                                    if (!$util.isString(message.data))
-                                        return "data: string expected";
+                                    if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
+                                        return "data: buffer expected";
                                 return null;
                             };
 
@@ -824,7 +824,10 @@ export const github = $root.github = (() => {
                                     message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param);
                                 }
                                 if (object.data != null)
-                                    message.data = String(object.data);
+                                    if (typeof object.data === "string")
+                                        $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
+                                    else if (object.data.length)
+                                        message.data = object.data;
                                 return message;
                             };
 
@@ -834,12 +837,18 @@ export const github = $root.github = (() => {
                                 let object = {};
                                 if (options.defaults) {
                                     object.param = null;
-                                    object.data = "";
+                                    if (options.bytes === String)
+                                        object.data = "";
+                                    else {
+                                        object.data = [];
+                                        if (options.bytes !== Array)
+                                            object.data = $util.newBuffer(object.data);
+                                    }
                                 }
                                 if (message.param != null && message.hasOwnProperty("param"))
                                     object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options);
                                 if (message.data != null && message.hasOwnProperty("data"))
-                                    object.data = message.data;
+                                    object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
                                 return object;
                             };
 
@@ -964,7 +973,7 @@ export const github = $root.github = (() => {
 
                             Response.prototype.code = 0;
                             Response.prototype.param = null;
-                            Response.prototype.result = "";
+                            Response.prototype.result = $util.newBuffer([]);
 
                             Response.create = function create(properties) {
                                 return new Response(properties);
@@ -978,7 +987,7 @@ export const github = $root.github = (() => {
                                 if (message.param != null && Object.hasOwnProperty.call(message, "param"))
                                     $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.encode(message.param, writer.uint32(18).fork()).ldelim();
                                 if (message.result != null && Object.hasOwnProperty.call(message, "result"))
-                                    writer.uint32(26).string(message.result);
+                                    writer.uint32(26).bytes(message.result);
                                 return writer;
                             };
 
@@ -1000,7 +1009,7 @@ export const github = $root.github = (() => {
                                         message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.decode(reader, reader.uint32());
                                         break;
                                     case 3:
-                                        message.result = reader.string();
+                                        message.result = reader.bytes();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -1028,8 +1037,8 @@ export const github = $root.github = (() => {
                                         return "param." + error;
                                 }
                                 if (message.result != null && message.hasOwnProperty("result"))
-                                    if (!$util.isString(message.result))
-                                        return "result: string expected";
+                                    if (!(message.result && typeof message.result.length === "number" || $util.isString(message.result)))
+                                        return "result: buffer expected";
                                 return null;
                             };
 
@@ -1045,7 +1054,10 @@ export const github = $root.github = (() => {
                                     message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param);
                                 }
                                 if (object.result != null)
-                                    message.result = String(object.result);
+                                    if (typeof object.result === "string")
+                                        $util.base64.decode(object.result, message.result = $util.newBuffer($util.base64.length(object.result)), 0);
+                                    else if (object.result.length)
+                                        message.result = object.result;
                                 return message;
                             };
 
@@ -1056,14 +1068,20 @@ export const github = $root.github = (() => {
                                 if (options.defaults) {
                                     object.code = 0;
                                     object.param = null;
-                                    object.result = "";
+                                    if (options.bytes === String)
+                                        object.result = "";
+                                    else {
+                                        object.result = [];
+                                        if (options.bytes !== Array)
+                                            object.result = $util.newBuffer(object.result);
+                                    }
                                 }
                                 if (message.code != null && message.hasOwnProperty("code"))
                                     object.code = message.code;
                                 if (message.param != null && message.hasOwnProperty("param"))
                                     object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options);
                                 if (message.result != null && message.hasOwnProperty("result"))
-                                    object.result = message.result;
+                                    object.result = options.bytes === String ? $util.base64.encode(message.result, 0, message.result.length) : options.bytes === Array ? Array.prototype.slice.call(message.result) : message.result;
                                 return object;
                             };
 
