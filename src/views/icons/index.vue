@@ -45,6 +45,8 @@ import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
 import proto from '../../../proto/proto'
 
+import { sendSock } from '../../api/socket'
+
 export default {
   name: 'Icons',
   data() {
@@ -54,8 +56,27 @@ export default {
     }
   },
   created() {
-    console.log(typeof proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data)
-    console.log(typeof proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.service)
+    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.nameSpace = 'default'
+    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.service = 'resource'
+    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.resourceType = 'RedisOperator'
+
+    var param = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype
+
+    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.param = param
+    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data = '12342121213131'
+
+    var list = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype
+
+    // console.log(list)
+
+    var senddata = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.encode(list).finish()
+
+    sendSock(senddata, function(res) {
+      console.log(res)
+      var buffer = new Uint8Array(res)
+      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decodeDelimited(buffer)
+      console.log(result)
+    })
   },
   methods: {
     generateIconCode(symbol) {

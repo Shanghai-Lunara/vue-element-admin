@@ -45,9 +45,10 @@ export default {
       var arr = '{"service":"ping","data":"abc"}'
       this.websocketsend(arr)
     },
-    websocketonerror() {
+    websocketonerror(e) {
+      console.log(e)
       console.log(454544)
-      this.initWebSocket()
+      // this.initWebSocket()
     },
     websocketonmessage(e) {
       const redata = JSON.parse(e.data)
