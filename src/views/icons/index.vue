@@ -72,10 +72,14 @@ export default {
     var senddata = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.encode(list).finish()
 
     sendSock(senddata, function(res) {
-      console.log(res)
-      var buffer = new Uint8Array(res)
-      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decodeDelimited(buffer)
+      console.log(res.data)
+      console.log(res.data.arrayBuffer(res.data))
+      var buffer = new Uint8Array(res.data.arrayBuffer(res.data))
+      // console.log(buffer)
+      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(buffer)
       console.log(result)
+      var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.toObject(result)
+      console.log(data)
     })
   },
   methods: {

@@ -38,7 +38,8 @@ function sendSock(data, callback) {
 
 function websockonmessage(e) {
   console.log(22222)
-  globalCalback(e.data)
+  console.log(e)
+  globalCalback(e)
 }
 
 function websocketsend(data) {
