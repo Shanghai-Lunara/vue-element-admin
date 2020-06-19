@@ -276,6 +276,7 @@ export const github = $root.github = (() => {
                             NodeSpec.prototype.replicas = 0;
                             NodeSpec.prototype.image = "";
                             NodeSpec.prototype.imagePullSecrets = "";
+                            NodeSpec.prototype.volumePath = "";
 
                             NodeSpec.create = function create(properties) {
                                 return new NodeSpec(properties);
@@ -292,6 +293,8 @@ export const github = $root.github = (() => {
                                     writer.uint32(26).string(message.image);
                                 if (message.imagePullSecrets != null && Object.hasOwnProperty.call(message, "imagePullSecrets"))
                                     writer.uint32(34).string(message.imagePullSecrets);
+                                if (message.volumePath != null && Object.hasOwnProperty.call(message, "volumePath"))
+                                    writer.uint32(42).string(message.volumePath);
                                 return writer;
                             };
 
@@ -317,6 +320,9 @@ export const github = $root.github = (() => {
                                         break;
                                     case 4:
                                         message.imagePullSecrets = reader.string();
+                                        break;
+                                    case 5:
+                                        message.volumePath = reader.string();
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -347,6 +353,9 @@ export const github = $root.github = (() => {
                                 if (message.imagePullSecrets != null && message.hasOwnProperty("imagePullSecrets"))
                                     if (!$util.isString(message.imagePullSecrets))
                                         return "imagePullSecrets: string expected";
+                                if (message.volumePath != null && message.hasOwnProperty("volumePath"))
+                                    if (!$util.isString(message.volumePath))
+                                        return "volumePath: string expected";
                                 return null;
                             };
 
@@ -362,6 +371,8 @@ export const github = $root.github = (() => {
                                     message.image = String(object.image);
                                 if (object.imagePullSecrets != null)
                                     message.imagePullSecrets = String(object.imagePullSecrets);
+                                if (object.volumePath != null)
+                                    message.volumePath = String(object.volumePath);
                                 return message;
                             };
 
@@ -374,6 +385,7 @@ export const github = $root.github = (() => {
                                     object.replicas = 0;
                                     object.image = "";
                                     object.imagePullSecrets = "";
+                                    object.volumePath = "";
                                 }
                                 if (message.Name != null && message.hasOwnProperty("Name"))
                                     object.Name = message.Name;
@@ -383,6 +395,8 @@ export const github = $root.github = (() => {
                                     object.image = message.image;
                                 if (message.imagePullSecrets != null && message.hasOwnProperty("imagePullSecrets"))
                                     object.imagePullSecrets = message.imagePullSecrets;
+                                if (message.volumePath != null && message.hasOwnProperty("volumePath"))
+                                    object.volumePath = message.volumePath;
                                 return object;
                             };
 
