@@ -103,10 +103,11 @@ export default {
       // console.log(res.data.arrayBuffer(res.data))
       var buffer = new Uint8Array(res.data)
       console.log(buffer)
-      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.decode(buffer)
+      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(buffer)
       console.log(result)
-      // var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.toObject(result)
-      // console.log(data)
+
+      var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(result.result)
+      console.log(data)
     })
   },
   methods: {

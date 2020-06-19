@@ -3,6 +3,7 @@ var globalCalback = null
 
 function initWebSocket() {
   websock = new WebSocket('ws://39.99.229.222:9090')
+  websock.binaryType = 'arraybuffer'
   websock.onopen = function() {
     websocketopen()
   }
