@@ -29,6 +29,237 @@ export const github = $root.github = (() => {
 
                         const proto = {};
 
+                        proto.ConfigMap = (function() {
+
+                            function ConfigMap(properties) {
+                                this.data = {};
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            ConfigMap.prototype.Name = "";
+                            ConfigMap.prototype.data = $util.emptyObject;
+
+                            ConfigMap.create = function create(properties) {
+                                return new ConfigMap(properties);
+                            };
+
+                            ConfigMap.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.Name != null && Object.hasOwnProperty.call(message, "Name"))
+                                    writer.uint32(10).string(message.Name);
+                                if (message.data != null && Object.hasOwnProperty.call(message, "data"))
+                                    for (let keys = Object.keys(message.data), i = 0; i < keys.length; ++i)
+                                        writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.data[keys[i]]).ldelim();
+                                return writer;
+                            };
+
+                            ConfigMap.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            ConfigMap.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap(), key;
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.Name = reader.string();
+                                        break;
+                                    case 2:
+                                        reader.skip().pos++;
+                                        if (message.data === $util.emptyObject)
+                                            message.data = {};
+                                        key = reader.string();
+                                        reader.pos++;
+                                        message.data[key] = reader.string();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            ConfigMap.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            ConfigMap.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    if (!$util.isString(message.Name))
+                                        return "Name: string expected";
+                                if (message.data != null && message.hasOwnProperty("data")) {
+                                    if (!$util.isObject(message.data))
+                                        return "data: object expected";
+                                    let key = Object.keys(message.data);
+                                    for (let i = 0; i < key.length; ++i)
+                                        if (!$util.isString(message.data[key[i]]))
+                                            return "data: string{k:string} expected";
+                                }
+                                return null;
+                            };
+
+                            ConfigMap.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap();
+                                if (object.Name != null)
+                                    message.Name = String(object.Name);
+                                if (object.data) {
+                                    if (typeof object.data !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.data: object expected");
+                                    message.data = {};
+                                    for (let keys = Object.keys(object.data), i = 0; i < keys.length; ++i)
+                                        message.data[keys[i]] = String(object.data[keys[i]]);
+                                }
+                                return message;
+                            };
+
+                            ConfigMap.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.objects || options.defaults)
+                                    object.data = {};
+                                if (options.defaults)
+                                    object.Name = "";
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    object.Name = message.Name;
+                                let keys2;
+                                if (message.data && (keys2 = Object.keys(message.data)).length) {
+                                    object.data = {};
+                                    for (let j = 0; j < keys2.length; ++j)
+                                        object.data[keys2[j]] = message.data[keys2[j]];
+                                }
+                                return object;
+                            };
+
+                            ConfigMap.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return ConfigMap;
+                        })();
+
+                        proto.ConfigMapList = (function() {
+
+                            function ConfigMapList(properties) {
+                                this.items = [];
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            ConfigMapList.prototype.items = $util.emptyArray;
+
+                            ConfigMapList.create = function create(properties) {
+                                return new ConfigMapList(properties);
+                            };
+
+                            ConfigMapList.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.items != null && message.items.length)
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.encode(message.items[i], writer.uint32(10).fork()).ldelim();
+                                return writer;
+                            };
+
+                            ConfigMapList.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            ConfigMapList.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.items && message.items.length))
+                                            message.items = [];
+                                        message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            ConfigMapList.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            ConfigMapList.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.items != null && message.hasOwnProperty("items")) {
+                                    if (!Array.isArray(message.items))
+                                        return "items: array expected";
+                                    for (let i = 0; i < message.items.length; ++i) {
+                                        let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.verify(message.items[i]);
+                                        if (error)
+                                            return "items." + error;
+                                    }
+                                }
+                                return null;
+                            };
+
+                            ConfigMapList.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList();
+                                if (object.items) {
+                                    if (!Array.isArray(object.items))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.items: array expected");
+                                    message.items = [];
+                                    for (let i = 0; i < object.items.length; ++i) {
+                                        if (typeof object.items[i] !== "object")
+                                            throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.items: object expected");
+                                        message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.fromObject(object.items[i]);
+                                    }
+                                }
+                                return message;
+                            };
+
+                            ConfigMapList.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.arrays || options.defaults)
+                                    object.items = [];
+                                if (message.items && message.items.length) {
+                                    object.items = [];
+                                    for (let j = 0; j < message.items.length; ++j)
+                                        object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.toObject(message.items[j], options);
+                                }
+                                return object;
+                            };
+
+                            ConfigMapList.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return ConfigMapList;
+                        })();
+
                         proto.MysqlCrd = (function() {
 
                             function MysqlCrd(properties) {
@@ -261,6 +492,201 @@ export const github = $root.github = (() => {
                             };
 
                             return MysqlCrdList;
+                        })();
+
+                        proto.NameSpace = (function() {
+
+                            function NameSpace(properties) {
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            NameSpace.prototype.Name = "";
+
+                            NameSpace.create = function create(properties) {
+                                return new NameSpace(properties);
+                            };
+
+                            NameSpace.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.Name != null && Object.hasOwnProperty.call(message, "Name"))
+                                    writer.uint32(10).string(message.Name);
+                                return writer;
+                            };
+
+                            NameSpace.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            NameSpace.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        message.Name = reader.string();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            NameSpace.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            NameSpace.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    if (!$util.isString(message.Name))
+                                        return "Name: string expected";
+                                return null;
+                            };
+
+                            NameSpace.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace();
+                                if (object.Name != null)
+                                    message.Name = String(object.Name);
+                                return message;
+                            };
+
+                            NameSpace.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.defaults)
+                                    object.Name = "";
+                                if (message.Name != null && message.hasOwnProperty("Name"))
+                                    object.Name = message.Name;
+                                return object;
+                            };
+
+                            NameSpace.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return NameSpace;
+                        })();
+
+                        proto.NameSpaceList = (function() {
+
+                            function NameSpaceList(properties) {
+                                this.items = [];
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            NameSpaceList.prototype.items = $util.emptyArray;
+
+                            NameSpaceList.create = function create(properties) {
+                                return new NameSpaceList(properties);
+                            };
+
+                            NameSpaceList.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.items != null && message.items.length)
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.encode(message.items[i], writer.uint32(10).fork()).ldelim();
+                                return writer;
+                            };
+
+                            NameSpaceList.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            NameSpaceList.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList();
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        if (!(message.items && message.items.length))
+                                            message.items = [];
+                                        message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.decode(reader, reader.uint32()));
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            NameSpaceList.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            NameSpaceList.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.items != null && message.hasOwnProperty("items")) {
+                                    if (!Array.isArray(message.items))
+                                        return "items: array expected";
+                                    for (let i = 0; i < message.items.length; ++i) {
+                                        let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.verify(message.items[i]);
+                                        if (error)
+                                            return "items." + error;
+                                    }
+                                }
+                                return null;
+                            };
+
+                            NameSpaceList.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList();
+                                if (object.items) {
+                                    if (!Array.isArray(object.items))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.items: array expected");
+                                    message.items = [];
+                                    for (let i = 0; i < object.items.length; ++i) {
+                                        if (typeof object.items[i] !== "object")
+                                            throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.items: object expected");
+                                        message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.fromObject(object.items[i]);
+                                    }
+                                }
+                                return message;
+                            };
+
+                            NameSpaceList.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.arrays || options.defaults)
+                                    object.items = [];
+                                if (message.items && message.items.length) {
+                                    object.items = [];
+                                    for (let j = 0; j < message.items.length; ++j)
+                                        object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.toObject(message.items[j], options);
+                                }
+                                return object;
+                            };
+
+                            NameSpaceList.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return NameSpaceList;
                         })();
 
                         proto.NodeSpec = (function() {
@@ -873,46 +1299,46 @@ export const github = $root.github = (() => {
                             return Request;
                         })();
 
-                        proto.Resources = (function() {
+                        proto.ResourceList = (function() {
 
-                            function Resources(properties) {
-                                this.resources = [];
+                            function ResourceList(properties) {
+                                this.items = [];
                                 if (properties)
                                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                                         if (properties[keys[i]] != null)
                                             this[keys[i]] = properties[keys[i]];
                             }
 
-                            Resources.prototype.resources = $util.emptyArray;
+                            ResourceList.prototype.items = $util.emptyArray;
 
-                            Resources.create = function create(properties) {
-                                return new Resources(properties);
+                            ResourceList.create = function create(properties) {
+                                return new ResourceList(properties);
                             };
 
-                            Resources.encode = function encode(message, writer) {
+                            ResourceList.encode = function encode(message, writer) {
                                 if (!writer)
                                     writer = $Writer.create();
-                                if (message.resources != null && message.resources.length)
-                                    for (let i = 0; i < message.resources.length; ++i)
-                                        writer.uint32(10).string(message.resources[i]);
+                                if (message.items != null && message.items.length)
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        writer.uint32(10).string(message.items[i]);
                                 return writer;
                             };
 
-                            Resources.encodeDelimited = function encodeDelimited(message, writer) {
+                            ResourceList.encodeDelimited = function encodeDelimited(message, writer) {
                                 return this.encode(message, writer).ldelim();
                             };
 
-                            Resources.decode = function decode(reader, length) {
+                            ResourceList.decode = function decode(reader, length) {
                                 if (!(reader instanceof $Reader))
                                     reader = $Reader.create(reader);
-                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources();
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList();
                                 while (reader.pos < end) {
                                     let tag = reader.uint32();
                                     switch (tag >>> 3) {
                                     case 1:
-                                        if (!(message.resources && message.resources.length))
-                                            message.resources = [];
-                                        message.resources.push(reader.string());
+                                        if (!(message.items && message.items.length))
+                                            message.items = [];
+                                        message.items.push(reader.string());
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -922,58 +1348,58 @@ export const github = $root.github = (() => {
                                 return message;
                             };
 
-                            Resources.decodeDelimited = function decodeDelimited(reader) {
+                            ResourceList.decodeDelimited = function decodeDelimited(reader) {
                                 if (!(reader instanceof $Reader))
                                     reader = new $Reader(reader);
                                 return this.decode(reader, reader.uint32());
                             };
 
-                            Resources.verify = function verify(message) {
+                            ResourceList.verify = function verify(message) {
                                 if (typeof message !== "object" || message === null)
                                     return "object expected";
-                                if (message.resources != null && message.hasOwnProperty("resources")) {
-                                    if (!Array.isArray(message.resources))
-                                        return "resources: array expected";
-                                    for (let i = 0; i < message.resources.length; ++i)
-                                        if (!$util.isString(message.resources[i]))
-                                            return "resources: string[] expected";
+                                if (message.items != null && message.hasOwnProperty("items")) {
+                                    if (!Array.isArray(message.items))
+                                        return "items: array expected";
+                                    for (let i = 0; i < message.items.length; ++i)
+                                        if (!$util.isString(message.items[i]))
+                                            return "items: string[] expected";
                                 }
                                 return null;
                             };
 
-                            Resources.fromObject = function fromObject(object) {
-                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources)
+                            ResourceList.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList)
                                     return object;
-                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources();
-                                if (object.resources) {
-                                    if (!Array.isArray(object.resources))
-                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.Resources.resources: array expected");
-                                    message.resources = [];
-                                    for (let i = 0; i < object.resources.length; ++i)
-                                        message.resources[i] = String(object.resources[i]);
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList();
+                                if (object.items) {
+                                    if (!Array.isArray(object.items))
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.items: array expected");
+                                    message.items = [];
+                                    for (let i = 0; i < object.items.length; ++i)
+                                        message.items[i] = String(object.items[i]);
                                 }
                                 return message;
                             };
 
-                            Resources.toObject = function toObject(message, options) {
+                            ResourceList.toObject = function toObject(message, options) {
                                 if (!options)
                                     options = {};
                                 let object = {};
                                 if (options.arrays || options.defaults)
-                                    object.resources = [];
-                                if (message.resources && message.resources.length) {
-                                    object.resources = [];
-                                    for (let j = 0; j < message.resources.length; ++j)
-                                        object.resources[j] = message.resources[j];
+                                    object.items = [];
+                                if (message.items && message.items.length) {
+                                    object.items = [];
+                                    for (let j = 0; j < message.items.length; ++j)
+                                        object.items[j] = message.items[j];
                                 }
                                 return object;
                             };
 
-                            Resources.prototype.toJSON = function toJSON() {
+                            ResourceList.prototype.toJSON = function toJSON() {
                                 return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
                             };
 
-                            return Resources;
+                            return ResourceList;
                         })();
 
                         proto.Response = (function() {
