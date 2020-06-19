@@ -56,30 +56,57 @@ export default {
     }
   },
   created() {
-    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.nameSpace = 'default'
-    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.service = 'resource'
-    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.resourceType = 'RedisOperator'
+    var data = {
+      'nameSpace': 'default',
+      'service': 'ping',
+      'resource': 'RedisOperator'
+    }
 
-    var param = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype
+    var errData = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
-    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.param = param
-    proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data = '12342121213131'
+    if (errData) { throw Error(errData) }
 
-    var list = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype
+    var msg = {
+      'param': data,
+      'data': ''
+    }
 
-    // console.log(list)
+    var errMsg = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.verify(msg)
 
-    var senddata = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.encode(list).finish()
+    if (errMsg) { throw Error(errMsg) }
+
+    var request = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+    var message = request.create(msg)
+
+    var senddata = request.encode(message).finish()
+
+    console.log(senddata)
+
+    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.nameSpace = 'default'
+    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.service = 'ping'
+    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.resourceType = 'RedisOperator'
+
+    // var param = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype
+
+    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.param = param
+    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data = '12342121213131'
+
+    // var list = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype
+
+    // // console.log(list)
+
+    // var senddata = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.encode(list).finish()
 
     sendSock(senddata, function(res) {
       console.log(res.data)
-      console.log(res.data.arrayBuffer(res.data))
-      var buffer = new Uint8Array(res.data.arrayBuffer(res.data))
-      // console.log(buffer)
-      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(buffer)
+      // console.log(res.data.arrayBuffer(res.data))
+      var buffer = new Uint8Array(res.data)
+      console.log(buffer)
+      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.decode(buffer)
       console.log(result)
-      var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.toObject(result)
-      console.log(data)
+      // var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.toObject(result)
+      // console.log(data)
     })
   },
   methods: {
