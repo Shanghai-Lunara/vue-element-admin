@@ -56,8 +56,8 @@ export default {
   created() {
     var data = {
       'nameSpace': 'default',
-      'service': 'ping',
-      'resource': 'RedisOperator'
+      'service': 'list',
+      'resourceType': 'RedisOperator'
     }
 
     var errData = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
@@ -75,15 +75,28 @@ export default {
 
     var senddata = request.encode(message).finish()
 
-    var _self = this
+    // var _self = this
 
     this.$socketApi(senddata, function(res) {
       var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
 
-      var dataString = _self.$binary.toStr(result.result)
+      var dataStr = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
 
-      console.log(dataString)
+      console.log(dataStr)
+
+      // var redisList = new proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList()
+
+      console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.prototype.items)
+      // for (let i = 0; i < redisList.items.length; i++) {
+      // }
+
+      // console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList)
+      // for (let i = 0; i < proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.propotype.items.length; i++) {
+      //   console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.propotype.items[i])
+      // }
+
+      // console.log(dataString.Name)
     })
   },
   methods: {
