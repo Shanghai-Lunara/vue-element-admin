@@ -11,7 +11,7 @@ function initWebSocket() {
     websockonmessage(e)
   }
   websock.onerror = function() {
-    console.log('ws连接失败')
+    console.log('ws连接失败' + '888888')
   }
   websock.onclose = function(e) {
     websocketclose(e)
@@ -19,7 +19,6 @@ function initWebSocket() {
 }
 
 function sendSock(data, callback) {
-  console.log(555556)
   globalCalback = callback
   if (websock.readyState === websock.OPEN) {
     // 若是ws开启状态
@@ -38,18 +37,18 @@ function sendSock(data, callback) {
 }
 
 function websockonmessage(e) {
-  console.log(22222)
-  console.log(e)
-  globalCalback(e)
+  console.log('websocket_message:' + '222222')
+  var buffer = new Uint8Array(e.data)
+  globalCalback(buffer)
 }
 
 function websocketsend(data) {
-  console.log(333)
+  console.log('websocket_send:' + '111111')
   websock.send(data)
 }
 
 function websocketclose(e) {
-  console.log(111111)
+  console.log('websocket_close:' + '333333')
 }
 
 function websocketopen() {

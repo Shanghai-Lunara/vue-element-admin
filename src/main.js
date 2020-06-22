@@ -20,6 +20,9 @@ import './utils/error-log' // error log
 
 import * as filters from './filters' // global filters
 
+import { sendSock } from './api/socket'
+import binary from './utils/binary'
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -44,6 +47,8 @@ Object.keys(filters).forEach(key => {
 })
 
 Vue.config.productionTip = false
+Vue.prototype.$socketApi = sendSock
+Vue.prototype.$binary = binary
 
 new Vue({
   el: '#app',

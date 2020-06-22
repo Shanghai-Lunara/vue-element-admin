@@ -45,8 +45,6 @@ import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
 import proto from '../../../proto/proto'
 
-import { sendSock } from '../../api/socket'
-
 export default {
   name: 'Icons',
   data() {
@@ -71,43 +69,21 @@ export default {
       'data': ''
     }
 
-    var errMsg = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.verify(msg)
-
-    if (errMsg) { throw Error(errMsg) }
-
     var request = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
 
     var message = request.create(msg)
 
     var senddata = request.encode(message).finish()
 
-    console.log(senddata)
+    var _self = this
 
-    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.nameSpace = 'default'
-    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.service = 'ping'
-    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype.resourceType = 'RedisOperator'
-
-    // var param = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.prototype
-
-    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.param = param
-    // proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype.data = '12342121213131'
-
-    // var list = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.prototype
-
-    // // console.log(list)
-
-    // var senddata = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.encode(list).finish()
-
-    sendSock(senddata, function(res) {
-      console.log(res.data)
-      // console.log(res.data.arrayBuffer(res.data))
-      var buffer = new Uint8Array(res.data)
-      console.log(buffer)
-      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(buffer)
+    this.$socketApi(senddata, function(res) {
+      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
 
-      var data = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(result.result)
-      console.log(data)
+      var dataString = _self.$binary.toStr(result.result)
+
+      console.log(dataString)
     })
   },
   methods: {
