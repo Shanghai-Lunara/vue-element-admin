@@ -43,7 +43,7 @@
 import clipboard from '@/utils/clipboard'
 import svgIcons from './svg-icons'
 import elementIcons from './element-icons'
-import proto from '../../../proto/proto'
+// import proto from '../../../proto/proto'
 
 export default {
   name: 'Icons',
@@ -60,7 +60,7 @@ export default {
       'resourceType': 'RedisOperator'
     }
 
-    var errData = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+    var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
     if (errData) { throw Error(errData) }
 
@@ -69,34 +69,23 @@ export default {
       'data': ''
     }
 
-    var request = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+    var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
 
     var message = request.create(msg)
 
     var senddata = request.encode(message).finish()
 
-    // var _self = this
+    var _self = this
 
     this.$socketApi(senddata, function(res) {
-      var result = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
 
-      var dataStr = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+      var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
 
       console.log(dataStr)
 
-      // var redisList = new proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList()
-
-      console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.prototype.items)
-      // for (let i = 0; i < redisList.items.length; i++) {
-      // }
-
-      // console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList)
-      // for (let i = 0; i < proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.propotype.items.length; i++) {
-      //   console.log(proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.propotype.items[i])
-      // }
-
-      // console.log(dataString.Name)
+      console.log(_self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.prototype.items)
     })
   },
   methods: {
