@@ -184,7 +184,7 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/kubo',
+    path: '/kube',
     component: Layout,
     redirect: '/kubo/default',
     name: 'kubo',
@@ -194,19 +194,19 @@ export const asyncRoutes = [
     children: [
       {
         path: 'default',
-        component: () => import('@/views/kubo/default'),
+        component: () => import('@/views/kube/default'),
         name: 'Default',
         meta: { title: 'Default', noCache: true }
       },
       {
         path: 'mysql',
-        component: () => import('@/views/kubo/mysql'),
+        component: () => import('@/views/kube/mysql'),
         name: 'Mysql',
         meta: { title: 'Mysql', noCache: true, activeMenu: '/kubo/mysql' }
       },
       {
         path: 'system',
-        component: () => import('@/views/kubo/system'),
+        component: () => import('@/views/kube/system'),
         name: 'System',
         meta: { title: 'System', noCache: true, activeMenu: '/kubo/system' }
       }

@@ -55,9 +55,9 @@ export default {
   },
   created() {
     var data = {
-      'nameSpace': 'default',
+      'nameSpace': '',
       'service': 'list',
-      'resourceType': 'RedisOperator'
+      'resourceType': 'NameSpace'
     }
 
     var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
@@ -81,7 +81,11 @@ export default {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
 
+<<<<<<< HEAD
       var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+=======
+      var dataStr = proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+>>>>>>> tmp
 
       console.log(dataStr)
 
