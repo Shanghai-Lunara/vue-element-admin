@@ -183,35 +183,6 @@ export const asyncRoutes = [
       }
     ]
   },
-  {
-    path: '/kube',
-    component: Layout,
-    redirect: '/kubo/default',
-    name: 'kubo',
-    meta: {
-      title: 'kubo'
-    },
-    children: [
-      {
-        path: 'default',
-        component: () => import('@/views/kube/default'),
-        name: 'Default',
-        meta: { title: 'Default', noCache: true }
-      },
-      {
-        path: 'mysql',
-        component: () => import('@/views/kube/mysql'),
-        name: 'Mysql',
-        meta: { title: 'Mysql', noCache: true, activeMenu: '/kubo/mysql' }
-      },
-      {
-        path: 'system',
-        component: () => import('@/views/kube/system'),
-        name: 'System',
-        meta: { title: 'System', noCache: true, activeMenu: '/kubo/system' }
-      }
-    ]
-  },
 
   /** when your routing map is too long, you can split it into small modules **/
   componentsRouter,
