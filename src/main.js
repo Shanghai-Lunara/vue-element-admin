@@ -21,7 +21,6 @@ import './utils/error-log' // error log
 import * as filters from './filters' // global filters
 
 import { sendSock } from './api/socket'
-import binary from './utils/binary'
 import proto from '../proto/proto'
 
 /**
@@ -49,7 +48,6 @@ Object.keys(filters).forEach(key => {
 
 Vue.config.productionTip = false
 Vue.prototype.$socketApi = sendSock
-Vue.prototype.$binary = binary
 Vue.prototype.$proto = proto
 
 new Vue({

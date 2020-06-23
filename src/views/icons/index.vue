@@ -81,11 +81,11 @@ export default {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
 
-      var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+      var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
 
       console.log(dataStr)
 
-      console.log(_self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.prototype.items)
+      // console.log(_self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.prototype.items)
     })
   },
   methods: {
