@@ -196,7 +196,7 @@ export default {
         type: undefined,
         sort: '+id'
       },
-      importanceOptions: [1, 2, 3],
+      importanceOptions: [],
       calendarTypeOptions,
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -228,6 +228,7 @@ export default {
   },
   created() {
     this.getList()
+    this.getNameSpaceList()
   },
   methods: {
     getList() {
@@ -240,6 +241,46 @@ export default {
         setTimeout(() => {
           this.listLoading = false
         }, 1.5 * 1000)
+      })
+    },
+    getNameSpaceList() {
+      var data = {
+        'nameSpace': '',
+        'service': 'list',
+        'resourceType': 'NameSpace'
+      }
+
+      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': data,
+        'data': ''
+      }
+
+      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+      var message = request.create(msg)
+
+      var senddata = request.encode(message).finish()
+
+      var _self = this
+
+      this.$socketApi(senddata, function(res) {
+        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+        console.log(result)
+
+        var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+
+        console.log(dataStr)
+        console.log(dataStr.items)
+        const nameSpaceList = _self.importanceOptions
+        dataStr.items.forEach(function(item, index) {
+          console.log(item.Name)
+          nameSpaceList.push(item.Name)
+        })
+        _self.importanceOptions = nameSpaceList
       })
     },
     handleFilter() {
