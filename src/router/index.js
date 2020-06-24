@@ -8,7 +8,7 @@ import Layout from '@/layout'
 
 /* Router Modules */
 // import componentsRouter from './modules/components'
-import tableRouter from './modules/table'
+// import tableRouter from './modules/table'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -69,19 +69,37 @@ export const constantRoutes = [
     hidden: true
   },
   {
-    path: '/profile',
+    path: '/',
     component: Layout,
-    redirect: '/profile/index',
-    hidden: true,
+    redirect: '/complex-table',
+    name: 'Table',
+    meta: {
+      title: 'Table',
+      icon: 'table'
+    },
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/profile/index'),
-        name: 'Profile',
-        meta: { title: 'profile', icon: 'user', noCache: true }
+        path: 'complex-table',
+        component: () => import('@/views/table/complex-table'),
+        name: 'ComplexTable',
+        meta: { title: 'complexTable' }
       }
     ]
   }
+  // {
+  //   path: '/profile',
+  //   component: Layout,
+  //   redirect: '/profile/index',
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/profile/index'),
+  //       name: 'Profile',
+  //       meta: { title: 'profile', icon: 'user', noCache: true }
+  //     }
+  //   ]
+  // }
 ]
 
 /**
@@ -131,14 +149,14 @@ export const asyncRoutes = [
   //   ]
   // },
 
-  {
-    path: '/',
-    component: Layout
-  },
+  // {
+  //   path: '/',
+  //   component: Layout
+  // },
 
   /** when your routing map is too long, you can split it into small modules **/
   // componentsRouter,
-  tableRouter,
+  // tableRouter,
 
   // 综合实例
   // {
@@ -272,7 +290,7 @@ export const asyncRoutes = [
   // },
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
