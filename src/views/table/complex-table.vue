@@ -229,6 +229,7 @@ export default {
   created() {
     this.getList()
     this.getNameSpaceList()
+    this.getConfigMapList()
   },
   methods: {
     getList() {
@@ -269,15 +270,48 @@ export default {
 
       this.$socketApi(senddata, function(res) {
         var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-        console.log(result)
 
         var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
 
-        console.log(dataStr)
-        console.log(dataStr.items)
         const nameSpaceList = _self.importanceOptions
         dataStr.items.forEach(function(item, index) {
-          console.log(item.Name)
+          nameSpaceList.push(item.Name)
+        })
+        _self.importanceOptions = nameSpaceList
+      })
+    },
+    getConfigMapList() {
+      var data = {
+        'nameSpace': 'default',
+        'service': 'list',
+        'resourceType': 'ConfigMap'
+      }
+
+      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': data,
+        'data': ''
+      }
+
+      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+      var message = request.create(msg)
+
+      var senddata = request.encode(message).finish()
+
+      var _self = this
+
+      this.$socketApi(senddata, function(res) {
+        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+
+        var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
+        console.log(dataStr)
+
+        const nameSpaceList = _self.importanceOptions
+        dataStr.items.forEach(function(item, index) {
           nameSpaceList.push(item.Name)
         })
         _self.importanceOptions = nameSpaceList
