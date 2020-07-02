@@ -418,7 +418,7 @@ export default {
     },
     selectResource(val) {
       console.log(val)
-      console.log(this.resourceType)
+      console.log(resourceType)
     },
     handleFilter() {
       this.listQuery.page = 1
