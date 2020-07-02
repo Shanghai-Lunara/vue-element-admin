@@ -27,22 +27,24 @@ function sendSock(data, callback) {
     // 若是 正在开启状态，则等待1s后重新调用
     setTimeout(function() {
       sendSock(data, callback)
-    }, 10000)
+    }, 1000)
   } else {
     // 若未开启 ，则等待1s后重新调用
     setTimeout(function() {
       sendSock(data, callback)
-    }, 10000)
+    }, 1000)
   }
 }
 
 function websockonmessage(e) {
   console.log('websocket_message:' + '222222')
+  // console.log(new Date().getTime() + '/' + '222222')
   var buffer = new Uint8Array(e.data)
   globalCalback(buffer)
 }
 
 function websocketsend(data) {
+  // console.log(new Date().getTime() + '/' + '111111')
   console.log('websocket_send:' + '111111')
   websock.send(data)
 }

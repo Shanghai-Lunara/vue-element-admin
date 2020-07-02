@@ -67,24 +67,6 @@ export const constantRoutes = [
     path: '/401',
     component: () => import('@/views/error-page/401'),
     hidden: true
-  },
-  {
-    path: '/',
-    component: Layout,
-    redirect: '/complex-table',
-    name: 'Table',
-    meta: {
-      title: 'Table',
-      icon: 'table'
-    },
-    children: [
-      {
-        path: 'complex-table',
-        component: () => import('@/views/table/complex-table'),
-        name: 'ComplexTable',
-        meta: { title: 'complexTable' }
-      }
-    ]
   }
   // {
   //   path: '/profile',
@@ -107,6 +89,23 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    redirect: '/complex-table',
+    name: 'Table',
+    meta: {
+      title: 'Table',
+      icon: 'list'
+    },
+    children: [
+      {
+        path: 'complex-table',
+        component: () => import('@/views/table/complex-table'),
+        name: 'ComplexTable'
+      }
+    ]
+  }
   // {
   //   path: '/permission',
   //   component: Layout,
