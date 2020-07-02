@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 90px" class="filter-item">
+      <!--<el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
+      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 200px" class="filter-item" @change="selectNameSpace">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px" @change="selectResource">
+        <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
       <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
@@ -35,41 +35,30 @@
       style="width: 100%;"
       @sort-change="sortChange"
     >
-      <el-table-column :label="$t('table.id')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column :label="$t('table_config.state')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.date')" width="150px" align="center">
+      <el-table-column :label="$t('table_config.name')" width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
+          <!--<span>{{ row.name| parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.title')" min-width="150px">
+      <el-table-column :label="$t('table_config.namespace')" width="150px">
         <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.title }}</span>
-          <el-tag>{{ row.type | typeFilter }}</el-tag>
+          <el-tag>{{ row.namespace }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.author')" width="110px" align="center">
+      <el-table-column :label="$t('table_config.keys')" min-width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.author }}</span>
+          <span>{{ row.keys}}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" :label="$t('table.reviewer')" width="110px" align="center">
+      <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.reviewer }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.importance')" width="80px">
-        <template slot-scope="{row}">
-          <svg-icon v-for="n in +row.importance" :key="n" icon-class="star" class="meta-item__icon" />
-        </template>
-      </el-table-column>
-      <el-table-column :label="$t('table.readings')" align="center" width="95">
-        <template slot-scope="{row}">
-          <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
-          <span v-else>0</span>
         </template>
       </el-table-column>
       <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
@@ -103,7 +92,7 @@
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('table.type')" prop="type">
           <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />
+            <!--<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />-->
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('table.date')" prop="timestamp">
@@ -150,7 +139,8 @@
 import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
-import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Pagination from '@/components/Pagination'
+import Vue from "vue"; // secondary package based on el-pagination
 
 const calendarTypeOptions = [
   { key: 'CN', display_name: 'China' },
@@ -158,6 +148,9 @@ const calendarTypeOptions = [
   { key: 'JP', display_name: 'Japan' },
   { key: 'EU', display_name: 'Eurozone' }
 ]
+
+const nameSpace = 'default'
+const resourceType = 'configMap'
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
@@ -178,14 +171,14 @@ export default {
       }
       return statusMap[status]
     },
-    typeFilter(type) {
-      return calendarTypeKeyValue[type]
-    }
+    //typeFilter(type) {
+    //  return calendarTypeKeyValue[type]
+    //}
   },
   data() {
     return {
       tableKey: 0,
-      list: null,
+      list: [],
       total: 0,
       listLoading: true,
       listQuery: {
@@ -197,7 +190,8 @@ export default {
         sort: '+id'
       },
       importanceOptions: [],
-      calendarTypeOptions,
+
+      calendarTypeOptions: [],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
@@ -228,15 +222,17 @@ export default {
   },
   created() {
     this.getList()
-    this.getNameSpaceList()
     this.getConfigMapList()
+    this.getNameSpaceList()
+    this.getResourceList()
+    this.timer()
   },
   methods: {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        this.list = response.data.items
-        this.total = response.data.total
+        //this.list = response.data.items
+        //this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -244,8 +240,60 @@ export default {
         }, 1.5 * 1000)
       })
     },
+    timer() {
+      const _self = this;
+      return setInterval(()=>{
+        const data = {
+          'nameSpace': '',
+          'service': 'ping',
+          'resourceType': ''
+        }
+        var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+        var msg = {
+          'param': data,
+          'data': ''
+        }
+
+        var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+        var message = request.create(msg)
+
+        var senddata = request.encode(message).finish()
+        const _self = this;
+        _self.$socketApi(senddata, function (res) {
+          _self.returnResource(res, _self)
+        })
+      },10000)
+    },
+    getResourceList() {
+      const data = {
+        'nameSpace': 'default',
+        'service': 'resource',
+        'resourceType': ''
+      }
+
+      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': data,
+        'data': ''
+      }
+
+      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+      var message = request.create(msg)
+
+      var senddata = request.encode(message).finish()
+
+      const _self = this;
+      this.$socketApi(senddata, function (res) {
+        _self.returnResource(res, _self)
+      })
+    },
     getNameSpaceList() {
-      var data = {
+      const data = {
         'nameSpace': '',
         'service': 'list',
         'resourceType': 'NameSpace'
@@ -266,27 +314,16 @@ export default {
 
       var senddata = request.encode(message).finish()
 
-      var _self = this
-
-      this.$socketApi(senddata, function(res) {
-        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-
-        var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
-
-        const nameSpaceList = _self.importanceOptions
-        dataStr.items.forEach(function(item, index) {
-          nameSpaceList.push(item.Name)
-        })
-        _self.importanceOptions = nameSpaceList
+      const _self = this;
+      this.$socketApi(senddata, function (res) {
+        _self.returnResource(res, _self)
       })
     },
-    getConfigMapList() {
-      var data = {
-        'nameSpace': 'default',
-        'service': 'list',
-        'resourceType': 'ConfigMap'
-      }
-
+    getConfigMapList(data = {
+      'nameSpace': 'default',
+      'service': 'list',
+      'resourceType': 'ConfigMap'
+    }) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -302,20 +339,86 @@ export default {
 
       var senddata = request.encode(message).finish()
 
-      var _self = this
-
-      this.$socketApi(senddata, function(res) {
-        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-
-        var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
-        console.log(dataStr)
-
-        const nameSpaceList = _self.importanceOptions
-        dataStr.items.forEach(function(item, index) {
-          nameSpaceList.push(item.Name)
-        })
-        _self.importanceOptions = nameSpaceList
+      const _self = this;
+      this.$socketApi(senddata, function (res) {
+        _self.returnMessage(res, _self)
       })
+    },
+    returnMessage(res, _self) {
+      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res);
+      console.log(result);
+
+      let dataStr = ''
+      switch (result.param.resourceType) {
+        case 'ConfigMap':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
+          console.log('configMap')
+          console.log(dataStr)
+
+          let list = _self.list;
+          list = []
+          dataStr.items.forEach(function(item, index) {
+
+            const one = [];
+            one.name = item.Name
+            one.namespace = 'default'
+
+            one.keys = Object.keys(item.data).join(',')
+            one.value = Object.values(item.data)
+
+            list.push(one)
+          })
+          _self.list = list
+          break
+        case 'NameSpace':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+          console.log('namespace')
+          console.log(dataStr)
+
+          const nameSpaceList = _self.importanceOptions
+          dataStr.items.forEach(function(item, index) {
+            nameSpaceList.push(item.Name)
+          })
+          _self.importanceOptions = nameSpaceList
+          break
+        case '':
+          console.log('ping')
+          break
+      }
+    },
+    returnResource(service, _self) {
+      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service);
+      console.log(result);
+      switch (result.param.service) {
+        case 'ping':
+          console.log('ping');
+          break
+        case 'resource':
+          const calendarTypeOptions = _self.calendarTypeOptions
+          let dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
+          console.log(dataStr);
+          dataStr.items.forEach(function(item, index) {
+            calendarTypeOptions.push(item)
+          })
+          _self.calendarTypeOptions = calendarTypeOptions
+          break
+        case 'list':
+          _self.returnMessage(service, _self)
+          break
+      }
+    },
+    selectNameSpace(val) {
+      const data = {
+        'nameSpace': val,
+        'service': 'list',
+        'resourceType': 'ConfigMap'
+      }
+      console.log(data);
+      this.getConfigMapList(data)
+    },
+    selectResource(val) {
+      console.log(val)
+      console.log(this.resourceType)
     },
     handleFilter() {
       this.listQuery.page = 1
