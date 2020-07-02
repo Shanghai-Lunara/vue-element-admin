@@ -149,8 +149,8 @@ const calendarTypeOptions = [
   { key: 'EU', display_name: 'Eurozone' }
 ]
 
-const nameSpace = 'default'
-const resourceType = 'configMap'
+let nameSpace = 'default';
+let resourceType = 'configMap';
 
 // arr to obj, such as { CN : "China", US : "USA" }
 const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
@@ -341,7 +341,7 @@ export default {
 
       const _self = this;
       this.$socketApi(senddata, function (res) {
-        _self.returnMessage(res, _self)
+        _self.returnResource(res, _self)
       })
     },
     returnMessage(res, _self) {
@@ -349,13 +349,13 @@ export default {
       console.log(result);
 
       let dataStr = ''
+      let list = _self.list;
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           console.log('configMap')
           console.log(dataStr)
 
-          let list = _self.list;
           list = []
           dataStr.items.forEach(function(item, index) {
 
@@ -370,6 +370,24 @@ export default {
           })
           _self.list = list
           break
+        case 'MysqlOperator':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
+          console.log('MysqlOperator')
+          console.log(dataStr)
+
+          list = []
+          //dataStr.items.forEach(function(item, index) {
+
+          //  const one = [];
+          //  one.name = item.Name
+          //  one.namespace = 'default'
+
+          //  one.keys = Object.keys(item.data).join(',')
+          //  one.value = Object.values(item.data)
+
+          //  list.push(one)
+          //})
+          //_self.list = list
         case 'NameSpace':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
           console.log('namespace')
@@ -381,8 +399,7 @@ export default {
           })
           _self.importanceOptions = nameSpaceList
           break
-        case '':
-          console.log('ping')
+
           break
       }
     },
@@ -408,17 +425,24 @@ export default {
       }
     },
     selectNameSpace(val) {
+      nameSpace = val
       const data = {
-        'nameSpace': val,
+        'nameSpace': nameSpace,
         'service': 'list',
-        'resourceType': 'ConfigMap'
+        'resourceType': resourceType
       }
       console.log(data);
       this.getConfigMapList(data)
     },
     selectResource(val) {
-      console.log(val)
-      console.log(resourceType)
+      resourceType = val
+      const data = {
+        'nameSpace': nameSpace,
+        'service': 'list',
+        'resourceType': resourceType
+      }
+      console.log(data)
+      this.getConfigMapList(data)
     },
     handleFilter() {
       this.listQuery.page = 1
