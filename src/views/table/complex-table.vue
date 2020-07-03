@@ -408,6 +408,13 @@ export default {
           console.log('ping')
           break
         case 'resource':
+          const calendarTypeOptions = _self.calendarTypeOptions
+          let dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
+          console.log(dataStr);
+          dataStr.items.forEach(function(item, index) {
+            calendarTypeOptions.push(item)
+          })
+          _self.calendarTypeOptions = calendarTypeOptions
 
           break
         case 'list':
