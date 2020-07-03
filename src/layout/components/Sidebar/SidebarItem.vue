@@ -17,8 +17,8 @@
         :key="child.name"
         :is-nest="true"
         :item="child"
-        :base-path="resolvePath(child.path)"
         class="nest-menu"
+        :base-path="resolvePath(child.path, child.name)"
       />
     </el-submenu>
   </div>
@@ -82,13 +82,18 @@ export default {
 
       return false
     },
-    resolvePath(routePath) {
+    resolvePath(routePath, routeName) {
       if (isExternal(routePath)) {
         return routePath
       }
       if (isExternal(this.basePath)) {
         return this.basePath
       }
+
+      if (routeName !== undefined) {
+        return path.resolve(this.basePath, routePath + '?name=' + routeName)
+      }
+
       return path.resolve(this.basePath, routePath)
     },
 

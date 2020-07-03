@@ -53,7 +53,7 @@
       </el-table-column>
       <el-table-column :label="$t('table_config.keys')" min-width="150px" align="center">
         <template slot-scope="{row}">
-          <span>{{ row.keys}}</span>
+          <span>{{ row.keys }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
@@ -140,23 +140,22 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import Vue from "vue"; // secondary package based on el-pagination
 
-const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
-]
+// const calendarTypeOptions = [
+//   { key: 'CN', display_name: 'China' },
+//   { key: 'US', display_name: 'USA' },
+//   { key: 'JP', display_name: 'Japan' },
+//   { key: 'EU', display_name: 'Eurozone' }
+// ]
 
-let nameSpace = 'default';
-let resourceType = 'configMap';
+let nameSpace = 'default'
+let resourceType = 'configMap'
 
 // arr to obj, such as { CN : "China", US : "USA" }
-const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-  acc[cur.key] = cur.display_name
-  return acc
-}, {})
+// const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
+//   acc[cur.key] = cur.display_name
+//   return acc
+// }, {})
 
 export default {
   name: 'ComplexTable',
@@ -170,10 +169,10 @@ export default {
         deleted: 'danger'
       }
       return statusMap[status]
-    },
-    //typeFilter(type) {
+    }
+    // typeFilter(type) {
     //  return calendarTypeKeyValue[type]
-    //}
+    // }
   },
   data() {
     return {
@@ -220,19 +219,25 @@ export default {
       downloadLoading: false
     }
   },
+  watch: {
+    $route(route) {
+      var name = route.query.name
+      this.selectNameSpace(name)
+    }
+  },
   created() {
     this.getList()
-    this.getConfigMapList()
-    this.getNameSpaceList()
-    this.getResourceList()
-    this.timer()
+    // this.getConfigMapList()
+    // this.getNameSpaceList()
+    // this.getResourceList()
+    // this.timer()
   },
   methods: {
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
-        //this.list = response.data.items
-        //this.total = response.data.total
+        // this.list = response.data.items
+        // this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -241,14 +246,13 @@ export default {
       })
     },
     timer() {
-      const _self = this;
-      return setInterval(()=>{
+      return setInterval(() => {
         const data = {
           'nameSpace': '',
           'service': 'ping',
           'resourceType': ''
         }
-        var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
         var msg = {
           'param': data,
           'data': ''
@@ -259,11 +263,11 @@ export default {
         var message = request.create(msg)
 
         var senddata = request.encode(message).finish()
-        const _self = this;
-        _self.$socketApi(senddata, function (res) {
+        const _self = this
+        _self.$socketApi(senddata, function(res) {
           _self.returnResource(res, _self)
         })
-      },10000)
+      }, 10000)
     },
     getResourceList() {
       const data = {
@@ -287,8 +291,8 @@ export default {
 
       var senddata = request.encode(message).finish()
 
-      const _self = this;
-      this.$socketApi(senddata, function (res) {
+      const _self = this
+      this.$socketApi(senddata, function(res) {
         _self.returnResource(res, _self)
       })
     },
@@ -314,8 +318,8 @@ export default {
 
       var senddata = request.encode(message).finish()
 
-      const _self = this;
-      this.$socketApi(senddata, function (res) {
+      const _self = this
+      this.$socketApi(senddata, function(res) {
         _self.returnResource(res, _self)
       })
     },
@@ -339,17 +343,17 @@ export default {
 
       var senddata = request.encode(message).finish()
 
-      const _self = this;
-      this.$socketApi(senddata, function (res) {
+      const _self = this
+      this.$socketApi(senddata, function(res) {
         _self.returnResource(res, _self)
       })
     },
     returnMessage(res, _self) {
-      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res);
-      console.log(result);
+      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+      console.log(result)
 
       let dataStr = ''
-      let list = _self.list;
+      let list = _self.list
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
@@ -358,8 +362,7 @@ export default {
 
           list = []
           dataStr.items.forEach(function(item, index) {
-
-            const one = [];
+            const one = []
             one.name = item.Name
             one.namespace = 'default'
 
@@ -376,7 +379,7 @@ export default {
           console.log(dataStr)
 
           list = []
-          //dataStr.items.forEach(function(item, index) {
+          // dataStr.items.forEach(function(item, index) {
 
           //  const one = [];
           //  one.name = item.Name
@@ -386,38 +389,26 @@ export default {
           //  one.value = Object.values(item.data)
 
           //  list.push(one)
-          //})
-          //_self.list = list
+          // })
+          // _self.list = list
+          break
         case 'NameSpace':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
           console.log('namespace')
           console.log(dataStr)
 
-          const nameSpaceList = _self.importanceOptions
-          dataStr.items.forEach(function(item, index) {
-            nameSpaceList.push(item.Name)
-          })
-          _self.importanceOptions = nameSpaceList
-          break
-
           break
       }
     },
     returnResource(service, _self) {
-      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service);
-      console.log(result);
+      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+      console.log(result)
       switch (result.param.service) {
         case 'ping':
-          console.log('ping');
+          console.log('ping')
           break
         case 'resource':
-          const calendarTypeOptions = _self.calendarTypeOptions
-          let dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
-          console.log(dataStr);
-          dataStr.items.forEach(function(item, index) {
-            calendarTypeOptions.push(item)
-          })
-          _self.calendarTypeOptions = calendarTypeOptions
+
           break
         case 'list':
           _self.returnMessage(service, _self)
@@ -431,7 +422,7 @@ export default {
         'service': 'list',
         'resourceType': resourceType
       }
-      console.log(data);
+      console.log(data)
       this.getConfigMapList(data)
     },
     selectResource(val) {

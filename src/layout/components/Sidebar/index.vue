@@ -89,7 +89,7 @@ export default {
         now_list['name'] = element['Name']
         now_list['component'] = () => import('@/views/table/complex-table')
 
-        now_list['meta'] = { 'title': element['Name'], 'icon': 'message' }
+        now_list['meta'] = { 'title': element['Name'], 'icon': 'form' }
         now_arr.push(now_list)
       })
 
