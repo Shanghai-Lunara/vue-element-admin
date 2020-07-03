@@ -186,7 +186,7 @@ export default {
         limit: 20,
         importance: undefined,
         title: undefined,
-        type: undefined,
+        type: '',
         sort: '+id'
       },
       importanceOptions: [],
@@ -413,9 +413,12 @@ export default {
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
           console.log(dataStr)
           dataStr.items.forEach(function(item, index) {
-            calendarTypeOptions.push(item)
+            if (item != 'NameSpace') {
+              calendarTypeOptions.push(item)
+            }
           })
           _self.calendarTypeOptions = calendarTypeOptions
+          _self.listQuery.type = 'ConfigMap'
 
           break
         case 'list':
