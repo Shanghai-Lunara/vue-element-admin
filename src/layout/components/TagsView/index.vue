@@ -1,6 +1,6 @@
 <template>
   <div id="tags-view-container" class="tags-view-container">
-    <scroll-pane ref="scrollPane" class="tags-view-wrapper">
+    <!-- <scroll-pane ref="scrollPane" class="tags-view-wrapper">
       <router-link
         v-for="tag in visitedViews"
         ref="tag"
@@ -15,7 +15,7 @@
         {{ generateTitle(tag.title) }}
         <span v-if="!isAffix(tag)" class="el-icon-close" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
-    </scroll-pane>
+    </scroll-pane> -->
     <ul v-show="visible" :style="{left:left+'px',top:top+'px'}" class="contextmenu">
       <li @click="refreshSelectedTag(selectedTag)">{{ $t('tagsView.refresh') }}</li>
       <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">{{ $t('tagsView.close') }}</li>
@@ -26,12 +26,12 @@
 </template>
 
 <script>
-import ScrollPane from './ScrollPane'
+// import ScrollPane from './ScrollPane'
 import { generateTitle } from '@/utils/i18n'
 import path from 'path'
 
 export default {
-  components: { ScrollPane },
+  // components: { ScrollPane },
   data() {
     return {
       visible: false,

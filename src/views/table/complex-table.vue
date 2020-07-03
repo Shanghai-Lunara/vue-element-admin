@@ -1,17 +1,18 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!--<el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />-->
-      <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 200px" class="filter-item" @change="selectNameSpace">
+      <!-- <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" /> -->
+      <!-- <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 200px" class="filter-item" @change="selectNameSpace">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px" @change="selectResource">
+      </el-select> -->
+      <span>resourceType:</span>
+      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
+      <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      </el-select> -->
+      <!-- <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
       </el-button>
       <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
@@ -19,10 +20,10 @@
       </el-button>
       <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
-      </el-button>
-      <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
+      </el-button> -->
+      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         {{ $t('table.reviewer') }}
-      </el-checkbox>
+      </el-checkbox> -->
     </div>
 
     <el-table
@@ -408,9 +409,9 @@ export default {
           console.log('ping')
           break
         case 'resource':
-          const calendarTypeOptions = _self.calendarTypeOptions
-          let dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
-          console.log(dataStr);
+          var calendarTypeOptions = _self.calendarTypeOptions
+          var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
+          console.log(dataStr)
           dataStr.items.forEach(function(item, index) {
             calendarTypeOptions.push(item)
           })
