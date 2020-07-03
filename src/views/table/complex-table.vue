@@ -225,12 +225,12 @@ export default {
       this.selectNameSpace(name)
     }
   },
-  created() {
+  mounted() {
     this.getList()
-    // this.getConfigMapList()
+    this.getConfigMapList()
     // this.getNameSpaceList()
-    // this.getResourceList()
-    // this.timer()
+    this.getResourceList()
+    this.timer()
   },
   methods: {
     getList() {
