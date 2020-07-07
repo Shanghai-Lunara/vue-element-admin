@@ -235,6 +235,11 @@ export default {
       this.nameSpace = name
     }
 
+    // 刷新定位到/
+    if (this.$route.fullPath.indexOf('?') !== -1) {
+      this.$router.push({ path: '/' })
+    }
+
     // this.timer()
   },
   methods: {
@@ -418,7 +423,7 @@ export default {
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
           dataStr.items.forEach(function(item, index) {
-            if (item != 'NameSpace') {
+            if (item !== 'NameSpace') {
               calendarTypeOptions.push(item)
             }
           })
@@ -442,15 +447,14 @@ export default {
       this.getConfigMapList(data)
     },
     selectResource() {
-      console.log(this.nameSpace)
-      console.log(this.listQuery.type)
-
-      const data = {
-        'nameSpace': this.nameSpace,
-        'service': 'list',
-        'resourceType': this.listQuery.type
+      if (this.namespace !== '') {
+        const data = {
+          'nameSpace': this.nameSpace,
+          'service': 'list',
+          'resourceType': this.listQuery.type
+        }
+        this.getConfigMapList(data)
       }
-      this.getConfigMapList(data)
     },
     handleFilter() {
       this.listQuery.page = 1
