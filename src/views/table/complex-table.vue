@@ -5,8 +5,8 @@
       <!-- <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 200px" class="filter-item" @change="selectNameSpace">
         <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
       </el-select> -->
-      <span>resourceType:</span>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" clearable class="filter-item" style="width: 130px;margin-left: 10px" @change="selectResource">
+      <span>ResourceType:</span>
+      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 160px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
       <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
@@ -34,7 +34,6 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
     >
       <el-table-column :label="$t('table_config.state')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
@@ -77,9 +76,9 @@
           <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
             {{ $t('table.publish') }}
           </el-button>
-          <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
+          <!-- <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
             {{ $t('table.draft') }}
-          </el-button>
+          </el-button> -->
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.delete') }}
           </el-button>
@@ -87,7 +86,7 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
       <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
@@ -149,9 +148,6 @@ import Pagination from '@/components/Pagination'
 //   { key: 'EU', display_name: 'Eurozone' }
 // ]
 
-let nameSpace = 'default'
-let resourceType = 'configMap'
-
 // arr to obj, such as { CN : "China", US : "USA" }
 // const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 //   acc[cur.key] = cur.display_name
@@ -180,7 +176,7 @@ export default {
       tableKey: 0,
       list: [],
       total: 0,
-      listLoading: true,
+      listLoading: false,
       listQuery: {
         page: 1,
         limit: 20,
@@ -217,26 +213,36 @@ export default {
         timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
-      downloadLoading: false
+      downloadLoading: false,
+      nameSpace: ''
     }
   },
   watch: {
     $route(route) {
+      // 监控路由
       var name = route.query.name
-      this.selectNameSpace(name)
+      this.nameSpace = name
+      this.selectNameSpace()
     }
   },
   mounted() {
-    this.getList()
-    this.getConfigMapList()
-    // this.getNameSpaceList()
+    // this.getList()
     this.getResourceList()
-    this.timer()
+
+    // 路由
+    if (this.nameSpace === '') {
+      var name = this.$router.history.current.query.name
+      this.nameSpace = name
+    }
+
+    // this.timer()
   },
   methods: {
     getList() {
+      // 加载分页
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
+        console.log(response)
         // this.list = response.data.items
         // this.total = response.data.total
 
@@ -324,11 +330,7 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    getConfigMapList(data = {
-      'nameSpace': 'default',
-      'service': 'list',
-      'resourceType': 'ConfigMap'
-    }) {
+    getConfigMapList(data) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -355,11 +357,10 @@ export default {
 
       let dataStr = ''
       let list = _self.list
+
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
-          console.log('configMap')
-          console.log(dataStr)
 
           list = []
           dataStr.items.forEach(function(item, index) {
@@ -372,7 +373,12 @@ export default {
 
             list.push(one)
           })
+
+          console.log(list)
+
           _self.list = list
+          _self.total = dataStr.items.length
+
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
@@ -411,12 +417,13 @@ export default {
         case 'resource':
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
-          console.log(dataStr)
           dataStr.items.forEach(function(item, index) {
             if (item != 'NameSpace') {
               calendarTypeOptions.push(item)
             }
           })
+
+          this.listQuery.type = calendarTypeOptions[0]
           _self.calendarTypeOptions = calendarTypeOptions
           _self.listQuery.type = 'ConfigMap'
 
@@ -426,24 +433,23 @@ export default {
           break
       }
     },
-    selectNameSpace(val) {
-      nameSpace = val
+    selectNameSpace() {
       const data = {
-        'nameSpace': nameSpace,
+        'nameSpace': this.nameSpace,
         'service': 'list',
-        'resourceType': resourceType
+        'resourceType': this.listQuery.type
       }
-      console.log(data)
       this.getConfigMapList(data)
     },
-    selectResource(val) {
-      resourceType = val
+    selectResource() {
+      console.log(this.nameSpace)
+      console.log(this.listQuery.type)
+
       const data = {
-        'nameSpace': nameSpace,
+        'nameSpace': this.nameSpace,
         'service': 'list',
-        'resourceType': resourceType
+        'resourceType': this.listQuery.type
       }
-      console.log(data)
       this.getConfigMapList(data)
     },
     handleFilter() {
@@ -456,20 +462,6 @@ export default {
         type: 'success'
       })
       row.status = status
-    },
-    sortChange(data) {
-      const { prop, order } = data
-      if (prop === 'id') {
-        this.sortByID(order)
-      }
-    },
-    sortByID(order) {
-      if (order === 'ascending') {
-        this.listQuery.sort = '+id'
-      } else {
-        this.listQuery.sort = '-id'
-      }
-      this.handleFilter()
     },
     resetTemp() {
       this.temp = {
