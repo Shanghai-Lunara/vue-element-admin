@@ -245,12 +245,8 @@ export default {
       },
       downloadLoading: false,
       nameSpace: '',
-<<<<<<< HEAD
       table:'',
       value: yamlData,
-=======
-      table: ''
->>>>>>> tmp
     }
   },
   watch: {
