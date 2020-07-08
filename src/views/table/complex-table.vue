@@ -89,10 +89,10 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+      <!--<el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
         <el-form-item :label="$t('table.type')" prop="type">
           <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            <!--<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />-->
+            &lt;!&ndash;<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />&ndash;&gt;
           </el-select>
         </el-form-item>
         <el-form-item :label="$t('table.date')" prop="timestamp">
@@ -112,7 +112,14 @@
         <el-form-item :label="$t('table.remark')">
           <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
         </el-form-item>
-      </el-form>
+      </el-form>-->
+      <template>
+        <div>
+          <div class="editor-container">
+            <yaml-editor  v-model="value" />
+          </div>
+        </div>
+      </template>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
@@ -140,6 +147,9 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
+import YamlEditor from '@/components/YamlEditor/index.vue';
+
+const yamlData = "- hosts: \n    enemies=aliens \n lives=3 \n enemies.cheat=true \n enemies.cheat.level=noGoodRotten \n secret.code.passphrase=UUDDLRLRBABAS \n secret.code.allowed=true \n secret.code.lives=30";
 
 // const calendarTypeOptions = [
 //   { key: 'CN', display_name: 'China' },
@@ -173,7 +183,10 @@ const table = {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
+  components: {
+    Pagination,
+    YamlEditor
+  },
   directives: { waves },
   filters: {
     statusFilter(status) {
@@ -232,7 +245,8 @@ export default {
       },
       downloadLoading: false,
       nameSpace: '',
-      table:''
+      table:'',
+      value: yamlData,
     }
   },
   watch: {
@@ -527,13 +541,17 @@ export default {
       })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row) // copy obj
-      this.temp.timestamp = new Date(this.temp.timestamp)
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
+      let str = '';
+      let keys = row.keys.split(',');
+      let reg = new RegExp('\n','g')
+      row.value.forEach(function (item, index) {
+        let newMsg = item.replace(reg,'\n    ');
+        console.log(newMsg);
+        str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
       })
+      this.value = str
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -599,3 +617,9 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .editor-container{
+    position: relative;
+    height: 100%;
+  }
+</style>
