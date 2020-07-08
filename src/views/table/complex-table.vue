@@ -56,11 +56,11 @@
           <span>{{ row.keys }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
+      <!-- <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.reviewer }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!--<el-table-column :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
@@ -167,7 +167,7 @@ const yamlData = "- hosts: \n    enemies=aliens \n lives=3 \n enemies.cheat=true
 const configMapTable = {
   key1: 'Name',
   key2: 'keys',
-  key3: 'NameSpace',
+  key3: 'NameSpace'
 }
 
 const mysqlOperatorTable = {
@@ -177,8 +177,8 @@ const mysqlOperatorTable = {
 }
 
 const table = {
-  'ConfigMap' : configMapTable,
-  'MysqlOperator' : mysqlOperatorTable
+  'ConfigMap': configMapTable,
+  'MysqlOperator': mysqlOperatorTable
 }
 
 export default {
@@ -245,8 +245,12 @@ export default {
       },
       downloadLoading: false,
       nameSpace: '',
+<<<<<<< HEAD
       table:'',
       value: yamlData,
+=======
+      table: ''
+>>>>>>> tmp
     }
   },
   watch: {
@@ -267,7 +271,6 @@ export default {
       this.nameSpace = name
       this.table = configMapTable
     }
-
 
     // 刷新定位到/
     if (this.$route.fullPath.indexOf('?') !== -1) {
@@ -486,11 +489,10 @@ export default {
           'service': 'list',
           'resourceType': this.listQuery.type
         }
+        this.table = table[this.listQuery.type]
+        console.log(this.table)
         this.getConfigMapList(data)
       }
-      this.table = table[this.listQuery.type]
-      console.log(this.table)
-      this.getConfigMapList(data)
     },
     handleFilter() {
       this.listQuery.page = 1
