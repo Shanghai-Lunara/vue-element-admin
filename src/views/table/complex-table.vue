@@ -35,23 +35,23 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column :label="$t('table_config.state')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      <!--<el-table-column :label="$t('table_config.state')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
-      </el-table-column>
-      <el-table-column :label="$t('table_config.name')" width="150px" align="center">
+      </el-table-column>-->
+      <el-table-column :label="table.key1" width="150px" align="center">
         <template slot-scope="{row}">
           <!--<span>{{ row.name| parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
           <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table_config.namespace')" width="150px">
+      <el-table-column :label="table.key3" width="150px">
         <template slot-scope="{row}">
           <el-tag>{{ row.namespace }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table_config.keys')" min-width="150px" align="center">
+      <el-table-column :label="table.key2" min-width="150px" align="center">
         <template slot-scope="{row}">
           <span>{{ row.keys }}</span>
         </template>
@@ -61,13 +61,13 @@
           <span style="color:red;">{{ row.reviewer }}</span>
         </template>
       </el-table-column>
-      <el-table-column :label="$t('table.status')" class-name="status-col" width="100">
+      <!--<el-table-column :label="$t('table.status')" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
         </template>
-      </el-table-column>
+      </el-table-column>-->
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -154,6 +154,23 @@ import Pagination from '@/components/Pagination'
 //   return acc
 // }, {})
 
+const configMapTable = {
+  key1: 'Name',
+  key2: 'keys',
+  key3: 'NameSpace',
+}
+
+const mysqlOperatorTable = {
+  key1: 'Name',
+  key2: 'Image',
+  key3: 'replicas'
+}
+
+const table = {
+  'ConfigMap' : configMapTable,
+  'MysqlOperator' : mysqlOperatorTable
+}
+
 export default {
   name: 'ComplexTable',
   components: { Pagination },
@@ -214,7 +231,8 @@ export default {
         title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
-      nameSpace: ''
+      nameSpace: '',
+      table:''
     }
   },
   watch: {
@@ -233,14 +251,15 @@ export default {
     if (this.nameSpace === '') {
       var name = this.$router.history.current.query.name
       this.nameSpace = name
+      this.table = configMapTable
     }
+
 
     // 刷新定位到/
     if (this.$route.fullPath.indexOf('?') !== -1) {
       this.$router.push({ path: '/' })
     }
-
-    // this.timer()
+    this.timer()
   },
   methods: {
     getList() {
@@ -455,6 +474,9 @@ export default {
         }
         this.getConfigMapList(data)
       }
+      this.table = table[this.listQuery.type]
+      console.log(this.table)
+      this.getConfigMapList(data)
     },
     handleFilter() {
       this.listQuery.page = 1
