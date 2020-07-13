@@ -9,29 +9,11 @@
       <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 160px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
-<<<<<<< HEAD
-      <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        {{ $t('table.search') }}
-      </el-button> -->
-      <!--<el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
-        {{ $t('table.add') }}
-      </el-button>-->
-      <!-- <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        {{ $t('table.export') }}
-      </el-button> -->
-      <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
-        {{ $t('table.reviewer') }}
-      </el-checkbox> -->
-=======
 
       <!-- mysql | redis | secret -->
       <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
->>>>>>> tmp
     </div>
 
     <el-table
@@ -338,7 +320,7 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    updateMapList(data){
+    updateMapList(data) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -358,8 +340,8 @@ export default {
         'data': msg_data
       }
 
-      console.log('msg update');
-      console.log(msg);
+      console.log('msg update')
+      console.log(msg)
 
       var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
 
@@ -382,8 +364,8 @@ export default {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
 
-          console.log('return configMap');
-          console.log(dataStr);
+          console.log('return configMap')
+          console.log(dataStr)
           list = []
           dataStr.items.forEach(function(item, index) {
             const one = []
@@ -396,10 +378,6 @@ export default {
 
             list.push(one)
           })
-<<<<<<< HEAD
-          console.log(list);
-=======
->>>>>>> tmp
 
           _self.list = list
           _self.total = dataStr.items.length
@@ -459,13 +437,13 @@ export default {
           _self.returnMessage(service, _self)
           break
         case 'update':
-          console.log('update');
-          if (result.code == 0) {
+          console.log('update')
+          if (result.code === 0) {
             // todo configMapList
           }
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.decode(result.result)
-          console.log('return configMap');
-          console.log(dataStr);
+          console.log('return configMap')
+          console.log(dataStr)
           break
       }
     },
@@ -535,27 +513,12 @@ export default {
       // var NodeSpec = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.prototype
     },
     handleCreate() {
-<<<<<<< HEAD
-      // this.resetTemp()
-      // this.dialogStatus = 'create'
-      // this.dialogFormVisible = true
-      // this.$nextTick(() => {
-      //   this.$refs['dataForm'].clearValidate()
-      // })
-      const data = {
-        'nameSpace': 'default',
-        'service': 'update',
-        'resourceType': this.listQuery.type
-      }
-      console.log("test");
-=======
       this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       // this.$nextTick(() => {
       //   this.$refs['dataForm'].clearValidate()
       // })
->>>>>>> tmp
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
