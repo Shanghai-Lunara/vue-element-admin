@@ -9,6 +9,7 @@
       <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 160px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
+<<<<<<< HEAD
       <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
@@ -24,6 +25,13 @@
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
         {{ $t('table.reviewer') }}
       </el-checkbox> -->
+=======
+
+      <!-- mysql | redis | secret -->
+      <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+        {{ $t('table.add') }}
+      </el-button>
+>>>>>>> tmp
     </div>
 
     <el-table
@@ -40,9 +48,16 @@
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>-->
-      <el-table-column :label="table.key1" width="150px" align="center">
+
+      <el-table-column v-for="(info,index) in table" :key="index" :label="info" align="center">
         <template slot-scope="{row}">
-          <!--<span>{{ row.name| parseTime('{y}-{m}-{d} {h}:{i}') }}</span>-->
+          <el-tag v-if="index === 'namespace'">{{ row[index] }}</el-tag>
+          <span v-else>{{ row[index] }}</span>
+        </template>
+      </el-table-column>
+
+      <!-- <el-table-column :label="table.key1" width="150px" align="center">
+        <template slot-scope="{row}">
           <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
         </template>
       </el-table-column>
@@ -55,7 +70,7 @@
         <template slot-scope="{row}">
           <span>{{ row.keys }}</span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <!-- <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.reviewer }}</span>
@@ -89,34 +104,10 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <!--<el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            &lt;!&ndash;<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />&ndash;&gt;
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>-->
       <template>
         <div>
           <div class="editor-container">
-            <yaml-editor  v-model="value" />
+            <yaml-editor :value="yamlData" />
           </div>
         </div>
       </template>
@@ -147,33 +138,19 @@ import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
-import YamlEditor from '@/components/YamlEditor/index.vue';
-
-const yamlData = "- hosts: \n    enemies=aliens \n lives=3 \n enemies.cheat=true \n enemies.cheat.level=noGoodRotten \n secret.code.passphrase=UUDDLRLRBABAS \n secret.code.allowed=true \n secret.code.lives=30";
-
-// const calendarTypeOptions = [
-//   { key: 'CN', display_name: 'China' },
-//   { key: 'US', display_name: 'USA' },
-//   { key: 'JP', display_name: 'Japan' },
-//   { key: 'EU', display_name: 'Eurozone' }
-// ]
-
-// arr to obj, such as { CN : "China", US : "USA" }
-// const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
-//   acc[cur.key] = cur.display_name
-//   return acc
-// }, {})
+import YamlEditor from '@/components/YamlEditor/index.vue'
 
 const configMapTable = {
-  key1: 'Name',
-  key2: 'keys',
-  key3: 'NameSpace'
+  name: 'Name',
+  namespace: 'NameSpace',
+  keys: 'keys'
 }
 
 const mysqlOperatorTable = {
-  key1: 'Name',
-  key2: 'Image',
-  key3: 'replicas'
+  name: 'Name',
+  namespace: 'NameSpace',
+  master: 'Image',
+  slave: 'replicas'
 }
 
 const table = {
@@ -216,7 +193,6 @@ export default {
         sort: '+id'
       },
       importanceOptions: [],
-
       calendarTypeOptions: [],
       sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
@@ -245,8 +221,9 @@ export default {
       },
       downloadLoading: false,
       nameSpace: '',
-      table:'',
-      value: yamlData,
+      table: '',
+      yamlData: '',
+      showFlag: false
     }
   },
   watch: {
@@ -340,33 +317,6 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    getNameSpaceList() {
-      const data = {
-        'nameSpace': '',
-        'service': 'list',
-        'resourceType': 'NameSpace'
-      }
-
-      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
-
-      if (errData) { throw Error(errData) }
-
-      var msg = {
-        'param': data,
-        'data': ''
-      }
-
-      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
-
-      var message = request.create(msg)
-
-      var senddata = request.encode(message).finish()
-
-      const _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.returnResource(res, _self)
-      })
-    },
     getConfigMapList(data) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
@@ -424,7 +374,6 @@ export default {
     },
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-      console.log(result)
 
       let dataStr = ''
       let list = _self.list
@@ -439,7 +388,7 @@ export default {
           dataStr.items.forEach(function(item, index) {
             const one = []
             one.name = item.Name
-            one.namespace = 'default'
+            one.namespace = _self.nameSpace
 
             one.keys = Object.keys(item.data).join(',')
             one.value = Object.values(item.data)
@@ -447,7 +396,10 @@ export default {
 
             list.push(one)
           })
+<<<<<<< HEAD
           console.log(list);
+=======
+>>>>>>> tmp
 
           _self.list = list
           _self.total = dataStr.items.length
@@ -455,27 +407,30 @@ export default {
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
-          console.log('MysqlOperator')
-          console.log(dataStr)
 
           list = []
-          // dataStr.items.forEach(function(item, index) {
+          dataStr.items.forEach(function(item, index) {
+            var one = []
+            one.namespace = _self.nameSpace
 
-          //  const one = [];
-          //  one.name = item.Name
-          //  one.namespace = 'default'
+            if (item.hasOwnProperty('master')) {
+              one.name = item.Name + '_' + item.master.Name + '_master'
+              one.master = item.master.image
+              one.slave = item.master.replicas
+            } else if (item.hasOwnProperty('slave')) {
+              one.name = item.Name + '_' + item.slave.Name + '_slave'
+              one.master = item.slave.image
+              one.slave = item.slave.replicas
+            }
 
-          //  one.keys = Object.keys(item.data).join(',')
-          //  one.value = Object.values(item.data)
+            list.push(one)
+          })
 
-          //  list.push(one)
-          // })
-          // _self.list = list
+          _self.list = list
+          _self.total = dataStr.items.length
           break
         case 'NameSpace':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
-          console.log('namespace')
-          console.log(dataStr)
 
           break
       }
@@ -499,7 +454,6 @@ export default {
           this.listQuery.type = calendarTypeOptions[0]
           _self.calendarTypeOptions = calendarTypeOptions
           _self.listQuery.type = 'ConfigMap'
-
           break
         case 'list':
           _self.returnMessage(service, _self)
@@ -531,7 +485,13 @@ export default {
           'resourceType': this.listQuery.type
         }
         this.table = table[this.listQuery.type]
-        console.log(this.table)
+
+        if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+          this.showFlag = false
+        } else {
+          this.showFlag = true
+        }
+
         this.getConfigMapList(data)
       }
     },
@@ -547,17 +507,35 @@ export default {
       this.updateMapList(row.item)
     },
     resetTemp() {
-      this.temp = {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        status: 'published',
-        type: ''
+      // console.log(1212122121)
+      var data = {
+        'Name': '',
+        'master': {
+          'Name': '',
+          'replicas': 0,
+          'image': '',
+          'imagePullSecrets': '',
+          'volumePath': ''
+        },
+        'slave': {
+          'Name': '',
+          'replicas': 0,
+          'image': '',
+          'imagePullSecrets': '',
+          'volumePath': ''
+        }
       }
+
+      this.yamlData = data
+      // var mysql = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.create()
+      // console.log(mysql)
+
+      // console.log(mysql.pr)
+
+      // var NodeSpec = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.prototype
     },
     handleCreate() {
+<<<<<<< HEAD
       // this.resetTemp()
       // this.dialogStatus = 'create'
       // this.dialogFormVisible = true
@@ -570,6 +548,14 @@ export default {
         'resourceType': this.listQuery.type
       }
       console.log("test");
+=======
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      // this.$nextTick(() => {
+      //   this.$refs['dataForm'].clearValidate()
+      // })
+>>>>>>> tmp
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -592,12 +578,12 @@ export default {
     handleUpdate(row) {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      let str = '';
-      let keys = row.keys.split(',');
-      let reg = new RegExp('\n','g')
-      row.value.forEach(function (item, index) {
-        let newMsg = item.replace(reg,'\n    ');
-        console.log(newMsg);
+      let str = ''
+      const keys = row.keys.split(',')
+      const reg = new RegExp('\n', 'g')
+      row.value.forEach(function(item, index) {
+        const newMsg = item.replace(reg, '\n    ')
+        console.log(newMsg)
         str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
       })
       this.value = str
