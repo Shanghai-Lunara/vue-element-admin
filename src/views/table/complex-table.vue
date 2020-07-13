@@ -11,14 +11,14 @@
       </el-select>
       <!-- <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select> -->
-      <!-- <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      </el-select>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
         {{ $t('table.search') }}
-      </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      </el-button> -->
+      <!--<el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+      </el-button>-->
+      <!-- <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         {{ $t('table.export') }}
       </el-button> -->
       <!-- <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
@@ -388,6 +388,40 @@ export default {
         _self.returnResource(res, _self)
       })
     },
+    updateMapList(data){
+      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
+      if (errData) { throw Error(errData) }
+
+      const param = {
+        'nameSpace': 'default',
+        'service': 'update',
+        'resourceType': this.listQuery.type
+      }
+
+      var data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
+      var data_message = data_request.create(data)
+      var msg_data = data_request.encode(data_message).finish()
+
+      var msg = {
+        'param': param,
+        'data': msg_data
+      }
+
+      console.log('msg update');
+      console.log(msg);
+
+      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+      var message = request.create(msg)
+
+      var senddata = request.encode(message).finish()
+
+      const _self = this
+      this.$socketApi(senddata, function(res) {
+        _self.returnResource(res, _self)
+      })
+    },
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       console.log(result)
@@ -399,6 +433,8 @@ export default {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
 
+          console.log('return configMap');
+          console.log(dataStr);
           list = []
           dataStr.items.forEach(function(item, index) {
             const one = []
@@ -407,11 +443,11 @@ export default {
 
             one.keys = Object.keys(item.data).join(',')
             one.value = Object.values(item.data)
+            one.item = item
 
             list.push(one)
           })
-
-          console.log(list)
+          console.log(list);
 
           _self.list = list
           _self.total = dataStr.items.length
@@ -468,6 +504,15 @@ export default {
         case 'list':
           _self.returnMessage(service, _self)
           break
+        case 'update':
+          console.log('update');
+          if (result.code == 0) {
+            // todo configMapList
+          }
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.decode(result.result)
+          console.log('return configMap');
+          console.log(dataStr);
+          break
       }
     },
     selectNameSpace() {
@@ -494,12 +539,12 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-    handleModifyStatus(row, status) {
-      this.$message({
-        message: '操作成功',
-        type: 'success'
-      })
-      row.status = status
+    handleModifyStatus(row) {
+      // this.$message({
+      //   message: '操作成功',
+      //   type: 'success'
+      // })
+      this.updateMapList(row.item)
     },
     resetTemp() {
       this.temp = {
@@ -513,12 +558,18 @@ export default {
       }
     },
     handleCreate() {
-      this.resetTemp()
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].clearValidate()
-      })
+      // this.resetTemp()
+      // this.dialogStatus = 'create'
+      // this.dialogFormVisible = true
+      // this.$nextTick(() => {
+      //   this.$refs['dataForm'].clearValidate()
+      // })
+      const data = {
+        'nameSpace': 'default',
+        'service': 'update',
+        'resourceType': this.listQuery.type
+      }
+      console.log("test");
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
