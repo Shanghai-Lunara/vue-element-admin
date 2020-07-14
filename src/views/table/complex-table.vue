@@ -234,7 +234,7 @@ export default {
     this.timer()
   },
   methods: {
-    getList() {
+    /*getList() {
       // 加载分页
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -247,7 +247,7 @@ export default {
           this.listLoading = false
         }, 1.5 * 1000)
       })
-    },
+    },*/
     timer() {
       return setInterval(() => {
         const data = {
@@ -299,7 +299,7 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    getConfigMapList(data) {
+    getList(data) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -385,6 +385,8 @@ export default {
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
+          console.log('return MysqlOperator')
+          console.log(dataStr)
 
           list = []
           dataStr.items.forEach(function(item, index) {
@@ -453,7 +455,7 @@ export default {
         'service': 'list',
         'resourceType': this.listQuery.type
       }
-      this.getConfigMapList(data)
+      this.getList(data)
     },
     selectResource() {
       if (this.namespace !== '') {
@@ -470,12 +472,12 @@ export default {
           this.showFlag = true
         }
 
-        this.getConfigMapList(data)
+        this.getList(data)
       }
     },
     handleFilter() {
       this.listQuery.page = 1
-      this.getList()
+      // this.getList()
     },
     handleModifyStatus(row) {
       // this.$message({
@@ -549,7 +551,7 @@ export default {
         console.log(newMsg)
         str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
       })
-      this.value = str
+      this.yamlData = str
     },
     updateData() {
       this.$refs['dataForm'].validate((valid) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="yaml-editor">
+  <div class="yaml-editor CodeMirror-wrap">
     <textarea ref="textarea" />
   </div>
 </template>
