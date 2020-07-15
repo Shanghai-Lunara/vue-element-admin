@@ -38,33 +38,6 @@
         </template>
       </el-table-column>
 
-      <!-- <el-table-column :label="table.key1" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="table.key3" width="150px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.namespace }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="table.key2" min-width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.keys }}</span>
-        </template>
-      </el-table-column> -->
-      <!-- <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
-        </template>
-      </el-table-column> -->
-      <!--<el-table-column :label="$t('table.status')" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>-->
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -86,18 +59,47 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template>
+
+      <!-- mysql | redis -->
+      <el-form v-if="createFlag" ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
+        <el-form-item :label="$t('table.type')" prop="type">
+          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
+            &lt;!&ndash;<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />&ndash;&gt;
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('table.date')" prop="timestamp">
+          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
+        </el-form-item>
+        <el-form-item :label="$t('table.title')" prop="title">
+          <el-input v-model="temp.title" />
+        </el-form-item>
+        <el-form-item :label="$t('table.status')">
+          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item :label="$t('table.importance')">
+          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
+        </el-form-item>
+        <el-form-item :label="$t('table.remark')">
+          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
+        </el-form-item>
+      </el-form>
+
+      <!-- configmap -->
+      <template v-else>
         <div>
           <div class="editor-container">
-            <yaml-editor :value="yamlData" ref="yamlEditor"/>
+            <yaml-editor ref="yamlEditor" :value="yamlData" />
           </div>
         </div>
       </template>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
+        <!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
         <el-button type="primary" @click="makeSureEdit()">
           {{ $t('table.confirm') }}
         </el-button>
@@ -117,7 +119,7 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
@@ -136,9 +138,17 @@ const mysqlOperatorTable = {
   slave: 'replicas'
 }
 
+const RedisOperatorTable = {
+  name: 'Name',
+  namespace: 'NameSpace',
+  master: 'Image',
+  slave: 'replicas'
+}
+
 const table = {
   'ConfigMap': configMapTable,
-  'MysqlOperator': mysqlOperatorTable
+  'MysqlOperator': mysqlOperatorTable,
+  'RedisOperator': RedisOperatorTable
 }
 
 export default {
@@ -175,9 +185,7 @@ export default {
         type: '',
         sort: '+id'
       },
-      importanceOptions: [],
       calendarTypeOptions: [],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
@@ -207,7 +215,8 @@ export default {
       table: '',
       yamlData: '',
       showFlag: false,
-      nowRow: '',   // 当前选中对象
+      nowRow: '', // 当前选中对象
+      createFlag: false
     }
   },
   watch: {
@@ -236,7 +245,7 @@ export default {
     this.timer()
   },
   methods: {
-    /*getList() {
+    /* getList() {
       // 加载分页
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -387,8 +396,6 @@ export default {
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
-          console.log('return MysqlOperator')
-          console.log(dataStr)
 
           list = []
           dataStr.items.forEach(function(item, index) {
@@ -410,6 +417,32 @@ export default {
 
           _self.list = list
           _self.total = dataStr.items.length
+          break
+        case 'RedisOperator':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+
+          list = []
+          dataStr.items.forEach(function(item, index) {
+            var one = []
+            one.namespace = _self.nameSpace
+
+            if (item.hasOwnProperty('master')) {
+              one.name = item.Name + '_' + item.master.Name + '_master'
+              one.master = item.master.image
+              one.slave = item.master.replicas
+            } else if (item.hasOwnProperty('slave')) {
+              one.name = item.Name + '_' + item.slave.Name + '_slave'
+              one.master = item.slave.image
+              one.slave = item.slave.replicas
+            }
+
+            list.push(one)
+          })
+
+          console.log(list)
+          _self.list = list
+          _self.total = dataStr.items.length
+
           break
         case 'NameSpace':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
@@ -435,7 +468,8 @@ export default {
 
           this.listQuery.type = calendarTypeOptions[0]
           _self.calendarTypeOptions = calendarTypeOptions
-          _self.listQuery.type = 'ConfigMap'
+          _self.listQuery.type = 'MysqlOperator'
+          this.showFlag = true
           break
         case 'list':
           _self.returnMessage(service, _self)
@@ -490,10 +524,8 @@ export default {
       // this.getList()
     },
     handleModifyStatus(row) {
-      console.log('yamlData');
-      console.log(this.yamlData);
-
-
+      console.log('yamlData')
+      console.log(this.yamlData)
     },
     resetTemp() {
       // console.log(1212122121)
@@ -524,12 +556,21 @@ export default {
       // var NodeSpec = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.prototype
     },
     handleCreate() {
-      this.resetTemp()
+      console.log(this.temp)
+      if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+        this.createFlag = false
+      } else {
+        this.createFlag = true
+      }
+      // this.resetTemp()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       // this.$nextTick(() => {
       //   this.$refs['dataForm'].clearValidate()
       // })
+    },
+    getDiadata() {
+
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -624,19 +665,19 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     makeSureEdit() {
-      console.log('makeSureEdit');
+      console.log('makeSureEdit')
       // 获取,更改编辑框里的值
-      let editValue = this.$refs.yamlEditor.getValue()
+      const editValue = this.$refs.yamlEditor.getValue()
       this.$refs.yamlEditor.setValue(editValue)
       this.yamlData = editValue
-      console.log(editValue);
+      console.log(editValue)
 
       // 取消弹框
       this.dialogFormVisible = false
 
       // 将编辑框内转化为对象,并update
-      let yaml = require('js-yaml')
-      let obj = yaml.load(this.yamlData)
+      const yaml = require('js-yaml')
+      const obj = yaml.load(this.yamlData)
 
       const data = {
         Name: this.nowRow.item.Name,

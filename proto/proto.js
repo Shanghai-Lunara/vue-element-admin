@@ -819,6 +819,7 @@ export const github = $root.github = (() => {
                             NodeSpec.prototype.image = "";
                             NodeSpec.prototype.imagePullSecrets = "";
                             NodeSpec.prototype.volumePath = "";
+                            NodeSpec.prototype.podResource = null;
 
                             NodeSpec.create = function create(properties) {
                                 return new NodeSpec(properties);
@@ -837,6 +838,8 @@ export const github = $root.github = (() => {
                                     writer.uint32(34).string(message.imagePullSecrets);
                                 if (message.volumePath != null && Object.hasOwnProperty.call(message, "volumePath"))
                                     writer.uint32(42).string(message.volumePath);
+                                if (message.podResource != null && Object.hasOwnProperty.call(message, "podResource"))
+                                    $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.encode(message.podResource, writer.uint32(50).fork()).ldelim();
                                 return writer;
                             };
 
@@ -865,6 +868,9 @@ export const github = $root.github = (() => {
                                         break;
                                     case 5:
                                         message.volumePath = reader.string();
+                                        break;
+                                    case 6:
+                                        message.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.decode(reader, reader.uint32());
                                         break;
                                     default:
                                         reader.skipType(tag & 7);
@@ -898,6 +904,11 @@ export const github = $root.github = (() => {
                                 if (message.volumePath != null && message.hasOwnProperty("volumePath"))
                                     if (!$util.isString(message.volumePath))
                                         return "volumePath: string expected";
+                                if (message.podResource != null && message.hasOwnProperty("podResource")) {
+                                    let error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.verify(message.podResource);
+                                    if (error)
+                                        return "podResource." + error;
+                                }
                                 return null;
                             };
 
@@ -915,6 +926,11 @@ export const github = $root.github = (() => {
                                     message.imagePullSecrets = String(object.imagePullSecrets);
                                 if (object.volumePath != null)
                                     message.volumePath = String(object.volumePath);
+                                if (object.podResource != null) {
+                                    if (typeof object.podResource !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.podResource: object expected");
+                                    message.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.fromObject(object.podResource);
+                                }
                                 return message;
                             };
 
@@ -928,6 +944,7 @@ export const github = $root.github = (() => {
                                     object.image = "";
                                     object.imagePullSecrets = "";
                                     object.volumePath = "";
+                                    object.podResource = null;
                                 }
                                 if (message.Name != null && message.hasOwnProperty("Name"))
                                     object.Name = message.Name;
@@ -939,6 +956,8 @@ export const github = $root.github = (() => {
                                     object.imagePullSecrets = message.imagePullSecrets;
                                 if (message.volumePath != null && message.hasOwnProperty("volumePath"))
                                     object.volumePath = message.volumePath;
+                                if (message.podResource != null && message.hasOwnProperty("podResource"))
+                                    object.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.toObject(message.podResource, options);
                                 return object;
                             };
 
@@ -1063,6 +1082,149 @@ export const github = $root.github = (() => {
                             };
 
                             return Param;
+                        })();
+
+                        proto.PodResourceRequirements = (function() {
+
+                            function PodResourceRequirements(properties) {
+                                this.limits = {};
+                                this.requests = {};
+                                if (properties)
+                                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                                        if (properties[keys[i]] != null)
+                                            this[keys[i]] = properties[keys[i]];
+                            }
+
+                            PodResourceRequirements.prototype.limits = $util.emptyObject;
+                            PodResourceRequirements.prototype.requests = $util.emptyObject;
+
+                            PodResourceRequirements.create = function create(properties) {
+                                return new PodResourceRequirements(properties);
+                            };
+
+                            PodResourceRequirements.encode = function encode(message, writer) {
+                                if (!writer)
+                                    writer = $Writer.create();
+                                if (message.limits != null && Object.hasOwnProperty.call(message, "limits"))
+                                    for (let keys = Object.keys(message.limits), i = 0; i < keys.length; ++i)
+                                        writer.uint32(10).fork().uint32(10).string(keys[i]).uint32(18).string(message.limits[keys[i]]).ldelim();
+                                if (message.requests != null && Object.hasOwnProperty.call(message, "requests"))
+                                    for (let keys = Object.keys(message.requests), i = 0; i < keys.length; ++i)
+                                        writer.uint32(18).fork().uint32(10).string(keys[i]).uint32(18).string(message.requests[keys[i]]).ldelim();
+                                return writer;
+                            };
+
+                            PodResourceRequirements.encodeDelimited = function encodeDelimited(message, writer) {
+                                return this.encode(message, writer).ldelim();
+                            };
+
+                            PodResourceRequirements.decode = function decode(reader, length) {
+                                if (!(reader instanceof $Reader))
+                                    reader = $Reader.create(reader);
+                                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements(), key;
+                                while (reader.pos < end) {
+                                    let tag = reader.uint32();
+                                    switch (tag >>> 3) {
+                                    case 1:
+                                        reader.skip().pos++;
+                                        if (message.limits === $util.emptyObject)
+                                            message.limits = {};
+                                        key = reader.string();
+                                        reader.pos++;
+                                        message.limits[key] = reader.string();
+                                        break;
+                                    case 2:
+                                        reader.skip().pos++;
+                                        if (message.requests === $util.emptyObject)
+                                            message.requests = {};
+                                        key = reader.string();
+                                        reader.pos++;
+                                        message.requests[key] = reader.string();
+                                        break;
+                                    default:
+                                        reader.skipType(tag & 7);
+                                        break;
+                                    }
+                                }
+                                return message;
+                            };
+
+                            PodResourceRequirements.decodeDelimited = function decodeDelimited(reader) {
+                                if (!(reader instanceof $Reader))
+                                    reader = new $Reader(reader);
+                                return this.decode(reader, reader.uint32());
+                            };
+
+                            PodResourceRequirements.verify = function verify(message) {
+                                if (typeof message !== "object" || message === null)
+                                    return "object expected";
+                                if (message.limits != null && message.hasOwnProperty("limits")) {
+                                    if (!$util.isObject(message.limits))
+                                        return "limits: object expected";
+                                    let key = Object.keys(message.limits);
+                                    for (let i = 0; i < key.length; ++i)
+                                        if (!$util.isString(message.limits[key[i]]))
+                                            return "limits: string{k:string} expected";
+                                }
+                                if (message.requests != null && message.hasOwnProperty("requests")) {
+                                    if (!$util.isObject(message.requests))
+                                        return "requests: object expected";
+                                    let key = Object.keys(message.requests);
+                                    for (let i = 0; i < key.length; ++i)
+                                        if (!$util.isString(message.requests[key[i]]))
+                                            return "requests: string{k:string} expected";
+                                }
+                                return null;
+                            };
+
+                            PodResourceRequirements.fromObject = function fromObject(object) {
+                                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements)
+                                    return object;
+                                let message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements();
+                                if (object.limits) {
+                                    if (typeof object.limits !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.limits: object expected");
+                                    message.limits = {};
+                                    for (let keys = Object.keys(object.limits), i = 0; i < keys.length; ++i)
+                                        message.limits[keys[i]] = String(object.limits[keys[i]]);
+                                }
+                                if (object.requests) {
+                                    if (typeof object.requests !== "object")
+                                        throw TypeError(".github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.requests: object expected");
+                                    message.requests = {};
+                                    for (let keys = Object.keys(object.requests), i = 0; i < keys.length; ++i)
+                                        message.requests[keys[i]] = String(object.requests[keys[i]]);
+                                }
+                                return message;
+                            };
+
+                            PodResourceRequirements.toObject = function toObject(message, options) {
+                                if (!options)
+                                    options = {};
+                                let object = {};
+                                if (options.objects || options.defaults) {
+                                    object.limits = {};
+                                    object.requests = {};
+                                }
+                                let keys2;
+                                if (message.limits && (keys2 = Object.keys(message.limits)).length) {
+                                    object.limits = {};
+                                    for (let j = 0; j < keys2.length; ++j)
+                                        object.limits[keys2[j]] = message.limits[keys2[j]];
+                                }
+                                if (message.requests && (keys2 = Object.keys(message.requests)).length) {
+                                    object.requests = {};
+                                    for (let j = 0; j < keys2.length; ++j)
+                                        object.requests[keys2[j]] = message.requests[keys2[j]];
+                                }
+                                return object;
+                            };
+
+                            PodResourceRequirements.prototype.toJSON = function toJSON() {
+                                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
+                            };
+
+                            return PodResourceRequirements;
                         })();
 
                         proto.RedisCrd = (function() {
