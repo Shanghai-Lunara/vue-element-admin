@@ -89,7 +89,7 @@
       <template>
         <div>
           <div class="editor-container">
-            <yaml-editor :value="yamlData" />
+            <yaml-editor :value="yamlData" ref="yamlEditor"/>
           </div>
         </div>
       </template>
@@ -97,7 +97,8 @@
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">
+<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
+        <el-button type="primary" @click="makeSureEdit()">
           {{ $t('table.confirm') }}
         </el-button>
       </div>
@@ -144,7 +145,7 @@ export default {
   name: 'ComplexTable',
   components: {
     Pagination,
-    YamlEditor
+    YamlEditor: YamlEditor
   },
   directives: { waves },
   filters: {
@@ -205,7 +206,8 @@ export default {
       nameSpace: '',
       table: '',
       yamlData: '',
-      showFlag: false
+      showFlag: false,
+      nowRow: '',   // 当前选中对象
     }
   },
   watch: {
@@ -320,13 +322,13 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    updateMapList(data) {
+    updateConfigMapList(data) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
 
       const param = {
-        'nameSpace': 'default',
+        'nameSpace': this.nameSpace,
         'service': 'update',
         'resourceType': this.listQuery.type
       }
@@ -441,11 +443,19 @@ export default {
         case 'update':
           console.log('update')
           if (result.code === 0) {
-            // todo configMapList
+            this.$notify({
+              title: '成功',
+              message: '更新成功',
+              type: 'success',
+              duration: 2000
+            })
+            const data = {
+              'nameSpace': this.nameSpace,
+              'service': 'list',
+              'resourceType': this.listQuery.type
+            }
+            this.getList(data)
           }
-          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.decode(result.result)
-          console.log('return configMap')
-          console.log(dataStr)
           break
       }
     },
@@ -480,11 +490,10 @@ export default {
       // this.getList()
     },
     handleModifyStatus(row) {
-      // this.$message({
-      //   message: '操作成功',
-      //   type: 'success'
-      // })
-      this.updateMapList(row.item)
+      console.log('yamlData');
+      console.log(this.yamlData);
+
+
     },
     resetTemp() {
       // console.log(1212122121)
@@ -541,6 +550,7 @@ export default {
       })
     },
     handleUpdate(row) {
+      this.nowRow = row
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       let str = ''
@@ -548,7 +558,6 @@ export default {
       const reg = new RegExp('\n', 'g')
       row.value.forEach(function(item, index) {
         const newMsg = item.replace(reg, '\n    ')
-        console.log(newMsg)
         str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
       })
       this.yamlData = str
@@ -613,6 +622,27 @@ export default {
     getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
+    },
+    makeSureEdit() {
+      console.log('makeSureEdit');
+      // 获取,更改编辑框里的值
+      let editValue = this.$refs.yamlEditor.getValue()
+      this.$refs.yamlEditor.setValue(editValue)
+      this.yamlData = editValue
+      console.log(editValue);
+
+      // 取消弹框
+      this.dialogFormVisible = false
+
+      // 将编辑框内转化为对象,并update
+      let yaml = require('js-yaml')
+      let obj = yaml.load(this.yamlData)
+
+      const data = {
+        Name: this.nowRow.item.Name,
+        data: obj
+      }
+      this.updateConfigMapList(data)
     }
   }
 }

@@ -50,6 +50,9 @@
     methods: {
       getValue() {
         return this.yamlEditor.getValue()
+      },
+      setValue(value) {
+        this.yamlEditor.setValue(value)
       }
     }
   }
