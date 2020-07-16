@@ -125,10 +125,17 @@ const RedisOperatorTable = {
   slave: 'replicas'
 }
 
+const ServiceTable = {
+  name: 'Name',
+  clusterIP: 'clusterIP',
+  port: 'port'
+}
+
 const table = {
   'ConfigMap': configMapTable,
   'MysqlOperator': mysqlOperatorTable,
-  'RedisOperator': RedisOperatorTable
+  'RedisOperator': RedisOperatorTable,
+  'Service': ServiceTable
 }
 
 export default {

@@ -2,8 +2,10 @@
   <div class="drawer-container">
     <div>
       <h3 class="drawer-title">{{ $t('settings.title') }}</h3>
-
-      <div class="drawer-item">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
+        {{ $t('table.add') }}
+      </el-button>
+      <!--<div class="drawer-item">
         <span>{{ $t('settings.theme') }}</span>
         <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
       </div>
@@ -33,7 +35,7 @@
       <div v-if="lang === 'zh'" class="drawer-item">
         <span>菜单支持拼音搜索</span>
         <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
-      </div>
+      </div>-->
 
     </div>
   </div>
@@ -47,7 +49,7 @@ export default {
   data() {
     return {}
   },
-  computed: {
+  /*computed: {
     isShowJob() {
       return this.$store.getters.language === 'zh'
     },
@@ -98,13 +100,16 @@ export default {
     lang() {
       return this.$store.getters.language
     }
-  },
+  },*/
   methods: {
     themeChange(val) {
       this.$store.dispatch('settings/changeSetting', {
         key: 'theme',
         value: val
       })
+    },
+    test() {
+      console.log('test');
     }
   }
 }
