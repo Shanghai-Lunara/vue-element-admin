@@ -416,17 +416,35 @@ export default {
               one.master = item.slave.image
               one.slave = item.slave.replicas
             }
+            list.push(one)
+            console.log(list)
+            _self.list = list
+            _self.total = dataStr.items.length
+          })
+          break
+
+        case 'Service':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
+          console.log('return Service')
+          console.log(dataStr)
+
+          list = []
+          dataStr.items.forEach(function (item, index) {
+            const one = []
+            one.name = item.Name
+            one.clusterIP = item.clusterIP
+            one.port = item.ports[0].port
 
             list.push(one)
           })
 
-          console.log(list)
           _self.list = list
           _self.total = dataStr.items.length
-
           break
+
         case 'NameSpace':
-          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+          // 更改到侧边栏, 取消这个
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
 
           break
       }
