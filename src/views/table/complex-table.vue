@@ -61,30 +61,8 @@
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
 
       <!-- mysql | redis -->
-      <el-form v-if="createFlag" ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="70px" style="width: 400px; margin-left:50px;">
-        <el-form-item :label="$t('table.type')" prop="type">
-          <el-select v-model="temp.type" class="filter-item" placeholder="Please select">
-            &lt;!&ndash;<el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name" :value="item.key" />&ndash;&gt;
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.date')" prop="timestamp">
-          <el-date-picker v-model="temp.timestamp" type="datetime" placeholder="Please pick a date" />
-        </el-form-item>
-        <el-form-item :label="$t('table.title')" prop="title">
-          <el-input v-model="temp.title" />
-        </el-form-item>
-        <el-form-item :label="$t('table.status')">
-          <el-select v-model="temp.status" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item :label="$t('table.importance')">
-          <el-rate v-model="temp.importance" :colors="['#99A9BF', '#F7BA2A', '#FF9900']" :max="3" style="margin-top:8px;" />
-        </el-form-item>
-        <el-form-item :label="$t('table.remark')">
-          <el-input v-model="temp.remark" :autosize="{ minRows: 2, maxRows: 4}" type="textarea" placeholder="Please input" />
-        </el-form-item>
-      </el-form>
+
+      <FormData v-if="createFlag" />
 
       <!-- configmap -->
       <template v-else>
@@ -124,6 +102,8 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
+// redis | mysql
+import FormData from '@/components/FormData'
 
 const configMapTable = {
   name: 'Name',
@@ -155,7 +135,8 @@ export default {
   name: 'ComplexTable',
   components: {
     Pagination,
-    YamlEditor: YamlEditor
+    YamlEditor: YamlEditor,
+    FormData
   },
   directives: { waves },
   filters: {
@@ -491,6 +472,14 @@ export default {
             this.getList(data)
           }
           break
+        case 'harbor':
+          console.log('harbor')
+
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
+
+          console.log(dataStr)
+
+          break
       }
     },
     selectNameSpace() {
@@ -527,50 +516,18 @@ export default {
       console.log('yamlData')
       console.log(this.yamlData)
     },
-    resetTemp() {
-      // console.log(1212122121)
-      var data = {
-        'Name': '',
-        'master': {
-          'Name': '',
-          'replicas': 0,
-          'image': '',
-          'imagePullSecrets': '',
-          'volumePath': ''
-        },
-        'slave': {
-          'Name': '',
-          'replicas': 0,
-          'image': '',
-          'imagePullSecrets': '',
-          'volumePath': ''
-        }
-      }
-
-      this.yamlData = data
-      // var mysql = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.create()
-      // console.log(mysql)
-
-      // console.log(mysql.pr)
-
-      // var NodeSpec = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.prototype
-    },
     handleCreate() {
-      console.log(this.temp)
       if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
         this.createFlag = false
       } else {
         this.createFlag = true
       }
-      // this.resetTemp()
+      // this.getCreateData()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       // this.$nextTick(() => {
       //   this.$refs['dataForm'].clearValidate()
       // })
-    },
-    getDiadata() {
-
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
