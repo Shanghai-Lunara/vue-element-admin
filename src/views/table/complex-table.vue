@@ -104,6 +104,7 @@ import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
 // redis | mysql
 import FormData from '@/components/FormData'
+import getters from "../../store/getters";
 
 const configMapTable = {
   name: 'Name',
@@ -231,6 +232,9 @@ export default {
       this.$router.push({ path: '/' })
     }
     this.timer()
+
+    // 获取右边搜索的list
+    this.getTinyTableList()
   },
   methods: {
     /* getList() {
@@ -356,8 +360,11 @@ export default {
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
 
-      let dataStr = ''
-      let list = _self.list
+      let dataStr = '';
+      let list;
+      let total;
+
+      let isTiny = false;  // service时为true, 存贮侧边栏数据
 
       switch (result.param.resourceType) {
         case 'ConfigMap':
@@ -378,9 +385,7 @@ export default {
             list.push(one)
           })
 
-          _self.list = list
-          _self.total = dataStr.items.length
-
+          total = dataStr.items.length
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
@@ -403,8 +408,7 @@ export default {
             list.push(one)
           })
 
-          _self.list = list
-          _self.total = dataStr.items.length
+          total = dataStr.items.length
           break
         case 'RedisOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -425,9 +429,8 @@ export default {
             }
             list.push(one)
             console.log(list)
-            _self.list = list
-            _self.total = dataStr.items.length
           })
+          total = dataStr.items.length
           break
 
         case 'Service':
@@ -444,9 +447,9 @@ export default {
 
             list.push(one)
           })
+          total = dataStr.items.length
+          isTiny = true
 
-          _self.list = list
-          _self.total = dataStr.items.length
           break
 
         case 'NameSpace':
@@ -455,7 +458,14 @@ export default {
 
           break
       }
+
+      return {
+        list: list,
+        total: total,
+        isTiny: isTiny
+      }
     },
+
     returnResource(service, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
       console.log(result)
@@ -478,7 +488,14 @@ export default {
           this.showFlag = true
           break
         case 'list':
-          _self.returnMessage(service, _self)
+          let obj = _self.returnMessage(service, _self)
+
+          if (obj.isTiny) {
+            this.$store.list = obj.list
+          }
+
+          this.list = obj.list
+          this.total = obj.total
           break
         case 'update':
           console.log('update')
@@ -666,6 +683,15 @@ export default {
         data: obj
       }
       this.updateConfigMapList(data)
+    },
+    // 获取右边搜索的list
+    getTinyTableList() {
+      const data = {
+        'nameSpace': this.nameSpace,
+        'service': 'list',
+        'resourceType': 'Service'
+      }
+      this.getList(data)
     }
   }
 }

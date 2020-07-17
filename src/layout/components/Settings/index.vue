@@ -37,6 +37,26 @@
         <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
       </div>-->
 
+      <el-table
+        :key="tableKey"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+      >
+        <el-table-column :label="$t('tiny_table.name')" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('tiny_table.port')" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.port }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+
     </div>
   </div>
 </template>
@@ -47,7 +67,10 @@ import ThemePicker from '@/components/ThemePicker'
 export default {
   components: { ThemePicker },
   data() {
-    return {}
+    return {
+      tableKey: 0,
+      list: []
+    }
   },
   /*computed: {
     isShowJob() {
@@ -109,7 +132,8 @@ export default {
       })
     },
     test() {
-      console.log('test');
+      this.list = this.$store.list
+      console.log(this.list);
     }
   }
 }
