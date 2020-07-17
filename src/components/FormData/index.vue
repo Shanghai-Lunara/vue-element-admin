@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="form" label-width="200px">
+  <el-form ref="form" label-width="150px">
     <el-form-item>
       <el-tag
         type=""
@@ -10,49 +10,80 @@
               font-size: 15px;"
       >{{ branch }}</el-tag>
     </el-form-item>
-    <el-form-item v-for="(value, key) in form" :key="key" :label="key">
-      <el-input :value="value" />
+    <el-form-item label="Name">
+      <el-input v-model="form.Name" />
     </el-form-item>
-    <!-- <el-form-item label="活动区域">
-      <el-select v-model="form.region" placeholder="请选择活动区域">
-        <el-option label="区域一" value="shanghai" />
-        <el-option label="区域二" value="beijing" />
-      </el-select>
+
+    <el-form-item label="image">
+      <el-input v-model="form.image" />
     </el-form-item>
-    <el-form-item label="活动时间">
-      <el-col :span="11">
-        <el-date-picker v-model="form.date1" type="date" placeholder="选择日期" style="width: 100%;" />
-      </el-col>
-      <el-col class="line" :span="2">-</el-col>
-      <el-col :span="11">
-        <el-time-picker v-model="form.date2" placeholder="选择时间" style="width: 100%;" />
-      </el-col>
+    <el-form-item label="imagePullSecrets">
+      <el-input v-model="form.imagePullSecrets" />
     </el-form-item>
-    <el-form-item label="即时配送">
-      <el-switch v-model="form.delivery" />
+
+    <el-form-item label="replicas">
+      <el-input v-model="form.replicas" />
     </el-form-item>
-    <el-form-item label="活动性质">
-      <el-checkbox-group v-model="form.type">
-        <el-checkbox label="美食/餐厅线上活动" name="type" />
-        <el-checkbox label="地推活动" name="type" />
-        <el-checkbox label="线下主题活动" name="type" />
-        <el-checkbox label="单纯品牌曝光" name="type" />
-      </el-checkbox-group>
+
+    <el-form-item label="volumePath">
+      <el-input v-model="form.volumePath" />
     </el-form-item>
-    <el-form-item label="特殊资源">
-      <el-radio-group v-model="form.resource">
-        <el-radio label="线上品牌商赞助" />
-        <el-radio label="线下场地免费" />
-      </el-radio-group>
+
+    <el-form-item label="containerPorts">
+      <!-- containerPorts -->
+      <div v-if="form.containerPorts !== ''">
+        <el-input placeholder="">
+          <template slot="prepend">containerPort:</template>
+        </el-input>
+        <el-input placeholder="">
+          <template slot="prepend">hostIP:</template>
+        </el-input>
+        <el-input placeholder="">
+          <template slot="prepend">hostPort:</template>
+        </el-input>
+        <el-input placeholder="">
+          <template slot="prepend">name:</template>
+        </el-input>
+        <el-input placeholder="">
+          <template slot="prepend">protocol:</template>
+        </el-input>
+      </div>
+
+      <el-input v-else v-model="form.containerPorts" />
+
     </el-form-item>
-    <el-form-item label="活动形式">
-      <el-input v-model="form.desc" type="textarea" />
+
+    <el-form-item label="podResource">
+      <el-input v-model="form.podResource" />
     </el-form-item>
-  </el-form> -->
+
+    <el-form-item label="servicePorts">
+      <el-input v-model="form.servicePorts" />
+    </el-form-item>
+
   </el-form>
 </template>
 
 <script>
+
+const form = {
+  Name: '',
+  containerPorts: contain,
+  image: '',
+  imagePullSecrets: '',
+  podResource: [],
+  replicas: 0,
+  servicePorts: [],
+  volumePath: ''
+}
+
+const contain = {
+  containerPort: 0,
+  hostIP: '',
+  hostPort: 0,
+  name: '',
+  protocol: ''
+}
 
 export default {
   name: 'FormData',
@@ -69,8 +100,8 @@ export default {
       command: '',
       mark: '',
       repos_list: '',
-      form: '',
-      branch: ''
+      branch: '',
+      form
     }
   },
   watch: {
@@ -87,14 +118,14 @@ export default {
       console.log(this.oneData)
 
       if (this.oneData.hasOwnProperty('master')) {
-        console.log(222222)
         this.form = this.oneData['master']
         this.branch = 'master'
       } else if (this.oneData.hasOwnProperty('slave')) {
-        console.log(12121212121212121212)
         this.form = this.oneData['slave']
         this.branch = 'slave'
       }
+
+      console.log(this.form.containerPorts)
     },
     initChange(id) {
       var param = this.initParam()
@@ -221,5 +252,7 @@ export default {
 </script>
 
 <style scoped>
-
+.el-input-group {
+  width: 20%;
+}
 </style>
