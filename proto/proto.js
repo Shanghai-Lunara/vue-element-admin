@@ -1519,6 +1519,7 @@ export const github = $root.github = (() => {
               Param.prototype.service = ''
               Param.prototype.resourceType = ''
               Param.prototype.nameSpace = ''
+              Param.prototype.command = ''
 
               Param.create = function create(properties) {
                 return new Param(properties)
@@ -1529,6 +1530,7 @@ export const github = $root.github = (() => {
                 if (message.service != null && Object.hasOwnProperty.call(message, 'service')) { writer.uint32(10).string(message.service) }
                 if (message.resourceType != null && Object.hasOwnProperty.call(message, 'resourceType')) { writer.uint32(18).string(message.resourceType) }
                 if (message.nameSpace != null && Object.hasOwnProperty.call(message, 'nameSpace')) { writer.uint32(26).string(message.nameSpace) }
+                if (message.command != null && Object.hasOwnProperty.call(message, 'command')) { writer.uint32(34).string(message.command) }
                 return writer
               }
 
@@ -1550,6 +1552,9 @@ export const github = $root.github = (() => {
                       break
                     case 3:
                       message.nameSpace = reader.string()
+                      break
+                    case 4:
+                      message.command = reader.string()
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -1575,6 +1580,9 @@ export const github = $root.github = (() => {
                 if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) {
                   if (!$util.isString(message.nameSpace)) { return 'nameSpace: string expected' }
                 }
+                if (message.command != null && message.hasOwnProperty('command')) {
+                  if (!$util.isString(message.command)) { return 'command: string expected' }
+                }
                 return null
               }
 
@@ -1584,6 +1592,7 @@ export const github = $root.github = (() => {
                 if (object.service != null) { message.service = String(object.service) }
                 if (object.resourceType != null) { message.resourceType = String(object.resourceType) }
                 if (object.nameSpace != null) { message.nameSpace = String(object.nameSpace) }
+                if (object.command != null) { message.command = String(object.command) }
                 return message
               }
 
@@ -1594,10 +1603,12 @@ export const github = $root.github = (() => {
                   object.service = ''
                   object.resourceType = ''
                   object.nameSpace = ''
+                  object.command = ''
                 }
                 if (message.service != null && message.hasOwnProperty('service')) { object.service = message.service }
                 if (message.resourceType != null && message.hasOwnProperty('resourceType')) { object.resourceType = message.resourceType }
                 if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) { object.nameSpace = message.nameSpace }
+                if (message.command != null && message.hasOwnProperty('command')) { object.command = message.command }
                 return object
               }
 
@@ -2237,6 +2248,191 @@ export const github = $root.github = (() => {
               }
 
               return Response
+            })()
+
+            proto.Secret = (function() {
+              function Secret(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              Secret.prototype.name = ''
+              Secret.prototype.nameSpace = ''
+
+              Secret.create = function create(properties) {
+                return new Secret(properties)
+              }
+
+              Secret.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
+                if (message.nameSpace != null && Object.hasOwnProperty.call(message, 'nameSpace')) { writer.uint32(18).string(message.nameSpace) }
+                return writer
+              }
+
+              Secret.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              Secret.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.name = reader.string()
+                      break
+                    case 2:
+                      message.nameSpace = reader.string()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              Secret.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              Secret.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.name != null && message.hasOwnProperty('name')) {
+                  if (!$util.isString(message.name)) { return 'name: string expected' }
+                }
+                if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) {
+                  if (!$util.isString(message.nameSpace)) { return 'nameSpace: string expected' }
+                }
+                return null
+              }
+
+              Secret.fromObject = function fromObject(object) {
+                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret) { return object }
+                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret()
+                if (object.name != null) { message.name = String(object.name) }
+                if (object.nameSpace != null) { message.nameSpace = String(object.nameSpace) }
+                return message
+              }
+
+              Secret.toObject = function toObject(message, options) {
+                if (!options) { options = {} }
+                const object = {}
+                if (options.defaults) {
+                  object.name = ''
+                  object.nameSpace = ''
+                }
+                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
+                if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) { object.nameSpace = message.nameSpace }
+                return object
+              }
+
+              Secret.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+              }
+
+              return Secret
+            })()
+
+            proto.SecretList = (function() {
+              function SecretList(properties) {
+                this.items = []
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              SecretList.prototype.items = $util.emptyArray
+
+              SecretList.create = function create(properties) {
+                return new SecretList(properties)
+              }
+
+              SecretList.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.items != null && message.items.length) {
+                  for (let i = 0; i < message.items.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.encode(message.items[i], writer.uint32(10).fork()).ldelim() }
+                }
+                return writer
+              }
+
+              SecretList.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              SecretList.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      if (!(message.items && message.items.length)) { message.items = [] }
+                      message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.decode(reader, reader.uint32()))
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              SecretList.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              SecretList.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.items != null && message.hasOwnProperty('items')) {
+                  if (!Array.isArray(message.items)) { return 'items: array expected' }
+                  for (let i = 0; i < message.items.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.verify(message.items[i])
+                    if (error) { return 'items.' + error }
+                  }
+                }
+                return null
+              }
+
+              SecretList.fromObject = function fromObject(object) {
+                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList) { return object }
+                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList()
+                if (object.items) {
+                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.items: array expected') }
+                  message.items = []
+                  for (let i = 0; i < object.items.length; ++i) {
+                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.items: object expected') }
+                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.fromObject(object.items[i])
+                  }
+                }
+                return message
+              }
+
+              SecretList.toObject = function toObject(message, options) {
+                if (!options) { options = {} }
+                const object = {}
+                if (options.arrays || options.defaults) { object.items = [] }
+                if (message.items && message.items.length) {
+                  object.items = []
+                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.toObject(message.items[j], options) }
+                }
+                return object
+              }
+
+              SecretList.prototype.toJSON = function toJSON() {
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+              }
+
+              return SecretList
             })()
 
             proto.Service = (function() {

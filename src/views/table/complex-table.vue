@@ -40,14 +40,12 @@
 
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+
+          <el-button type="primary" size="mini" @click="showFlag ? editData(row) : handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+          <!-- <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
             {{ $t('table.publish') }}
-          </el-button>
-          <!-- <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
-            {{ $t('table.draft') }}
           </el-button> -->
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.delete') }}
@@ -62,7 +60,7 @@
 
       <!-- mysql | redis -->
 
-      <FormData v-if="createFlag" />
+      <FormData v-if="createFlag" ref="FormData" :one-data="oneData" />
 
       <!-- configmap -->
       <template v-else>
@@ -104,7 +102,6 @@ import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
 // redis | mysql
 import FormData from '@/components/FormData'
-import getters from "../../store/getters";
 
 const configMapTable = {
   name: 'Name',
@@ -205,7 +202,9 @@ export default {
       yamlData: '',
       showFlag: false,
       nowRow: '', // 当前选中对象
-      createFlag: false
+      createFlag: false,
+      mysqlData: '',
+      oneData: ''
     }
   },
   watch: {
@@ -360,11 +359,11 @@ export default {
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
 
-      let dataStr = '';
-      let list;
-      let total;
+      let dataStr = ''
+      let list
+      let total
 
-      let isTiny = false;  // service时为true, 存贮侧边栏数据
+      let isTiny = false // service时为true, 存贮侧边栏数据
 
       switch (result.param.resourceType) {
         case 'ConfigMap':
@@ -392,23 +391,35 @@ export default {
 
           list = []
           dataStr.items.forEach(function(item, index) {
-            var one = []
-            one.namespace = _self.nameSpace
-
             if (item.hasOwnProperty('master')) {
-              one.name = item.Name + '_' + item.master.Name + '_master'
-              one.master = item.master.image
-              one.slave = item.master.replicas
-            } else if (item.hasOwnProperty('slave')) {
-              one.name = item.Name + '_' + item.slave.Name + '_slave'
-              one.master = item.slave.image
-              one.slave = item.slave.replicas
+              var master = []
+              master.namespace = _self.nameSpace
+              master.name = item.Name + '_' + item.master.Name + '_master'
+              master.master = item.master.image
+              master.slave = item.master.replicas
+              master.flagname = item.Name
+              master.flagdiff = 'master'
+              list.push(master)
             }
 
-            list.push(one)
+            if (item.hasOwnProperty('slave')) {
+              var slave = []
+              slave.namespace = _self.nameSpace
+              slave.name = item.Name + '_' + item.slave.Name + '_slave'
+              slave.master = item.slave.image
+              slave.slave = item.slave.replicas
+              slave.flagname = item.Name
+              slave.flagdiff = 'slave'
+              list.push(slave)
+            }
+
+            // list.push(one)
           })
 
           total = dataStr.items.length
+          _self.list = list
+          _self.total = dataStr.items.length
+          _self.mysqlData = dataStr.items
           break
         case 'RedisOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -439,7 +450,7 @@ export default {
           console.log(dataStr)
 
           list = []
-          dataStr.items.forEach(function (item, index) {
+          dataStr.items.forEach(function(item, index) {
             const one = []
             one.name = item.Name
             one.clusterIP = item.clusterIP
@@ -488,7 +499,7 @@ export default {
           this.showFlag = true
           break
         case 'list':
-          let obj = _self.returnMessage(service, _self)
+          const obj = _self.returnMessage(service, _self)
 
           if (obj.isTiny) {
             this.$store.list = obj.list
@@ -692,6 +703,26 @@ export default {
         'resourceType': 'Service'
       }
       this.getList(data)
+    },
+    editData(row) {
+      console.log(row)
+      console.log(this.mysqlData)
+
+      var arr = []
+
+      this.mysqlData.forEach(element => {
+        if (element.Name === row.flagname) {
+          if (row.flagdiff === 'master') {
+            arr['master'] = element.master
+          } else if (row.flagdiff === 'slave') {
+            arr['slave'] = element.slave
+          }
+        }
+      })
+
+      this.oneData = arr
+      this.createFlag = true
+      this.dialogFormVisible = true
     }
   }
 }
