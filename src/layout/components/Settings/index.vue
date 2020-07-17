@@ -1,10 +1,14 @@
 <template>
   <div class="drawer-container">
     <div>
-      <h3 class="drawer-title">{{ $t('settings.title') }}</h3>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
-        {{ $t('table.add') }}
-      </el-button>
+      <div style="margin-bottom: 10px">
+        <h3 class="drawer-title">{{ $t('tiny_table.title') }}</h3>
+        <el-input v-model="searchValue" v-on:input ="inputFunc" :placeholder="$t('tiny_table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
+          {{ $t('table.add') }}
+        </el-button>
+      </div>
+
       <!--<div class="drawer-item">
         <span>{{ $t('settings.theme') }}</span>
         <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
@@ -39,18 +43,18 @@
 
       <el-table
         :key="tableKey"
-        :data="list"
+        :data="tmpList"
         border
         fit
         highlight-current-row
         style="width: 100%;"
       >
-        <el-table-column :label="$t('tiny_table.name')" width="110px" align="center">
+        <el-table-column :label="$t('tiny_table.name')" width="350px" align="center">
           <template slot-scope="{row}">
             <span>{{ row.name }}</span>
           </template>
         </el-table-column>
-        <el-table-column :label="$t('tiny_table.port')" width="110px" align="center">
+        <el-table-column :label="$t('tiny_table.port')" width="100px" align="center">
           <template slot-scope="{row}">
             <span>{{ row.port }}</span>
           </template>
@@ -69,7 +73,9 @@ export default {
   data() {
     return {
       tableKey: 0,
-      list: []
+      list: [],
+      tmpList: [],
+      searchValue: ''
     }
   },
   /*computed: {
@@ -132,8 +138,22 @@ export default {
       })
     },
     test() {
-      this.list = this.$store.list
-      console.log(this.list);
+      this.tmpList = this.list = this.$store.list
+    },
+    inputFunc(){
+      let value = this.searchValue
+      console.log(this.searchValue);
+      this.tmpList = []
+      let tmp = []
+      this.list.forEach(function(item, index) {
+        if (item.name.indexOf(value) !== -1) {
+          tmp.push(item)
+        }
+      })
+      console.log('tmp');
+      console.log(tmp);
+
+      this.tmpList = tmp
     }
   }
 }

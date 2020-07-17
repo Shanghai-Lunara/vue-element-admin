@@ -181,6 +181,8 @@ export default {
     sidebarLogo: '侧边栏 Logo'
   },
   tiny_table: {
+    search: 'search',
+    title: 'Search',
     name: 'Name',
     clusterIP: 'clusterIP',
     port: 'port'
