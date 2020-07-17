@@ -2,8 +2,10 @@
   <div class="drawer-container">
     <div>
       <h3 class="drawer-title">{{ $t('settings.title') }}</h3>
-
-      <div class="drawer-item">
+      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
+        {{ $t('table.add') }}
+      </el-button>
+      <!--<div class="drawer-item">
         <span>{{ $t('settings.theme') }}</span>
         <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
       </div>
@@ -33,7 +35,27 @@
       <div v-if="lang === 'zh'" class="drawer-item">
         <span>菜单支持拼音搜索</span>
         <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
-      </div>
+      </div>-->
+
+      <el-table
+        :key="tableKey"
+        :data="list"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%;"
+      >
+        <el-table-column :label="$t('tiny_table.name')" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.name }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column :label="$t('tiny_table.port')" width="110px" align="center">
+          <template slot-scope="{row}">
+            <span>{{ row.port }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
 
     </div>
   </div>
@@ -45,9 +67,12 @@ import ThemePicker from '@/components/ThemePicker'
 export default {
   components: { ThemePicker },
   data() {
-    return {}
+    return {
+      tableKey: 0,
+      list: []
+    }
   },
-  computed: {
+  /*computed: {
     isShowJob() {
       return this.$store.getters.language === 'zh'
     },
@@ -98,13 +123,17 @@ export default {
     lang() {
       return this.$store.getters.language
     }
-  },
+  },*/
   methods: {
     themeChange(val) {
       this.$store.dispatch('settings/changeSetting', {
         key: 'theme',
         value: val
       })
+    },
+    test() {
+      this.list = this.$store.list
+      console.log(this.list);
     }
   }
 }

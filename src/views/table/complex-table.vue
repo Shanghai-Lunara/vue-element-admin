@@ -38,33 +38,6 @@
         </template>
       </el-table-column>
 
-      <!-- <el-table-column :label="table.key1" width="150px" align="center">
-        <template slot-scope="{row}">
-          <span class="link-type" @click="handleUpdate(row)">{{ row.name }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column :label="table.key3" width="150px">
-        <template slot-scope="{row}">
-          <el-tag>{{ row.namespace }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column :label="table.key2" min-width="150px" align="center">
-        <template slot-scope="{row}">
-          <span>{{ row.keys }}</span>
-        </template>
-      </el-table-column> -->
-      <!-- <el-table-column v-if="showReviewer" :label="$t('table_config.Created')" width="110px" align="center">
-        <template slot-scope="{row}">
-          <span style="color:red;">{{ row.reviewer }}</span>
-        </template>
-      </el-table-column> -->
-      <!--<el-table-column :label="$t('table.status')" class-name="status-col" width="100">
-        <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>-->
       <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
           <el-button type="primary" size="mini" @click="handleUpdate(row)">
@@ -86,18 +59,25 @@
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <template>
+
+      <!-- mysql | redis -->
+
+      <FormData v-if="createFlag" />
+
+      <!-- configmap -->
+      <template v-else>
         <div>
           <div class="editor-container">
-            <yaml-editor :value="yamlData" ref="yamlEditor"/>
+            <yaml-editor ref="yamlEditor" :value="yamlData" />
           </div>
         </div>
       </template>
+
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">
           {{ $t('table.cancel') }}
         </el-button>
-<!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
+        <!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
         <el-button type="primary" @click="makeSureEdit()">
           {{ $t('table.confirm') }}
         </el-button>
@@ -117,11 +97,14 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import { fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
+// redis | mysql
+import FormData from '@/components/FormData'
+import getters from "../../store/getters";
 
 const configMapTable = {
   name: 'Name',
@@ -136,16 +119,32 @@ const mysqlOperatorTable = {
   slave: 'replicas'
 }
 
+const RedisOperatorTable = {
+  name: 'Name',
+  namespace: 'NameSpace',
+  master: 'Image',
+  slave: 'replicas'
+}
+
+const ServiceTable = {
+  name: 'Name',
+  clusterIP: 'clusterIP',
+  port: 'port'
+}
+
 const table = {
   'ConfigMap': configMapTable,
-  'MysqlOperator': mysqlOperatorTable
+  'MysqlOperator': mysqlOperatorTable,
+  'RedisOperator': RedisOperatorTable,
+  'Service': ServiceTable
 }
 
 export default {
   name: 'ComplexTable',
   components: {
     Pagination,
-    YamlEditor: YamlEditor
+    YamlEditor: YamlEditor,
+    FormData
   },
   directives: { waves },
   filters: {
@@ -175,9 +174,7 @@ export default {
         type: '',
         sort: '+id'
       },
-      importanceOptions: [],
       calendarTypeOptions: [],
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
       temp: {
@@ -207,7 +204,8 @@ export default {
       table: '',
       yamlData: '',
       showFlag: false,
-      nowRow: '',   // 当前选中对象
+      nowRow: '', // 当前选中对象
+      createFlag: false
     }
   },
   watch: {
@@ -234,9 +232,12 @@ export default {
       this.$router.push({ path: '/' })
     }
     this.timer()
+
+    // 获取右边搜索的list
+    this.getTinyTableList()
   },
   methods: {
-    /*getList() {
+    /* getList() {
       // 加载分页
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
@@ -359,8 +360,11 @@ export default {
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
 
-      let dataStr = ''
-      let list = _self.list
+      let dataStr = '';
+      let list;
+      let total;
+
+      let isTiny = false;  // service时为true, 存贮侧边栏数据
 
       switch (result.param.resourceType) {
         case 'ConfigMap':
@@ -381,14 +385,10 @@ export default {
             list.push(one)
           })
 
-          _self.list = list
-          _self.total = dataStr.items.length
-
+          total = dataStr.items.length
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
-          console.log('return MysqlOperator')
-          console.log(dataStr)
 
           list = []
           dataStr.items.forEach(function(item, index) {
@@ -408,15 +408,64 @@ export default {
             list.push(one)
           })
 
-          _self.list = list
-          _self.total = dataStr.items.length
+          total = dataStr.items.length
           break
+        case 'RedisOperator':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+
+          list = []
+          dataStr.items.forEach(function(item, index) {
+            var one = []
+            one.namespace = _self.nameSpace
+
+            if (item.hasOwnProperty('master')) {
+              one.name = item.Name + '_' + item.master.Name + '_master'
+              one.master = item.master.image
+              one.slave = item.master.replicas
+            } else if (item.hasOwnProperty('slave')) {
+              one.name = item.Name + '_' + item.slave.Name + '_slave'
+              one.master = item.slave.image
+              one.slave = item.slave.replicas
+            }
+            list.push(one)
+            console.log(list)
+          })
+          total = dataStr.items.length
+          break
+
+        case 'Service':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
+          console.log('return Service')
+          console.log(dataStr)
+
+          list = []
+          dataStr.items.forEach(function (item, index) {
+            const one = []
+            one.name = item.Name
+            one.clusterIP = item.clusterIP
+            one.port = item.ports[0].port
+
+            list.push(one)
+          })
+          total = dataStr.items.length
+          isTiny = true
+
+          break
+
         case 'NameSpace':
-          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+          // 更改到侧边栏, 取消这个
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
 
           break
       }
+
+      return {
+        list: list,
+        total: total,
+        isTiny: isTiny
+      }
     },
+
     returnResource(service, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
       console.log(result)
@@ -435,10 +484,18 @@ export default {
 
           this.listQuery.type = calendarTypeOptions[0]
           _self.calendarTypeOptions = calendarTypeOptions
-          _self.listQuery.type = 'ConfigMap'
+          _self.listQuery.type = 'MysqlOperator'
+          this.showFlag = true
           break
         case 'list':
-          _self.returnMessage(service, _self)
+          let obj = _self.returnMessage(service, _self)
+
+          if (obj.isTiny) {
+            this.$store.list = obj.list
+          }
+
+          this.list = obj.list
+          this.total = obj.total
           break
         case 'update':
           console.log('update')
@@ -456,6 +513,14 @@ export default {
             }
             this.getList(data)
           }
+          break
+        case 'harbor':
+          console.log('harbor')
+
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
+
+          console.log(dataStr)
+
           break
       }
     },
@@ -490,41 +555,16 @@ export default {
       // this.getList()
     },
     handleModifyStatus(row) {
-      console.log('yamlData');
-      console.log(this.yamlData);
-
-
-    },
-    resetTemp() {
-      // console.log(1212122121)
-      var data = {
-        'Name': '',
-        'master': {
-          'Name': '',
-          'replicas': 0,
-          'image': '',
-          'imagePullSecrets': '',
-          'volumePath': ''
-        },
-        'slave': {
-          'Name': '',
-          'replicas': 0,
-          'image': '',
-          'imagePullSecrets': '',
-          'volumePath': ''
-        }
-      }
-
-      this.yamlData = data
-      // var mysql = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.create()
-      // console.log(mysql)
-
-      // console.log(mysql.pr)
-
-      // var NodeSpec = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.prototype
+      console.log('yamlData')
+      console.log(this.yamlData)
     },
     handleCreate() {
-      this.resetTemp()
+      if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+        this.createFlag = false
+      } else {
+        this.createFlag = true
+      }
+      // this.getCreateData()
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       // this.$nextTick(() => {
@@ -624,25 +664,34 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     makeSureEdit() {
-      console.log('makeSureEdit');
+      console.log('makeSureEdit')
       // 获取,更改编辑框里的值
-      let editValue = this.$refs.yamlEditor.getValue()
+      const editValue = this.$refs.yamlEditor.getValue()
       this.$refs.yamlEditor.setValue(editValue)
       this.yamlData = editValue
-      console.log(editValue);
+      console.log(editValue)
 
       // 取消弹框
       this.dialogFormVisible = false
 
       // 将编辑框内转化为对象,并update
-      let yaml = require('js-yaml')
-      let obj = yaml.load(this.yamlData)
+      const yaml = require('js-yaml')
+      const obj = yaml.load(this.yamlData)
 
       const data = {
         Name: this.nowRow.item.Name,
         data: obj
       }
       this.updateConfigMapList(data)
+    },
+    // 获取右边搜索的list
+    getTinyTableList() {
+      const data = {
+        'nameSpace': this.nameSpace,
+        'service': 'list',
+        'resourceType': 'Service'
+      }
+      this.getList(data)
     }
   }
 }
