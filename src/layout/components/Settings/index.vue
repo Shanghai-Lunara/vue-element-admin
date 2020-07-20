@@ -3,7 +3,7 @@
     <div>
       <div style="margin-bottom: 10px">
         <h3 class="drawer-title">{{ $t('tiny_table.title') }}</h3>
-        <el-input v-model="searchValue" v-on:input ="inputFunc" :placeholder="$t('tiny_table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
+        <el-input v-model="searchValue" v-on:input ="inputFunc" :placeholder="$t('tiny_table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="" />
         <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
           {{ $t('table.add') }}
         </el-button>
@@ -41,25 +41,28 @@
         <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
       </div>-->
 
-      <el-table
-        :key="tableKey"
-        :data="tmpList"
-        border
-        fit
-        highlight-current-row
-        style="width: 100%;"
-      >
-        <el-table-column :label="$t('tiny_table.name')" width="350px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.name }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column :label="$t('tiny_table.port')" width="100px" align="center">
-          <template slot-scope="{row}">
-            <span>{{ row.port }}</span>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div style="max-height: 500px">
+        <el-table
+          :key="tableKey"
+          :data="tmpList"
+          border
+          fit
+          height="750"
+          highlight-current-row
+          style="width: 100%;height: 100%"
+        >
+          <el-table-column :label="$t('tiny_table.name')" width="350px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column :label="$t('tiny_table.port')" width="100px" align="center">
+            <template slot-scope="{row}">
+              <span>{{ row.port }}</span>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
     </div>
   </div>
