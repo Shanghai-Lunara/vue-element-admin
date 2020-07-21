@@ -11,12 +11,19 @@
       >{{ branch }}</el-tag>
     </el-form-item>
     <el-form-item label="Name">
-      <el-input v-model="form.Name" />
+      <el-input v-model="form.name" />
     </el-form-item>
 
     <el-form-item label="image">
       <el-input v-model="form.image" />
+
+      <!-- <el-cascader
+    v-model="value"
+    :options="options"
+    @change="handleChange"></el-cascader> -->
+
     </el-form-item>
+
     <el-form-item label="imagePullSecrets">
       <el-input v-model="form.imagePullSecrets" />
     </el-form-item>
@@ -31,43 +38,108 @@
 
     <el-form-item label="containerPorts">
       <!-- containerPorts -->
-      <div v-if="form.containerPorts !== ''">
-        <el-input placeholder="">
-          <template slot="prepend">containerPort:</template>
-        </el-input>
-        <el-input placeholder="">
-          <template slot="prepend">hostIP:</template>
-        </el-input>
-        <el-input placeholder="">
-          <template slot="prepend">hostPort:</template>
-        </el-input>
-        <el-input placeholder="">
-          <template slot="prepend">name:</template>
-        </el-input>
-        <el-input placeholder="">
-          <template slot="prepend">protocol:</template>
-        </el-input>
-      </div>
 
-      <el-input v-else v-model="form.containerPorts" />
+      <div style="margin-bottom: 20px;">
+        <el-button
+          size="small"
+          type="primary"
+          @click="addTab(editableTabsValue.contain, 'contain')"
+        >
+          add
+        </el-button>
+      </div>
+      <el-tabs v-model="editableTabsValue.contain" type="card" closable @tab-remove="removeTab(editableTabsValue.contain,'contain')">
+        <el-tab-pane
+          v-for="item in editableTabs.contain"
+          :key="item.name"
+          :label="item.title"
+          :name="item.name"
+        >
+
+          <el-input v-model="item.content.containerPort" placeholder="">
+            <template slot="prepend">containerPort:</template>
+          </el-input>
+          <el-input v-model="item.content.hostIP" placeholder="">
+            <template slot="prepend">hostIP:</template>
+          </el-input>
+          <el-input v-model="item.content.hostPort" placeholder="">
+            <template slot="prepend">hostPort:</template>
+          </el-input>
+          <el-input v-model="item.content.name" placeholder="">
+            <template slot="prepend">name:</template>
+          </el-input>
+          <el-input v-model="item.content.protocol" placeholder="">
+            <template slot="prepend">protocol:</template>
+          </el-input>
+
+        </el-tab-pane>
+      </el-tabs>
 
     </el-form-item>
 
     <el-form-item label="podResource">
-      <el-input v-model="form.podResource" />
+      <el-tabs type="border-card">
+        <el-tab-pane v-for="(pod,pod_key) in form.podResource" :key="pod_key" :label="pod_key">
+          <el-input v-model="pod.cpu">
+            <template slot="prepend">cpu</template>
+          </el-input>
+          <el-input v-model="pod.memory">
+            <template slot="prepend">memory</template>
+          </el-input>
+        </el-tab-pane>
+      </el-tabs>
     </el-form-item>
 
     <el-form-item label="servicePorts">
-      <el-input v-model="form.servicePorts" />
+      <!-- <el-input v-model="form.servicePorts" /> -->
+      <div style="margin-bottom: 20px;">
+        <el-button
+          size="small"
+          type="primary"
+          @click="addTab(editableTabsValue,'service')"
+        >
+          add
+        </el-button>
+      </div>
+      <el-tabs v-model="editableTabsValue.service" type="card" closable @tab-remove="removeTab(editableTabsValue.service,'service')">
+        <el-tab-pane
+          v-for="item in editableTabs.service"
+          :key="item.name"
+          :label="item.title"
+          :name="item.name"
+        >
+
+          <el-input v-model="item.content.nodePort" placeholder="">
+            <template slot="prepend">nodePort:</template>
+          </el-input>
+          <el-input v-model="item.content.port" placeholder="">
+            <template slot="prepend">port:</template>
+          </el-input>
+          <el-input v-if="item.content.targetPort.type === 0" v-model="item.content.targetPort.intVal" placeholder="">
+            <template slot="prepend">targetPort:</template>
+          </el-input>
+          <el-input v-else v-model="item.content.targetPort.strVal" placeholder="">
+            <template slot="prepend">targetPort:</template>
+          </el-input>
+          <el-input v-model="item.content.name" placeholder="">
+            <template slot="prepend">name:</template>
+          </el-input>
+          <el-input v-model="item.content.protocol" placeholder="">
+            <template slot="prepend">protocol:</template>
+          </el-input>
+
+        </el-tab-pane>
+      </el-tabs>
     </el-form-item>
 
   </el-form>
 </template>
 
 <script>
+import service from '../../utils/request'
 
 const form = {
-  Name: '',
+  name: '',
   containerPorts: contain,
   image: '',
   imagePullSecrets: '',
@@ -82,7 +154,20 @@ const contain = {
   hostIP: '',
   hostPort: 0,
   name: '',
-  protocol: ''
+  protocol: 'TCP'
+}
+
+// targetPort: IntOrString
+// intVal: 3306
+// strVal: ""
+// type: 0
+
+const servicePort = {
+  name: '',
+  nodePort: 0,
+  port: 3306,
+  protocol: 'TCP',
+  targetPort: ''
 }
 
 export default {
@@ -101,7 +186,16 @@ export default {
       mark: '',
       repos_list: '',
       branch: '',
-      form
+      form,
+      editableTabsValue: {
+        contain: '1',
+        service: '1'
+      },
+      editableTabs: [],
+      tabIndex: {
+        contain: 1,
+        service: 1
+      }
     }
   },
   watch: {
@@ -110,12 +204,34 @@ export default {
     }
   },
   mounted() {
-    // this.getCreateData()
+    this.getCreateData()
     this.initForm()
   },
   methods: {
+    getCreateData() {
+      var param = this.initParam()
+
+      this.initHubs(param)
+
+      var senddata = this.initData('projects', param)
+
+      // HarborRequest
+      var _self = this
+      this.$socketApi(senddata, function(res) {
+        _self.responseData(res, _self)
+      })
+    },
+    initHubs(param) {
+      var senddata = this.initData('hubs', param)
+
+      // hubs
+      var _self = this
+      this.$socketApi(senddata, function(res) {
+        _self.responseData(res, _self)
+      })
+    },
     initForm() {
-      console.log(this.oneData)
+      // console.log(this.oneData)
 
       if (this.oneData.hasOwnProperty('master')) {
         this.form = this.oneData['master']
@@ -125,7 +241,57 @@ export default {
         this.branch = 'slave'
       }
 
-      console.log(this.form.containerPorts)
+      // containerPorts
+      if (this.form.containerPorts !== '') {
+        this.editableTabs.contain = []
+        this.form.containerPorts.forEach((value, index) => {
+          var arr = {
+            'title': 'port' + (index + 1),
+            'name': (index + 1).toString(),
+            'content': value
+          }
+
+          this.editableTabs.contain.push(arr)
+        })
+      } else {
+        var arr = {
+          'title': 'port1',
+          'name': '1',
+          'content': contain
+        }
+        this.editableTabs.contain.push(arr)
+      }
+
+      this.editableTabsValue.contain = '1'
+
+      // form.podResource
+      // console.log(this.form.podResource)
+
+      // form servicePorts
+      // console.log(this.form.servicePorts)
+
+      if (this.form.servicePorts !== '') {
+        this.editableTabs.service = []
+
+        this.form.servicePorts.forEach((port_value, port_key) => {
+          var port_data = {
+            'title': 'port' + (port_key + 1),
+            'name': (port_key + 1).toString(),
+            'content': port_value
+          }
+
+          this.editableTabs.service.push(port_data)
+        })
+      } else {
+        var port_data = {
+          'title': 'port1',
+          'name': '1',
+          'content': servicePort
+        }
+        this.editableTabs.service.push(port_data)
+      }
+
+      this.editableTabsValue.service = '1'
     },
     initChange(id) {
       var param = this.initParam()
@@ -202,22 +368,15 @@ export default {
 
       return senddata
     },
-    getCreateData() {
-      var param = this.initParam()
-
-      var senddata = this.initData('projects', param)
-
-      // HarborRequest
-
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
-    },
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
       //   console.log(result)
       switch (result.param.command) {
+        case 'hubs':
+          // var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
+
+          // console.log(dataStr)
+          break
         case 'projects':
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
           dataStr.items.forEach((element, key) => {
@@ -246,13 +405,42 @@ export default {
           console.log(tags)
           break
       }
+    },
+    addTab(targetName, type) {
+      var newTabName = ++this.tabIndex[type]
+      var arr = {
+        'title': 'port' + newTabName,
+        'name': newTabName.toString(),
+        'content': type === 'contain' ? contain : service
+      }
+      this.editableTabs[type].push(arr)
+      this.editableTabsValue[type] = newTabName.toString()
+    },
+    removeTab(targetName, type) {
+      const tabs = this.editableTabs[type]
+      let activeName = this.editableTabsValue[type]
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            const nextTab = tabs[index + 1] || tabs[index - 1]
+            if (nextTab) {
+              activeName = nextTab.name
+            }
+          }
+        })
+      }
+
+      this.editableTabsValue[type] = activeName
+      this.editableTabs[type] = tabs.filter((tab, index) => tab.name !== targetName)
     }
   }
 }
+
 </script>
 
 <style scoped>
 .el-input-group {
   width: 20%;
+  margin-top: 5px;
 }
 </style>

@@ -394,10 +394,10 @@ export default {
             if (item.hasOwnProperty('master')) {
               var master = []
               master.namespace = _self.nameSpace
-              master.name = item.Name + '_' + item.master.Name + '_master'
+              master.name = item.name + '_' + item.master.name + '_master'
               master.master = item.master.image
               master.slave = item.master.replicas
-              master.flagname = item.Name
+              master.flagname = item.name
               master.flagdiff = 'master'
               list.push(master)
             }
@@ -405,10 +405,10 @@ export default {
             if (item.hasOwnProperty('slave')) {
               var slave = []
               slave.namespace = _self.nameSpace
-              slave.name = item.Name + '_' + item.slave.Name + '_slave'
+              slave.name = item.name + '_' + item.slave.name + '_slave'
               slave.master = item.slave.image
               slave.slave = item.slave.replicas
-              slave.flagname = item.Name
+              slave.flagname = item.name
               slave.flagdiff = 'slave'
               list.push(slave)
             }
@@ -422,26 +422,26 @@ export default {
           _self.mysqlData = dataStr.items
           break
         case 'RedisOperator':
-          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
 
-          list = []
-          dataStr.items.forEach(function(item, index) {
-            var one = []
-            one.namespace = _self.nameSpace
+          // list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   var one = []
+          //   one.namespace = _self.nameSpace
 
-            if (item.hasOwnProperty('master')) {
-              one.name = item.Name + '_' + item.master.Name + '_master'
-              one.master = item.master.image
-              one.slave = item.master.replicas
-            } else if (item.hasOwnProperty('slave')) {
-              one.name = item.Name + '_' + item.slave.Name + '_slave'
-              one.master = item.slave.image
-              one.slave = item.slave.replicas
-            }
-            list.push(one)
-            console.log(list)
-          })
-          total = dataStr.items.length
+          //   if (item.hasOwnProperty('master')) {
+          //     one.name = item.Name + '_' + item.master.Name + '_master'
+          //     one.master = item.master.image
+          //     one.slave = item.master.replicas
+          //   } else if (item.hasOwnProperty('slave')) {
+          //     one.name = item.Name + '_' + item.slave.Name + '_slave'
+          //     one.master = item.slave.image
+          //     one.slave = item.slave.replicas
+          //   }
+          //   list.push(one)
+          //   console.log(list)
+          // })
+          // total = dataStr.items.length
           break
 
         case 'Service':
@@ -499,7 +499,7 @@ export default {
           this.showFlag = true
           break
         case 'list':
-          const obj = _self.returnMessage(service, _self)
+          var obj = _self.returnMessage(service, _self)
 
           if (obj.isTiny) {
             this.$store.list = obj.list
@@ -711,7 +711,7 @@ export default {
       var arr = []
 
       this.mysqlData.forEach(element => {
-        if (element.Name === row.flagname) {
+        if (element.name === row.flagname) {
           if (row.flagdiff === 'master') {
             arr['master'] = element.master
           } else if (row.flagdiff === 'slave') {
