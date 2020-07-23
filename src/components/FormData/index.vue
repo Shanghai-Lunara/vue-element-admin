@@ -1,26 +1,28 @@
 <template>
   <el-form ref="form" label-width="150px">
     <el-form-item>
-      <el-tag
-        type=""
-        style="width: 100px;
-              height: 40px;
-              text-align: center;
-              line-height: 40px;
-              font-size: 15px;"
-      >{{ branch }}</el-tag>
+      <el-select v-model="branch" @change="changeBranch">
+        <el-option
+          v-for="item in select"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
     </el-form-item>
+
     <el-form-item label="Name">
       <el-input v-model="form.name" />
     </el-form-item>
 
     <el-form-item label="image">
-      <el-input v-model="form.image" />
+      <!-- <el-input v-model="form.image" /> -->
 
-      <!-- <el-cascader
-    v-model="value"
-    :options="options"
-    @change="handleChange"></el-cascader> -->
+      <el-cascader
+        v-model="value"
+        :options="options"
+        @change="handleChange"
+      />
 
     </el-form-item>
 
@@ -174,17 +176,19 @@ export default {
   name: 'FormData',
   props: {
     oneData: {
-      type: Array,
+      type: Object,
       required: true
     }
   },
   data() {
     return {
-      list: '',
-      flag: '',
-      command: '',
-      mark: '',
-      repos_list: '',
+      select: [{
+        value: 'master',
+        label: 'master'
+      }, {
+        value: 'slave',
+        label: 'slave'
+      }],
       branch: '',
       form,
       editableTabsValue: {
@@ -195,7 +199,14 @@ export default {
       tabIndex: {
         contain: 1,
         service: 1
-      }
+      },
+      options: [],
+      value: [],
+      url: '',
+      project: 1,
+      image: '',
+      masterData: '',
+      slaveData: ''
     }
   },
   watch: {
@@ -205,21 +216,12 @@ export default {
   },
   mounted() {
     this.getCreateData()
-    this.initForm()
+    // this.initForm()
   },
   methods: {
     getCreateData() {
       var param = this.initParam()
-
       this.initHubs(param)
-
-      var senddata = this.initData('projects', param)
-
-      // HarborRequest
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
     },
     initHubs(param) {
       var senddata = this.initData('hubs', param)
@@ -230,17 +232,46 @@ export default {
         _self.responseData(res, _self)
       })
     },
-    initForm() {
-      // console.log(this.oneData)
+    changeBranch(value) {
+      this.branch = value
+      this.form = this.oneData[value]
 
-      if (this.oneData.hasOwnProperty('master')) {
-        this.form = this.oneData['master']
-        this.branch = 'master'
-      } else if (this.oneData.hasOwnProperty('slave')) {
-        this.form = this.oneData['slave']
-        this.branch = 'slave'
+      if (value === 'slave') {
+        this.masterData = this.editableTabs
       }
 
+      if (value === 'master') {
+        this.slaveData = this.editableTabs
+      }
+
+      this.editableTabs = []
+      this.tabIndex = {
+        contain: 1,
+        service: 1
+      }
+
+      this.editableTabsValue = {
+        contain: '1',
+        service: '1'
+      }
+
+      this.initPodService()
+    },
+    handleChange(value) {
+      console.log(45545454)
+      console.log(value)
+    },
+    initProject() {
+      var param = this.initParam()
+      var senddata = this.initData('projects', param, 0)
+
+      // HarborRequest
+      var _self = this
+      this.$socketApi(senddata, function(res) {
+        _self.responseData(res, _self)
+      })
+    },
+    initPodService() {
       // containerPorts
       if (this.form.containerPorts !== '') {
         this.editableTabs.contain = []
@@ -263,12 +294,6 @@ export default {
       }
 
       this.editableTabsValue.contain = '1'
-
-      // form.podResource
-      // console.log(this.form.podResource)
-
-      // form servicePorts
-      // console.log(this.form.servicePorts)
 
       if (this.form.servicePorts !== '') {
         this.editableTabs.service = []
@@ -293,7 +318,13 @@ export default {
 
       this.editableTabsValue.service = '1'
     },
+    initForm() {
+      this.branch = 'master'
+      this.form = this.oneData.master
+      this.initPodService()
+    },
     initChange(id) {
+      console.log(id)
       var param = this.initParam()
 
       var senddata = this.initData('repositories', param, id)
@@ -314,7 +345,7 @@ export default {
 
       var _self = this
       this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
+        _self.responseData(res, _self, id)
       })
     },
     reposChange() {
@@ -340,13 +371,17 @@ export default {
 
       var data = ''
       if (type === 'tags') {
+        console.log(id)
+        console.log(969696)
         data = {
+          'harborUrl': this.url,
           'command': type,
           'projectId': 0,
           'imageName': id
         }
       } else {
         data = {
+          'harborUrl': this.url,
           'command': type,
           'projectId': id,
           'imageName': ''
@@ -368,41 +403,96 @@ export default {
 
       return senddata
     },
-    responseData(res, _self) {
+    responseData(res, _self, tag_name = '') {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-      //   console.log(result)
       switch (result.param.command) {
         case 'hubs':
-          // var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
+          var hublist = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
 
-          // console.log(dataStr)
+          hublist.items.forEach(element => {
+            _self.options.push(
+              {
+                'value': element.name,
+                'label': element.name,
+                'children': []
+              }
+            )
+
+            _self.url = element.name
+            _self.initProject()
+          })
+
           break
         case 'projects':
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
-          dataStr.items.forEach((element, key) => {
-            if (key === 0) {
-              _self.flag = element.name
-              _self.initChange(element.projectId)
+
+          _self.options.forEach(value => {
+            if (value.value === _self.url) {
+              dataStr.items.forEach((element, key) => {
+                value.children.push(
+                  {
+                    'value': element.projectId,
+                    'label': element.name,
+                    'children': []
+                  }
+                )
+
+                _self.projectId = element.projectId
+                _self.initChange(element.projectId)
+              })
             }
           })
 
-          _self.list = dataStr.items
           break
         case 'repositories':
           // HarborRepositoryList
           var repositories = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList.decode(result.result)
-          repositories.items.forEach((element, index) => {
-            if (index === 0) {
-              _self.mark = element.name
-              _self.initTag(element.name)
+
+          _self.options.forEach(value => {
+            if (value.value === _self.url) {
+              value.children.forEach(repos_value => {
+                repositories.items.forEach(element => {
+                  if (repos_value.value === element.projectId) {
+                    repos_value.children.push({
+                      'value': element.repositoryId,
+                      'label': element.name,
+                      'children': []
+                    })
+                    // console.log(element.name)
+                    // console.log(121212121)
+                    _self.initTag(element.name)
+                  }
+                })
+              })
             }
           })
-          _self.repos_list = repositories.items
+
           break
         case 'tags':
           var tags = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList.decode(result.result)
-          console.log('tags')
-          console.log(tags)
+
+          _self.options.forEach(value => {
+            if (value.value === _self.url) {
+              value.children.forEach(repos_value => {
+                repos_value.children.forEach(element => {
+                  console.log(element)
+                  // console.log(8888)
+                  // console.log(tag_name)
+
+                  if (element.label === tag_name) {
+                    console.log(tags)
+                    tags.items.forEach(tag_value => {
+                      element.children.push({
+                        'value': tag_value.digest,
+                        'label': tag_value.name
+                      })
+                    })
+                  }
+                })
+              })
+            }
+          })
+
           break
       }
     },

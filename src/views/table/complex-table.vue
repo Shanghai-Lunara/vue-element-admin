@@ -111,16 +111,16 @@ const configMapTable = {
 
 const mysqlOperatorTable = {
   name: 'Name',
-  namespace: 'NameSpace',
-  master: 'Image',
-  slave: 'replicas'
+  namespace: 'NameSpace'
+  // master: 'Image',
+  // slave: 'replicas'
 }
 
 const RedisOperatorTable = {
   name: 'Name',
-  namespace: 'NameSpace',
-  master: 'Image',
-  slave: 'replicas'
+  namespace: 'NameSpace'
+  // master: 'Image',
+  // slave: 'replicas'
 }
 
 const ServiceTable = {
@@ -203,7 +203,6 @@ export default {
       showFlag: false,
       nowRow: '', // 当前选中对象
       createFlag: false,
-      mysqlData: '',
       oneData: ''
     }
   },
@@ -391,35 +390,14 @@ export default {
 
           list = []
           dataStr.items.forEach(function(item, index) {
-            if (item.hasOwnProperty('master')) {
-              var master = []
-              master.namespace = _self.nameSpace
-              master.name = item.name + '_' + item.master.name + '_master'
-              master.master = item.master.image
-              master.slave = item.master.replicas
-              master.flagname = item.name
-              master.flagdiff = 'master'
-              list.push(master)
-            }
+            item.namespace = _self.nameSpace
 
-            if (item.hasOwnProperty('slave')) {
-              var slave = []
-              slave.namespace = _self.nameSpace
-              slave.name = item.name + '_' + item.slave.name + '_slave'
-              slave.master = item.slave.image
-              slave.slave = item.slave.replicas
-              slave.flagname = item.name
-              slave.flagdiff = 'slave'
-              list.push(slave)
-            }
-
-            // list.push(one)
+            list.push(item)
           })
 
           total = dataStr.items.length
           _self.list = list
           _self.total = dataStr.items.length
-          _self.mysqlData = dataStr.items
           break
         case 'RedisOperator':
           // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -706,21 +684,8 @@ export default {
     },
     editData(row) {
       console.log(row)
-      console.log(this.mysqlData)
 
-      var arr = []
-
-      this.mysqlData.forEach(element => {
-        if (element.name === row.flagname) {
-          if (row.flagdiff === 'master') {
-            arr['master'] = element.master
-          } else if (row.flagdiff === 'slave') {
-            arr['slave'] = element.slave
-          }
-        }
-      })
-
-      this.oneData = arr
+      this.oneData = row
       this.createFlag = true
       this.dialogFormVisible = true
     }
