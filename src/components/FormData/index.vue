@@ -21,6 +21,7 @@
       <el-cascader
         v-model="value"
         :options="options"
+        style="width: 540px"
         @change="handleChange"
       />
 
@@ -202,31 +203,62 @@ export default {
       },
       options: [],
       value: [],
-      url: '',
-      project: 1,
-      image: '',
       masterData: '',
       slaveData: ''
     }
   },
   watch: {
     oneData() {
-      this.initForm()
+      // this.initForm()
     }
   },
   mounted() {
     this.getCreateData()
-    // this.initForm()
+    this.initForm()
   },
   methods: {
     getCreateData() {
-      var param = this.initParam()
-      this.initHubs(param)
+      // 初始化 hubs
+      this.initParam('hubs')
     },
-    initHubs(param) {
-      var senddata = this.initData('hubs', param)
+    handleChange(value) {
+      console.log(45545454)
+      console.log(value)
 
-      // hubs
+      value.forEach((element, index) => {
+
+      })
+    },
+    initParam(type, url = '', id = 0, imageName = '') {
+      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
+
+      var data = {
+        'harborUrl': url,
+        'command': type,
+        'projectId': id,
+        'imageName': imageName
+      }
+
+      var param = {
+        'nameSpace': this.nameSpace,
+        'service': 'harbor',
+        'resourceType': '',
+        'harborRequest': data
+      }
+
+      var errData = Proto.Param.verify(param)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': param,
+        'data': ''
+      }
+
+      var message = Proto.Request.create(msg)
+
+      var senddata = Proto.Request.encode(message).finish()
+
       var _self = this
       this.$socketApi(senddata, function(res) {
         _self.responseData(res, _self)
@@ -256,20 +288,6 @@ export default {
       }
 
       this.initPodService()
-    },
-    handleChange(value) {
-      console.log(45545454)
-      console.log(value)
-    },
-    initProject() {
-      var param = this.initParam()
-      var senddata = this.initData('projects', param, 0)
-
-      // HarborRequest
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
     },
     initPodService() {
       // containerPorts
@@ -321,91 +339,17 @@ export default {
     initForm() {
       this.branch = 'master'
       this.form = this.oneData.master
+      console.log(this.form)
       this.initPodService()
-    },
-    initChange(id) {
-      console.log(id)
-      var param = this.initParam()
-
-      var senddata = this.initData('repositories', param, id)
-
-      // HarborRequest
-
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
-    },
-    initTag(id) {
-      var param = this.initParam()
-
-      var senddata = this.initData('tags', param, id)
-
-      // HarborRequest
-
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self, id)
-      })
     },
     reposChange() {
 
     },
-    initParam() {
-      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
-
-      var param = {
-        'nameSpace': this.nameSpace,
-        'service': 'harbor',
-        'resourceType': ''
-      }
-
-      var errData = Proto.Param.verify(param)
-
-      if (errData) { throw Error(errData) }
-
-      return param
-    },
-    initData(type, param, id = 0) {
-      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
-
-      var data = ''
-      if (type === 'tags') {
-        console.log(id)
-        console.log(969696)
-        data = {
-          'harborUrl': this.url,
-          'command': type,
-          'projectId': 0,
-          'imageName': id
-        }
-      } else {
-        data = {
-          'harborUrl': this.url,
-          'command': type,
-          'projectId': id,
-          'imageName': ''
-        }
-      }
-
-      var mess = Proto.HarborRequest.create(data)
-
-      var mess_data = Proto.HarborRequest.encode(mess).finish()
-
-      var msg = {
-        'param': param,
-        'data': mess_data
-      }
-
-      var message = Proto.Request.create(msg)
-
-      var senddata = Proto.Request.encode(message).finish()
-
-      return senddata
-    },
-    responseData(res, _self, tag_name = '') {
+    responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-      switch (result.param.command) {
+      console.log(result)
+      console.log(12121121212121)
+      switch (result.param.harborRequest.command) {
         case 'hubs':
           var hublist = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
 
@@ -418,8 +362,7 @@ export default {
               }
             )
 
-            _self.url = element.name
-            _self.initProject()
+            _self.initParam('projects', element.name)
           })
 
           break
@@ -427,7 +370,7 @@ export default {
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
 
           _self.options.forEach(value => {
-            if (value.value === _self.url) {
+            if (value.value === result.param.harborRequest.harborUrl) {
               dataStr.items.forEach((element, key) => {
                 value.children.push(
                   {
@@ -437,8 +380,7 @@ export default {
                   }
                 )
 
-                _self.projectId = element.projectId
-                _self.initChange(element.projectId)
+                _self.initParam('repositories', result.param.harborRequest.harborUrl, element.projectId)
               })
             }
           })
@@ -449,20 +391,18 @@ export default {
           var repositories = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList.decode(result.result)
 
           _self.options.forEach(value => {
-            if (value.value === _self.url) {
+            if (value.value === result.param.harborRequest.harborUrl) {
               value.children.forEach(repos_value => {
-                repositories.items.forEach(element => {
-                  if (repos_value.value === element.projectId) {
+                if (repos_value.value === result.param.harborRequest.projectId) {
+                  repositories.items.forEach(element => {
                     repos_value.children.push({
-                      'value': element.repositoryId,
+                      'value': element.name,
                       'label': element.name,
                       'children': []
                     })
-                    // console.log(element.name)
-                    // console.log(121212121)
-                    _self.initTag(element.name)
-                  }
-                })
+                    _self.initParam('tags', result.param.harborRequest.harborUrl, element.projectId, element.name)
+                  })
+                }
               })
             }
           })
@@ -472,23 +412,20 @@ export default {
           var tags = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList.decode(result.result)
 
           _self.options.forEach(value => {
-            if (value.value === _self.url) {
+            if (value.value === result.param.harborRequest.harborUrl) {
               value.children.forEach(repos_value => {
-                repos_value.children.forEach(element => {
-                  console.log(element)
-                  // console.log(8888)
-                  // console.log(tag_name)
-
-                  if (element.label === tag_name) {
-                    console.log(tags)
-                    tags.items.forEach(tag_value => {
-                      element.children.push({
-                        'value': tag_value.digest,
-                        'label': tag_value.name
+                if (repos_value.value === result.param.harborRequest.projectId) {
+                  repos_value.children.forEach(tags_value => {
+                    if (tags_value.label === result.param.harborRequest.imageName) {
+                      tags.items.forEach(element => {
+                        tags_value.children.push({
+                          'value': element.name,
+                          'label': element.name
+                        })
                       })
-                    })
-                  }
-                })
+                    }
+                  })
+                }
               })
             }
           })

@@ -2673,7 +2673,7 @@ export const github = $root.github = (() => {
               Param.prototype.service = ''
               Param.prototype.resourceType = ''
               Param.prototype.nameSpace = ''
-              Param.prototype.command = ''
+              Param.prototype.harborRequest = null
 
               Param.create = function create(properties) {
                 return new Param(properties)
@@ -2684,7 +2684,7 @@ export const github = $root.github = (() => {
                 if (message.service != null && Object.hasOwnProperty.call(message, 'service')) { writer.uint32(10).string(message.service) }
                 if (message.resourceType != null && Object.hasOwnProperty.call(message, 'resourceType')) { writer.uint32(18).string(message.resourceType) }
                 if (message.nameSpace != null && Object.hasOwnProperty.call(message, 'nameSpace')) { writer.uint32(26).string(message.nameSpace) }
-                if (message.command != null && Object.hasOwnProperty.call(message, 'command')) { writer.uint32(34).string(message.command) }
+                if (message.harborRequest != null && Object.hasOwnProperty.call(message, 'harborRequest')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.encode(message.harborRequest, writer.uint32(34).fork()).ldelim() }
                 return writer
               }
 
@@ -2708,7 +2708,7 @@ export const github = $root.github = (() => {
                       message.nameSpace = reader.string()
                       break
                     case 4:
-                      message.command = reader.string()
+                      message.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.decode(reader, reader.uint32())
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -2734,8 +2734,9 @@ export const github = $root.github = (() => {
                 if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) {
                   if (!$util.isString(message.nameSpace)) { return 'nameSpace: string expected' }
                 }
-                if (message.command != null && message.hasOwnProperty('command')) {
-                  if (!$util.isString(message.command)) { return 'command: string expected' }
+                if (message.harborRequest != null && message.hasOwnProperty('harborRequest')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.verify(message.harborRequest)
+                  if (error) { return 'harborRequest.' + error }
                 }
                 return null
               }
@@ -2746,7 +2747,10 @@ export const github = $root.github = (() => {
                 if (object.service != null) { message.service = String(object.service) }
                 if (object.resourceType != null) { message.resourceType = String(object.resourceType) }
                 if (object.nameSpace != null) { message.nameSpace = String(object.nameSpace) }
-                if (object.command != null) { message.command = String(object.command) }
+                if (object.harborRequest != null) {
+                  if (typeof object.harborRequest !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.harborRequest: object expected') }
+                  message.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.fromObject(object.harborRequest)
+                }
                 return message
               }
 
@@ -2757,12 +2761,12 @@ export const github = $root.github = (() => {
                   object.service = ''
                   object.resourceType = ''
                   object.nameSpace = ''
-                  object.command = ''
+                  object.harborRequest = null
                 }
                 if (message.service != null && message.hasOwnProperty('service')) { object.service = message.service }
                 if (message.resourceType != null && message.hasOwnProperty('resourceType')) { object.resourceType = message.resourceType }
                 if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) { object.nameSpace = message.nameSpace }
-                if (message.command != null && message.hasOwnProperty('command')) { object.command = message.command }
+                if (message.harborRequest != null && message.hasOwnProperty('harborRequest')) { object.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.toObject(message.harborRequest, options) }
                 return object
               }
 
