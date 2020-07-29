@@ -16,19 +16,27 @@
     </el-form-item>
 
     <el-form-item label="image">
-      <!-- <el-input v-model="form.image" /> -->
+      <el-input v-model="form.image" style="width: 400px;" />
 
       <el-cascader
         v-model="value"
         :options="options"
-        style="width: 540px"
+        style="width: 540px;"
         @change="handleChange"
       />
 
     </el-form-item>
 
     <el-form-item label="imagePullSecrets">
-      <el-input v-model="form.imagePullSecrets" />
+      <el-select v-model="form.imagePullSecrets" @change="changesecre">
+        <el-option
+          v-for="item in secretData"
+          :key="item.name"
+          :label="item.name"
+          :value="item.name"
+        />
+      </el-select>
+      <!-- <el-input v-model="form.imagePullSecrets" /> -->
     </el-form-item>
 
     <el-form-item label="replicas">
@@ -203,6 +211,7 @@ export default {
       },
       options: [],
       value: [],
+      secretData: '',
       masterData: '',
       slaveData: ''
     }
@@ -213,8 +222,10 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.oneData)
     this.getCreateData()
     this.initForm()
+    this.secret()
   },
   methods: {
     getCreateData() {
@@ -222,12 +233,12 @@ export default {
       this.initParam('hubs')
     },
     handleChange(value) {
-      console.log(45545454)
-      console.log(value)
+      var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
 
-      value.forEach((element, index) => {
-
-      })
+      this.form.image = str
+    },
+    changesecre() {
+      console.log(4444444)
     },
     initParam(type, url = '', id = 0, imageName = '') {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
@@ -240,7 +251,7 @@ export default {
       }
 
       var param = {
-        'nameSpace': this.nameSpace,
+        'nameSpace': this.oneData.namespace,
         'service': 'harbor',
         'resourceType': '',
         'harborRequest': data
@@ -262,6 +273,39 @@ export default {
       var _self = this
       this.$socketApi(senddata, function(res) {
         _self.responseData(res, _self)
+      })
+    },
+    secret() {
+      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
+
+      var param = {
+        'nameSpace': this.oneData.namespace,
+        'service': 'list',
+        'resourceType': 'Secret'
+      }
+
+      var errData = Proto.Param.verify(param)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': param,
+        'data': ''
+      }
+
+      var message = Proto.Request.create(msg)
+
+      var senddata = Proto.Request.encode(message).finish()
+
+      var _self = this
+      this.$socketApi(senddata, function(res) {
+        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+
+        if (result.param.service === 'list') {
+          var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
+
+          _self.secretData = list.items
+        }
       })
     },
     changeBranch(value) {
@@ -289,7 +333,7 @@ export default {
 
       this.initPodService()
     },
-    initPodService() {
+    initPodService(branch) {
       // containerPorts
       if (this.form.containerPorts !== '') {
         this.editableTabs.contain = []
@@ -342,13 +386,8 @@ export default {
       console.log(this.form)
       this.initPodService()
     },
-    reposChange() {
-
-    },
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-      console.log(result)
-      console.log(12121121212121)
       switch (result.param.harborRequest.command) {
         case 'hubs':
           var hublist = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
