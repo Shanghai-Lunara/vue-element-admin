@@ -50,41 +50,38 @@
     <el-form-item label="containerPorts">
       <!-- containerPorts -->
 
-      <div style="margin-bottom: 20px;">
-        <el-button
-          size="small"
-          type="primary"
-          @click="addTab(editableTabsValue.contain, 'contain')"
-        >
-          add
-        </el-button>
-      </div>
-      <el-tabs v-model="editableTabsValue.contain" type="card" closable @tab-remove="removeTab(editableTabsValue.contain,'contain')">
-        <el-tab-pane
-          v-for="item in editableTabs.contain"
-          :key="item.name"
-          :label="item.title"
-          :name="item.name"
-        >
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="form.containerPorts" border style="width: 100%" highlight-current-row>
 
-          <el-input v-model="item.content.containerPort" placeholder="">
-            <template slot="prepend">containerPort:</template>
-          </el-input>
-          <el-input v-model="item.content.hostIP" placeholder="">
-            <template slot="prepend">hostIP:</template>
-          </el-input>
-          <el-input v-model="item.content.hostPort" placeholder="">
-            <template slot="prepend">hostPort:</template>
-          </el-input>
-          <el-input v-model="item.content.name" placeholder="">
-            <template slot="prepend">name:</template>
-          </el-input>
-          <el-input v-model="item.content.protocol" placeholder="">
-            <template slot="prepend">protocol:</template>
-          </el-input>
+            <el-table-column v-for="v in containCloumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
 
-        </el-tab-pane>
-      </el-tabs>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,1)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addContainPort()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
 
     </el-form-item>
 
@@ -102,52 +99,48 @@
     </el-form-item>
 
     <el-form-item label="servicePorts">
-      <!-- <el-input v-model="form.servicePorts" /> -->
-      <div style="margin-bottom: 20px;">
-        <el-button
-          size="small"
-          type="primary"
-          @click="addTab(editableTabsValue,'service')"
-        >
-          add
-        </el-button>
-      </div>
-      <el-tabs v-model="editableTabsValue.service" type="card" closable @tab-remove="removeTab(editableTabsValue.service,'service')">
-        <el-tab-pane
-          v-for="item in editableTabs.service"
-          :key="item.name"
-          :label="item.title"
-          :name="item.name"
-        >
 
-          <el-input v-model="item.content.nodePort" placeholder="">
-            <template slot="prepend">nodePort:</template>
-          </el-input>
-          <el-input v-model="item.content.port" placeholder="">
-            <template slot="prepend">port:</template>
-          </el-input>
-          <el-input v-if="item.content.targetPort.type === 0" v-model="item.content.targetPort.intVal" placeholder="">
-            <template slot="prepend">targetPort:</template>
-          </el-input>
-          <el-input v-else v-model="item.content.targetPort.strVal" placeholder="">
-            <template slot="prepend">targetPort:</template>
-          </el-input>
-          <el-input v-model="item.content.name" placeholder="">
-            <template slot="prepend">name:</template>
-          </el-input>
-          <el-input v-model="item.content.protocol" placeholder="">
-            <template slot="prepend">protocol:</template>
-          </el-input>
+      <!-- servicePorts -->
 
-        </el-tab-pane>
-      </el-tabs>
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="form.servicePorts" border style="width: 100%" highlight-current-row>
+
+            <el-table-column v-for="v in serviceCloumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,2)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addServicePort()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
+
     </el-form-item>
 
   </el-form>
 </template>
 
 <script>
-import service from '../../utils/request'
 
 const form = {
   name: '',
@@ -165,20 +158,21 @@ const contain = {
   hostIP: '',
   hostPort: 0,
   name: '',
-  protocol: 'TCP'
+  protocol: 'TCP',
+  isSet: true
 }
-
-// targetPort: IntOrString
-// intVal: 3306
-// strVal: ""
-// type: 0
 
 const servicePort = {
   name: '',
   nodePort: 0,
   port: 3306,
   protocol: 'TCP',
-  targetPort: ''
+  targetPort: {
+    intVal: 3306,
+    strVal: '',
+    type: 0
+  },
+  isSet: true
 }
 
 export default {
@@ -200,18 +194,23 @@ export default {
       }],
       branch: '',
       form,
-      editableTabsValue: {
-        contain: '1',
-        service: '1'
-      },
-      editableTabs: [],
-      tabIndex: {
-        contain: 1,
-        service: 1
-      },
       options: [],
       value: [],
       secretData: '',
+      containCloumn: [
+        { field: 'containerPort', title: 'containerPort', width: 150 },
+        { field: 'hostIP', title: 'hostIP', width: 150 },
+        { field: 'hostPort', title: 'hostPort', width: 150 },
+        { field: 'name', title: 'name', width: 150 },
+        { field: 'protocol', title: 'protocol', width: 150 }
+      ],
+      serviceCloumn: [
+        { field: 'name', title: 'name', width: 150 },
+        { field: 'nodePort', title: 'nodePort', width: 150 },
+        { field: 'port', title: 'port', width: 150 },
+        { field: 'protocol', title: 'protocol', width: 150 },
+        { field: 'targetPort', title: 'targetPort', width: 380 }
+      ],
       masterData: '',
       slaveData: ''
     }
@@ -222,7 +221,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(this.oneData)
     this.getCreateData()
     this.initForm()
     this.secret()
@@ -234,11 +232,10 @@ export default {
     },
     handleChange(value) {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
-
       this.form.image = str
     },
-    changesecre() {
-      console.log(4444444)
+    changesecre(value) {
+      console.log(value)
     },
     initParam(type, url = '', id = 0, imageName = '') {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
@@ -312,79 +309,33 @@ export default {
       this.branch = value
       this.form = this.oneData[value]
 
-      if (value === 'slave') {
-        this.masterData = this.editableTabs
-      }
-
-      if (value === 'master') {
-        this.slaveData = this.editableTabs
-      }
-
-      this.editableTabs = []
-      this.tabIndex = {
-        contain: 1,
-        service: 1
-      }
-
-      this.editableTabsValue = {
-        contain: '1',
-        service: '1'
-      }
-
-      this.initPodService()
-    },
-    initPodService(branch) {
-      // containerPorts
       if (this.form.containerPorts !== '') {
-        this.editableTabs.contain = []
-        this.form.containerPorts.forEach((value, index) => {
-          var arr = {
-            'title': 'port' + (index + 1),
-            'name': (index + 1).toString(),
-            'content': value
-          }
-
-          this.editableTabs.contain.push(arr)
+        this.form.containerPorts.forEach(element => {
+          element.isSet = false
         })
-      } else {
-        var arr = {
-          'title': 'port1',
-          'name': '1',
-          'content': contain
-        }
-        this.editableTabs.contain.push(arr)
       }
-
-      this.editableTabsValue.contain = '1'
 
       if (this.form.servicePorts !== '') {
-        this.editableTabs.service = []
-
-        this.form.servicePorts.forEach((port_value, port_key) => {
-          var port_data = {
-            'title': 'port' + (port_key + 1),
-            'name': (port_key + 1).toString(),
-            'content': port_value
-          }
-
-          this.editableTabs.service.push(port_data)
+        this.form.servicePorts.forEach(element => {
+          element.isSet = false
         })
-      } else {
-        var port_data = {
-          'title': 'port1',
-          'name': '1',
-          'content': servicePort
-        }
-        this.editableTabs.service.push(port_data)
       }
-
-      this.editableTabsValue.service = '1'
     },
     initForm() {
       this.branch = 'master'
       this.form = this.oneData.master
-      console.log(this.form)
-      this.initPodService()
+
+      if (this.form.containerPorts !== '') {
+        this.form.containerPorts.forEach(element => {
+          element.isSet = false
+        })
+      }
+
+      if (this.form.servicePorts !== '') {
+        this.form.servicePorts.forEach(element => {
+          element.isSet = false
+        })
+      }
     },
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
@@ -472,32 +423,80 @@ export default {
           break
       }
     },
-    addTab(targetName, type) {
-      var newTabName = ++this.tabIndex[type]
-      var arr = {
-        'title': 'port' + newTabName,
-        'name': newTabName.toString(),
-        'content': type === 'contain' ? contain : service
-      }
-      this.editableTabs[type].push(arr)
-      this.editableTabsValue[type] = newTabName.toString()
-    },
-    removeTab(targetName, type) {
-      const tabs = this.editableTabs[type]
-      let activeName = this.editableTabsValue[type]
-      if (activeName === targetName) {
-        tabs.forEach((tab, index) => {
-          if (tab.name === targetName) {
-            const nextTab = tabs[index + 1] || tabs[index - 1]
-            if (nextTab) {
-              activeName = nextTab.name
-            }
-          }
-        })
+    // 修改
+    edit(row, index, cg, type) {
+      // 点击修改 判断是否已经保存所有操作
+
+      var param = ''
+      if (type === 1) {
+        param = 'containerPorts'
+      } else {
+        param = 'servicePorts'
       }
 
-      this.editableTabsValue[type] = activeName
-      this.editableTabs[type] = tabs.filter((tab, index) => tab.name !== targetName)
+      this.form[param].forEach((element, key) => {
+        if (element.isSet && key !== index) {
+          this.$message.warning('请先保存当前编辑项')
+          return false
+        }
+      })
+
+      // 是否是取消操作
+      if (!cg) {
+        if (this.form[param][index]) {
+          this.form[param].splice(index, 1)
+        }
+      } else {
+        // 提交数据
+        if (row.isSet) {
+          if (param === 'servicePorts') {
+            this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
+          }
+          row.isSet = false
+          // console.log(this.form[param][index])
+        } else {
+          if (param === 'servicePorts') {
+            this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
+          }
+          // console.log(this.form[param][index]['targetPort'])
+          row.isSet = true
+          this.form[param][index]['isSet'] = true
+        }
+      }
+    },
+    // 添加 containport
+    addContainPort() {
+      var mark = true
+      this.form.containerPorts.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        this.form.containerPorts.push(contain)
+      }
+    },
+    addServicePort() {
+      var mark = true
+      this.form.servicePorts.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        servicePort.targetPort = JSON.stringify(servicePort.targetPort)
+        this.form.servicePorts.push(servicePort)
+      }
     }
   }
 }
@@ -505,6 +504,19 @@ export default {
 </script>
 
 <style scoped>
+
+.el-table-add-row {
+    margin-top: 10px;
+    width: 100%;
+    height: 34px;
+    border: 1px dashed #c1c1cd;
+    border-radius: 3px;
+    cursor: pointer;
+    justify-content: center;
+    display: flex;
+    line-height: 34px;
+}
+
 .el-input-group {
   width: 20%;
   margin-top: 5px;
