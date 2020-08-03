@@ -21,7 +21,7 @@
       <el-cascader
         v-model="value"
         :options="options"
-        style="width: 540px;"
+        style="width: 580px;"
         @change="handleChange"
       />
 
@@ -144,10 +144,19 @@
 
 const form = {
   name: '',
-  containerPorts: contain,
+  containerPorts: [],
   image: '',
   imagePullSecrets: '',
-  podResource: [],
+  podResource: {
+    limits: {
+      cpu: '100m',
+      memory: '1Gi'
+    },
+    requests: {
+      cpu: '10m',
+      memory: '512Mi'
+    }
+  },
   replicas: 0,
   servicePorts: [],
   volumePath: ''
@@ -210,17 +219,26 @@ export default {
         { field: 'port', title: 'port', width: 150 },
         { field: 'protocol', title: 'protocol', width: 150 },
         { field: 'targetPort', title: 'targetPort', width: 380 }
-      ],
-      masterData: '',
-      slaveData: ''
+      ]
     }
   },
   watch: {
     oneData() {
-      // this.initForm()
+      if (this.oneData.name === '') {
+        this.oneData.master = form
+        this.oneData.slave = form
+      }
+
+      this.getCreateData()
+      this.initForm()
+      this.secret()
     }
   },
-  mounted() {
+  created() {
+    if (this.oneData.name === '') {
+      this.oneData.master = form
+      this.oneData.slave = form
+    }
     this.getCreateData()
     this.initForm()
     this.secret()
@@ -228,6 +246,7 @@ export default {
   methods: {
     getCreateData() {
       // 初始化 hubs
+      this.options = []
       this.initParam('hubs')
     },
     handleChange(value) {
@@ -296,13 +315,7 @@ export default {
 
       var _self = this
       this.$socketApi(senddata, function(res) {
-        var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-
-        if (result.param.service === 'list') {
-          var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
-
-          _self.secretData = list.items
-        }
+        _self.responseData(res, _self)
       })
     },
     changeBranch(value) {
@@ -339,6 +352,13 @@ export default {
     },
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+
+      if (result.param.service === 'list') {
+        var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
+
+        _self.secretData = list.items
+      }
+
       switch (result.param.harborRequest.command) {
         case 'hubs':
           var hublist = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)

@@ -363,7 +363,7 @@ export default {
 
       let dataStr = ''
       let list
-      let total
+      let total = 1
 
       let isTiny = false // service时为true, 存贮侧边栏数据
 
@@ -534,16 +534,18 @@ export default {
       console.log(this.yamlData)
     },
     handleCreate() {
-      console.log(111111)
-      console.log(this.list.type)
-      // if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
-      //   this.createFlag = false
-      // } else {
-      //   this.createFlag = true
-      // }
+      if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+        this.createFlag = false
+      } else {
+        this.createFlag = true
+      }
 
-      // this.dialogStatus = 'create'
-      // this.dialogFormVisible = true
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+
+      this.oneData = {}
+      this.oneData.name = ''
+      this.oneData.namespace = this.nameSpace
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -676,9 +678,10 @@ export default {
         delete element.isSet
       })
 
-      this.updateConfigMapList(this.oneData)
-
+      console.log('confirm')
       console.log(this.oneData)
+
+      // this.updateConfigMapList(this.oneData)
     },
     // 获取右边搜索的list
     getTinyTableList() {
@@ -690,6 +693,8 @@ export default {
       this.getList(data)
     },
     editData(row) {
+      console.log(row)
+      console.log(11121211)
       this.oneData = row
       this.createFlag = true
       this.dialogFormVisible = true
