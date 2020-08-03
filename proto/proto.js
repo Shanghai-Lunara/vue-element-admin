@@ -1649,6 +1649,7 @@ export const github = $root.github = (() => {
               }
 
               HelixSagaCrd.prototype.name = ''
+              HelixSagaCrd.prototype.resourceVersion = ''
               HelixSagaCrd.prototype.configMap = null
               HelixSagaCrd.prototype.applications = $util.emptyArray
 
@@ -1659,9 +1660,10 @@ export const github = $root.github = (() => {
               HelixSagaCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.configMap != null && Object.hasOwnProperty.call(message, 'configMap')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.encode(message.configMap, writer.uint32(18).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.configMap != null && Object.hasOwnProperty.call(message, 'configMap')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.encode(message.configMap, writer.uint32(26).fork()).ldelim() }
                 if (message.applications != null && message.applications.length) {
-                  for (let i = 0; i < message.applications.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.encode(message.applications[i], writer.uint32(26).fork()).ldelim() }
+                  for (let i = 0; i < message.applications.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.encode(message.applications[i], writer.uint32(34).fork()).ldelim() }
                 }
                 return writer
               }
@@ -1680,9 +1682,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       if (!(message.applications && message.applications.length)) { message.applications = [] }
                       message.applications.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.decode(reader, reader.uint32()))
                       break
@@ -1704,6 +1709,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.configMap != null && message.hasOwnProperty('configMap')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.verify(message.configMap)
                   if (error) { return 'configMap.' + error }
@@ -1722,6 +1730,7 @@ export const github = $root.github = (() => {
                 if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd) { return object }
                 const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd()
                 if (object.name != null) { message.name = String(object.name) }
+                if (object.resourceVersion != null) { message.resourceVersion = String(object.resourceVersion) }
                 if (object.configMap != null) {
                   if (typeof object.configMap !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.configMap: object expected') }
                   message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.fromObject(object.configMap)
@@ -1743,9 +1752,11 @@ export const github = $root.github = (() => {
                 if (options.arrays || options.defaults) { object.applications = [] }
                 if (options.defaults) {
                   object.name = ''
+                  object.resourceVersion = ''
                   object.configMap = null
                 }
                 if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) { object.resourceVersion = message.resourceVersion }
                 if (message.configMap != null && message.hasOwnProperty('configMap')) { object.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.toObject(message.configMap, options) }
                 if (message.applications && message.applications.length) {
                   object.applications = []
@@ -2068,6 +2079,7 @@ export const github = $root.github = (() => {
               }
 
               MysqlCrd.prototype.name = ''
+              MysqlCrd.prototype.resourceVersion = ''
               MysqlCrd.prototype.master = null
               MysqlCrd.prototype.slave = null
 
@@ -2078,8 +2090,9 @@ export const github = $root.github = (() => {
               MysqlCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim() }
-                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(26).fork()).ldelim() }
+                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(34).fork()).ldelim() }
                 return writer
               }
 
@@ -2097,9 +2110,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
                       break
                     default:
@@ -2120,6 +2136,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.master != null && message.hasOwnProperty('master')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master)
                   if (error) { return 'master.' + error }
@@ -2135,6 +2154,7 @@ export const github = $root.github = (() => {
                 if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd) { return object }
                 const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd()
                 if (object.name != null) { message.name = String(object.name) }
+                if (object.resourceVersion != null) { message.resourceVersion = String(object.resourceVersion) }
                 if (object.master != null) {
                   if (typeof object.master !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.master: object expected') }
                   message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master)
@@ -2151,10 +2171,12 @@ export const github = $root.github = (() => {
                 const object = {}
                 if (options.defaults) {
                   object.name = ''
+                  object.resourceVersion = ''
                   object.master = null
                   object.slave = null
                 }
                 if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) { object.resourceVersion = message.resourceVersion }
                 if (message.master != null && message.hasOwnProperty('master')) { object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options) }
                 if (message.slave != null && message.hasOwnProperty('slave')) { object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options) }
                 return object
@@ -2914,6 +2936,7 @@ export const github = $root.github = (() => {
               }
 
               RedisCrd.prototype.name = ''
+              RedisCrd.prototype.resourceVersion = ''
               RedisCrd.prototype.master = null
               RedisCrd.prototype.slave = null
 
@@ -2924,8 +2947,9 @@ export const github = $root.github = (() => {
               RedisCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim() }
-                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(26).fork()).ldelim() }
+                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(34).fork()).ldelim() }
                 return writer
               }
 
@@ -2943,9 +2967,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
                       break
                     default:
@@ -2966,6 +2993,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.master != null && message.hasOwnProperty('master')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master)
                   if (error) { return 'master.' + error }
@@ -2981,6 +3011,7 @@ export const github = $root.github = (() => {
                 if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd) { return object }
                 const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd()
                 if (object.name != null) { message.name = String(object.name) }
+                if (object.resourceVersion != null) { message.resourceVersion = String(object.resourceVersion) }
                 if (object.master != null) {
                   if (typeof object.master !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.master: object expected') }
                   message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master)
@@ -2997,10 +3028,12 @@ export const github = $root.github = (() => {
                 const object = {}
                 if (options.defaults) {
                   object.name = ''
+                  object.resourceVersion = ''
                   object.master = null
                   object.slave = null
                 }
                 if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) { object.resourceVersion = message.resourceVersion }
                 if (message.master != null && message.hasOwnProperty('master')) { object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options) }
                 if (message.slave != null && message.hasOwnProperty('slave')) { object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options) }
                 return object
