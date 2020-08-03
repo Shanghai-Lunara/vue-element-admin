@@ -317,14 +317,14 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    updateConfigMapList(data) {
+    updateConfigMapList(data, type) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
 
       const param = {
         'nameSpace': this.nameSpace,
-        'service': 'update',
+        'service': type,
         'resourceType': this.listQuery.type
       }
 
@@ -497,6 +497,23 @@ export default {
             // this.getList(data)
           }
           break
+        case 'create':
+          console.log(result)
+          // if (result.code === 0) {
+          //   this.$notify({
+          //     title: '成功',
+          //     message: '新增',
+          //     type: 'success',
+          //     duration: 2000
+          //   })
+          //   const data = {
+          //     'nameSpace': this.nameSpace,
+          //     'service': 'list',
+          //     'resourceType': this.listQuery.type
+          //   }
+          //   this.getList(data)
+          // }
+          break
       }
     },
     selectNameSpace() {
@@ -534,16 +551,17 @@ export default {
       console.log(this.yamlData)
     },
     handleCreate() {
+      this.oneData = {}
       if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
         this.createFlag = false
       } else {
         this.createFlag = true
+        this.oneData.type = 1
       }
 
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
 
-      this.oneData = {}
       this.oneData.name = ''
       this.oneData.namespace = this.nameSpace
     },
@@ -656,10 +674,11 @@ export default {
         Name: this.nowRow.item.Name,
         data: obj
       }
-      this.updateConfigMapList(data)
+      this.updateConfigMapList(data, 'update')
     },
     // 更新mysqloperate
     makeMysql() {
+      console.log(this.oneData)
       delete this.oneData.namespace
 
       this.oneData.master.containerPorts.forEach(element => {
@@ -678,10 +697,14 @@ export default {
         delete element.isSet
       })
 
-      console.log('confirm')
-      console.log(this.oneData)
-
-      // this.updateConfigMapList(this.oneData)
+      if (this.oneData.type) {
+        this.oneData.name = this.oneData.master.name
+        delete this.oneData.type
+        this.updateConfigMapList(this.oneData, 'create')
+      } else {
+        delete this.oneData.type
+        // this.updateConfigMapList(this.oneData,'update')
+      }
     },
     // 获取右边搜索的list
     getTinyTableList() {
@@ -698,6 +721,7 @@ export default {
       this.oneData = row
       this.createFlag = true
       this.dialogFormVisible = true
+      this.oneData.type = 0
     }
   }
 }
