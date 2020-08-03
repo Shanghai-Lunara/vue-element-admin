@@ -1,10 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <!-- <el-input v-model="listQuery.title" :placeholder="$t('table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" /> -->
-      <!-- <el-select v-model="listQuery.importance" :placeholder="$t('table.importance')" clearable style="width: 200px" class="filter-item" @change="selectNameSpace">
-        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />
-      </el-select> -->
       <span>ResourceType:</span>
       <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 160px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
@@ -25,11 +21,6 @@
       highlight-current-row
       style="width: 100%"
     >
-      <!--<el-table-column :label="$t('table_config.state')" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
-        <template slot-scope="{row}">
-          <span>{{ row.id }}</span>
-        </template>
-      </el-table-column>-->
 
       <el-table-column v-for="(info,index) in table" :key="index" :label="info" align="center">
         <template slot-scope="{row}">
@@ -38,18 +29,17 @@
         </template>
       </el-table-column>
 
-      <el-table-column :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="listQuery.type !== 'Service'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
 
           <el-button type="primary" size="mini" @click="showFlag ? editData(row) : handleUpdate(row)">
             {{ $t('table.edit') }}
           </el-button>
-          <!-- <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
-            {{ $t('table.publish') }}
-          </el-button> -->
+
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             {{ $t('table.delete') }}
           </el-button>
+
         </template>
       </el-table-column>
     </el-table>
@@ -60,7 +50,17 @@
 
       <!-- mysql | redis -->
 
-      <FormData v-if="createFlag" ref="FormData" :one-data="oneData" />
+      <template v-if="createFlag">
+        <FormData ref="FormData" :one-data="oneData" />
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <el-button type="primary" @click="makeMysql()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
+      </template>
 
       <!-- configmap -->
       <template v-else>
@@ -69,17 +69,17 @@
             <yaml-editor ref="yamlEditor" :value="yamlData" />
           </div>
         </div>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">
+            {{ $t('table.cancel') }}
+          </el-button>
+          <!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
+          <el-button type="primary" @click="makeSureEdit()">
+            {{ $t('table.confirm') }}
+          </el-button>
+        </div>
       </template>
 
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          {{ $t('table.cancel') }}
-        </el-button>
-        <!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
-        <el-button type="primary" @click="makeSureEdit()">
-          {{ $t('table.confirm') }}
-        </el-button>
-      </div>
     </el-dialog>
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
@@ -112,15 +112,11 @@ const configMapTable = {
 const mysqlOperatorTable = {
   name: 'Name',
   namespace: 'NameSpace'
-  // master: 'Image',
-  // slave: 'replicas'
 }
 
 const RedisOperatorTable = {
   name: 'Name',
   namespace: 'NameSpace'
-  // master: 'Image',
-  // slave: 'replicas'
 }
 
 const ServiceTable = {
@@ -332,7 +328,17 @@ export default {
         'resourceType': this.listQuery.type
       }
 
-      var data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
+      var data_request = ''
+      switch (this.listQuery.type) {
+        case 'ConfigMap':
+          data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
+
+          break
+        case 'MysqlOperator':
+          data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd
+          break
+      }
+
       var data_message = data_request.create(data)
       var msg_data = data_request.encode(data_message).finish()
 
@@ -340,9 +346,6 @@ export default {
         'param': param,
         'data': msg_data
       }
-
-      console.log('msg update')
-      console.log(msg)
 
       var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
 
@@ -360,16 +363,13 @@ export default {
 
       let dataStr = ''
       let list
-      let total
+      let total = 1
 
       let isTiny = false // service时为true, 存贮侧边栏数据
 
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
-
-          console.log('return configMap')
-          console.log(dataStr)
           list = []
           dataStr.items.forEach(function(item, index) {
             const one = []
@@ -384,6 +384,7 @@ export default {
           })
 
           total = dataStr.items.length
+          this.showFlag = false
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
@@ -398,6 +399,8 @@ export default {
           total = dataStr.items.length
           _self.list = list
           _self.total = dataStr.items.length
+          this.showFlag = true
+          isTiny = true
           break
         case 'RedisOperator':
           // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -424,9 +427,6 @@ export default {
 
         case 'Service':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
-          console.log('return Service')
-          console.log(dataStr)
-
           list = []
           dataStr.items.forEach(function(item, index) {
             const one = []
@@ -439,11 +439,7 @@ export default {
           total = dataStr.items.length
           isTiny = true
 
-          break
-
-        case 'NameSpace':
-          // 更改到侧边栏, 取消这个
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+          this.showFlag = false
 
           break
       }
@@ -457,7 +453,6 @@ export default {
 
     returnResource(service, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
-      console.log(result)
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
@@ -472,9 +467,9 @@ export default {
           })
 
           this.listQuery.type = calendarTypeOptions[0]
-          _self.calendarTypeOptions = calendarTypeOptions
-          _self.listQuery.type = 'MysqlOperator'
-          this.showFlag = true
+          this.calendarTypeOptions = calendarTypeOptions
+          this.listQuery.type = 'ConfigMap'
+          this.showFlag = false
           break
         case 'list':
           var obj = _self.returnMessage(service, _self)
@@ -487,7 +482,6 @@ export default {
           this.total = obj.total
           break
         case 'update':
-          console.log('update')
           if (result.code === 0) {
             this.$notify({
               title: '成功',
@@ -495,21 +489,13 @@ export default {
               type: 'success',
               duration: 2000
             })
-            const data = {
-              'nameSpace': this.nameSpace,
-              'service': 'list',
-              'resourceType': this.listQuery.type
-            }
-            this.getList(data)
+            // const data = {
+            //   'nameSpace': this.nameSpace,
+            //   'service': 'list',
+            //   'resourceType': this.listQuery.type
+            // }
+            // this.getList(data)
           }
-          break
-        case 'harbor':
-          console.log('harbor')
-
-          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
-
-          console.log(dataStr)
-
           break
       }
     },
@@ -553,12 +539,13 @@ export default {
       } else {
         this.createFlag = true
       }
-      // this.getCreateData()
+
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
-      // this.$nextTick(() => {
-      //   this.$refs['dataForm'].clearValidate()
-      // })
+
+      this.oneData = {}
+      this.oneData.name = ''
+      this.oneData.namespace = this.nameSpace
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -653,12 +640,10 @@ export default {
       return sort === `+${key}` ? 'ascending' : 'descending'
     },
     makeSureEdit() {
-      console.log('makeSureEdit')
       // 获取,更改编辑框里的值
       const editValue = this.$refs.yamlEditor.getValue()
       this.$refs.yamlEditor.setValue(editValue)
       this.yamlData = editValue
-      console.log(editValue)
 
       // 取消弹框
       this.dialogFormVisible = false
@@ -673,6 +658,31 @@ export default {
       }
       this.updateConfigMapList(data)
     },
+    // 更新mysqloperate
+    makeMysql() {
+      delete this.oneData.namespace
+
+      this.oneData.master.containerPorts.forEach(element => {
+        delete element.isSet
+      })
+
+      this.oneData.master.servicePorts.forEach(element => {
+        delete element.isSet
+      })
+
+      this.oneData.slave.containerPorts.forEach(element => {
+        delete element.isSet
+      })
+
+      this.oneData.slave.servicePorts.forEach(element => {
+        delete element.isSet
+      })
+
+      console.log('confirm')
+      console.log(this.oneData)
+
+      // this.updateConfigMapList(this.oneData)
+    },
     // 获取右边搜索的list
     getTinyTableList() {
       const data = {
@@ -684,7 +694,7 @@ export default {
     },
     editData(row) {
       console.log(row)
-
+      console.log(11121211)
       this.oneData = row
       this.createFlag = true
       this.dialogFormVisible = true
