@@ -142,7 +142,7 @@
 
 <script>
 
-const form = {
+const Form = {
   name: '',
   containerPorts: [],
   image: '',
@@ -163,7 +163,7 @@ const form = {
 }
 
 const contain = {
-  containerPort: 0,
+  containerPort: 3306,
   hostIP: '',
   hostPort: 0,
   name: '',
@@ -202,7 +202,7 @@ export default {
         label: 'slave'
       }],
       branch: '',
-      form,
+      form: [],
       options: [],
       value: [],
       secretData: '',
@@ -225,8 +225,8 @@ export default {
   watch: {
     oneData() {
       if (this.oneData.name === '') {
-        this.oneData.master = form
-        this.oneData.slave = form
+        this.oneData.master = Form
+        this.oneData.slave = Form
       }
 
       this.getCreateData()
@@ -234,10 +234,10 @@ export default {
       this.secret()
     }
   },
-  created() {
+  mounted() {
     if (this.oneData.name === '') {
-      this.oneData.master = form
-      this.oneData.slave = form
+      this.oneData.master = Form
+      this.oneData.slave = Form
     }
     this.getCreateData()
     this.initForm()
@@ -318,13 +318,14 @@ export default {
         _self.responseData(res, _self)
       })
     },
+    // master | slave 切换
     changeBranch(value) {
       this.branch = value
       this.form = this.oneData[value]
 
       if (this.form.containerPorts !== '') {
-        this.form.containerPorts.forEach(element => {
-          element.isSet = false
+        this.form.containerPorts.forEach(value => {
+          value.isSet = false
         })
       }
 
@@ -334,17 +335,18 @@ export default {
         })
       }
     },
+    // 初始化form数据
     initForm() {
       this.branch = 'master'
       this.form = this.oneData.master
 
-      if (this.form.containerPorts !== '') {
-        this.form.containerPorts.forEach(element => {
-          element.isSet = false
+      if (this.form.containerPorts !== {}) {
+        this.form.containerPorts.forEach(value => {
+          value.isSet = false
         })
       }
 
-      if (this.form.servicePorts !== '') {
+      if (this.form.servicePorts !== {}) {
         this.form.servicePorts.forEach(element => {
           element.isSet = false
         })
@@ -443,23 +445,30 @@ export default {
           break
       }
     },
-    // 修改
+    // 修改 | 保存
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
 
       var param = ''
+
       if (type === 1) {
         param = 'containerPorts'
       } else {
         param = 'servicePorts'
       }
 
+      var flag = 0
+
       this.form[param].forEach((element, key) => {
         if (element.isSet && key !== index) {
           this.$message.warning('请先保存当前编辑项')
-          return false
+          flag = 1
         }
       })
+
+      if (flag) {
+        return
+      }
 
       // 是否是取消操作
       if (!cg) {
@@ -469,18 +478,16 @@ export default {
       } else {
         // 提交数据
         if (row.isSet) {
-          if (param === 'servicePorts') {
+          if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
           row.isSet = false
-          // console.log(this.form[param][index])
         } else {
-          if (param === 'servicePorts') {
+          if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
           }
-          // console.log(this.form[param][index]['targetPort'])
+
           row.isSet = true
-          this.form[param][index]['isSet'] = true
         }
       }
     },

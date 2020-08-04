@@ -2,7 +2,7 @@
   <div class="app-container">
     <div class="filter-container">
       <span>ResourceType:</span>
-      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 160px;margin-left: 10px" @change="selectResource">
+      <el-select v-model="listQuery.type" :placeholder="$t('table.type')" class="filter-item" style="width: 250px;margin-left: 10px" @change="selectResource">
         <el-option v-for="item in calendarTypeOptions" :key="item" :label="item" :value="item" />
       </el-select>
 
@@ -32,7 +32,7 @@
       <el-table-column v-if="listQuery.type !== 'Service'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
 
-          <el-button type="primary" size="mini" @click="showFlag ? editData(row) : handleUpdate(row)">
+          <el-button type="primary" size="mini" @click="editData(row)">
             {{ $t('table.edit') }}
           </el-button>
 
@@ -56,7 +56,7 @@
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <el-button type="primary" @click="makeMysql()">
+          <el-button type="primary" @click="makeConfirm()">
             {{ $t('table.confirm') }}
           </el-button>
         </div>
@@ -73,7 +73,6 @@
           <el-button @click="dialogFormVisible = false">
             {{ $t('table.cancel') }}
           </el-button>
-          <!--        <el-button type="primary" @click="dialogStatus==='create'?createData():updateData()">-->
           <el-button type="primary" @click="makeSureEdit()">
             {{ $t('table.confirm') }}
           </el-button>
@@ -95,9 +94,7 @@
 </template>
 
 <script>
-import { fetchPv, createArticle, updateArticle } from '@/api/article'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
 // redis | mysql
@@ -119,6 +116,11 @@ const RedisOperatorTable = {
   namespace: 'NameSpace'
 }
 
+const HelixSagaOperatorTable = {
+  name: 'Name',
+  namespace: 'NameSpace'
+}
+
 const ServiceTable = {
   name: 'Name',
   clusterIP: 'clusterIP',
@@ -129,6 +131,7 @@ const table = {
   'ConfigMap': configMapTable,
   'MysqlOperator': mysqlOperatorTable,
   'RedisOperator': RedisOperatorTable,
+  'HelixSagaOperator': HelixSagaOperatorTable,
   'Service': ServiceTable
 }
 
@@ -225,6 +228,7 @@ export default {
     if (this.$route.fullPath.indexOf('?') !== -1) {
       this.$router.push({ path: '/' })
     }
+
     this.timer()
 
     // 获取右边搜索的list
@@ -269,20 +273,24 @@ export default {
         })
       }, 10000)
     },
+    // 获得下拉框列表属性值
     getResourceList() {
-      const data = {
+      var data = {
         'nameSpace': 'default',
         'service': 'resource',
         'resourceType': ''
       }
 
-      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+      this.getList(data)
+    },
+    getList(param, data = '') {
+      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(param)
 
       if (errData) { throw Error(errData) }
 
       var msg = {
-        'param': data,
-        'data': ''
+        'param': param,
+        'data': data
       }
 
       var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
@@ -296,33 +304,13 @@ export default {
         _self.returnResource(res, _self)
       })
     },
-    getList(data) {
-      var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
-
-      if (errData) { throw Error(errData) }
-
-      var msg = {
-        'param': data,
-        'data': ''
-      }
-
-      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
-
-      var message = request.create(msg)
-
-      var senddata = request.encode(message).finish()
-
-      const _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.returnResource(res, _self)
-      })
-    },
+    // 修改更新数据
     updateConfigMapList(data, type) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
 
-      const param = {
+      var param = {
         'nameSpace': this.nameSpace,
         'service': type,
         'resourceType': this.listQuery.type
@@ -332,31 +320,19 @@ export default {
       switch (this.listQuery.type) {
         case 'ConfigMap':
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
-
           break
         case 'MysqlOperator':
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd
+          break
+        case 'RedisOperator':
+          data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd
           break
       }
 
       var data_message = data_request.create(data)
       var msg_data = data_request.encode(data_message).finish()
 
-      var msg = {
-        'param': param,
-        'data': msg_data
-      }
-
-      var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
-
-      var message = request.create(msg)
-
-      var senddata = request.encode(message).finish()
-
-      const _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.returnResource(res, _self)
-      })
+      this.getList(param, msg_data)
     },
     returnMessage(res, _self) {
       const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
@@ -384,7 +360,7 @@ export default {
           })
 
           total = dataStr.items.length
-          this.showFlag = false
+          _self.showFlag = false
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
@@ -398,38 +374,49 @@ export default {
 
           total = dataStr.items.length
           _self.list = list
-          _self.total = dataStr.items.length
-          this.showFlag = true
+          _self.showFlag = true
           isTiny = true
           break
         case 'RedisOperator':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
 
-          // list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   var one = []
-          //   one.namespace = _self.nameSpace
+          list = []
+          dataStr.items.forEach(function(item, index) {
+            item.namespace = _self.nameSpace
 
-          //   if (item.hasOwnProperty('master')) {
-          //     one.name = item.Name + '_' + item.master.Name + '_master'
-          //     one.master = item.master.image
-          //     one.slave = item.master.replicas
-          //   } else if (item.hasOwnProperty('slave')) {
-          //     one.name = item.Name + '_' + item.slave.Name + '_slave'
-          //     one.master = item.slave.image
-          //     one.slave = item.slave.replicas
-          //   }
-          //   list.push(one)
-          //   console.log(list)
-          // })
-          // total = dataStr.items.length
+            list.push(item)
+          })
+
+          total = dataStr.items.length
+          _self.list = list
+          _self.showFlag = true
+          isTiny = true
+          break
+
+        case 'HelixSagaOperator':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.decode(result.result)
+
+          console.log(dataStr)
+
+          list = []
+          dataStr.items.forEach(function(item, index) {
+            item.namespace = _self.nameSpace
+
+            list.push(item)
+          })
+
+          total = dataStr.items.length
+          _self.list = list
+          _self.showFlag = true
+          isTiny = true
+
           break
 
         case 'Service':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
           list = []
           dataStr.items.forEach(function(item, index) {
-            const one = []
+            var one = []
             one.name = item.Name
             one.clusterIP = item.clusterIP
             one.port = item.ports[0].port
@@ -439,7 +426,7 @@ export default {
           total = dataStr.items.length
           isTiny = true
 
-          this.showFlag = false
+          _self.showFlag = false
 
           break
       }
@@ -466,10 +453,10 @@ export default {
             }
           })
 
-          this.listQuery.type = calendarTypeOptions[0]
-          this.calendarTypeOptions = calendarTypeOptions
-          this.listQuery.type = 'ConfigMap'
-          this.showFlag = false
+          _self.listQuery.type = calendarTypeOptions[0]
+          _self.calendarTypeOptions = calendarTypeOptions
+          _self.listQuery.type = 'ConfigMap'
+          _self.showFlag = false
           break
         case 'list':
           var obj = _self.returnMessage(service, _self)
@@ -489,30 +476,47 @@ export default {
               type: 'success',
               duration: 2000
             })
-            // const data = {
-            //   'nameSpace': this.nameSpace,
-            //   'service': 'list',
-            //   'resourceType': this.listQuery.type
-            // }
-            // this.getList(data)
+            this.dialogFormVisible = false
+            const data = {
+              'nameSpace': this.nameSpace,
+              'service': 'list',
+              'resourceType': this.listQuery.type
+            }
+            this.getList(data)
           }
           break
         case 'create':
-          console.log(result)
-          // if (result.code === 0) {
-          //   this.$notify({
-          //     title: '成功',
-          //     message: '新增',
-          //     type: 'success',
-          //     duration: 2000
-          //   })
-          //   const data = {
-          //     'nameSpace': this.nameSpace,
-          //     'service': 'list',
-          //     'resourceType': this.listQuery.type
-          //   }
-          //   this.getList(data)
-          // }
+          if (result.code === 0) {
+            this.$notify({
+              title: '成功',
+              message: '新增',
+              type: 'success',
+              duration: 2000
+            })
+            this.dialogFormVisible = false
+            const data = {
+              'nameSpace': this.nameSpace,
+              'service': 'list',
+              'resourceType': this.listQuery.type
+            }
+            this.getList(data)
+          }
+          break
+        case 'delete':
+          if (result.code === 0) {
+            this.$notify({
+              title: '成功',
+              message: '删除成功',
+              type: 'success',
+              duration: 2000
+            })
+            var data = {
+              'nameSpace': this.nameSpace,
+              'service': 'list',
+              'resourceType': this.listQuery.type
+            }
+            this.getList(data)
+          }
           break
       }
     },
@@ -542,14 +546,7 @@ export default {
         this.getList(data)
       }
     },
-    handleFilter() {
-      this.listQuery.page = 1
-      // this.getList()
-    },
-    handleModifyStatus(row) {
-      console.log('yamlData')
-      console.log(this.yamlData)
-    },
+    // mysql | redis | helixsaga 新增
     handleCreate() {
       this.oneData = {}
       if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
@@ -565,24 +562,7 @@ export default {
       this.oneData.name = ''
       this.oneData.namespace = this.nameSpace
     },
-    createData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          this.temp.id = parseInt(Math.random() * 100) + 1024 // mock a id
-          this.temp.author = 'vue-element-admin'
-          createArticle(this.temp).then(() => {
-            this.list.unshift(this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '创建成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
+    // configmap 内容展示
     handleUpdate(row) {
       this.nowRow = row
       this.dialogStatus = 'update'
@@ -596,66 +576,11 @@ export default {
       })
       this.yamlData = str
     },
-    updateData() {
-      this.$refs['dataForm'].validate((valid) => {
-        if (valid) {
-          const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
-          updateArticle(tempData).then(() => {
-            const index = this.list.findIndex(v => v.id === this.temp.id)
-            this.list.splice(index, 1, this.temp)
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '成功',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-          })
-        }
-      })
-    },
     handleDelete(row, index) {
-      this.$notify({
-        title: '成功',
-        message: '删除成功',
-        type: 'success',
-        duration: 2000
-      })
-      this.list.splice(index, 1)
-    },
-    handleFetchPv(pv) {
-      fetchPv(pv).then(response => {
-        this.pvData = response.data.pvData
-        this.dialogPvVisible = true
-      })
-    },
-    handleDownload() {
-      this.downloadLoading = true
-      import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
-        const data = this.formatJson(filterVal)
-        excel.export_json_to_excel({
-          header: tHeader,
-          data,
-          filename: 'table-list'
-        })
-        this.downloadLoading = false
-      })
-    },
-    formatJson(filterVal) {
-      return this.list.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
-    },
-    getSortClass: function(key) {
-      const sort = this.listQuery.sort
-      return sort === `+${key}` ? 'ascending' : 'descending'
+      delete row.namespace
+      delete row.resourceVersion
+
+      this.updateConfigMapList(row, 'delete')
     },
     makeSureEdit() {
       // 获取,更改编辑框里的值
@@ -677,25 +602,33 @@ export default {
       this.updateConfigMapList(data, 'update')
     },
     // 更新mysqloperate
-    makeMysql() {
-      console.log(this.oneData)
+    makeConfirm() {
       delete this.oneData.namespace
+      // delete this.oneData.resourceVersion
 
-      this.oneData.master.containerPorts.forEach(element => {
-        delete element.isSet
-      })
+      if (this.oneData.master.containerPorts !== '') {
+        this.oneData.master.containerPorts.forEach(element => {
+          delete element.isSet
+        })
+      }
 
-      this.oneData.master.servicePorts.forEach(element => {
-        delete element.isSet
-      })
+      if (this.oneData.master.servicePorts !== '') {
+        this.oneData.master.servicePorts.forEach(element => {
+          delete element.isSet
+        })
+      }
 
-      this.oneData.slave.containerPorts.forEach(element => {
-        delete element.isSet
-      })
+      if (this.oneData.slave.containerPorts !== '') {
+        this.oneData.slave.containerPorts.forEach(element => {
+          delete element.isSet
+        })
+      }
 
-      this.oneData.slave.servicePorts.forEach(element => {
-        delete element.isSet
-      })
+      if (this.oneData.slave.servicePorts !== '') {
+        this.oneData.slave.servicePorts.forEach(element => {
+          delete element.isSet
+        })
+      }
 
       if (this.oneData.type) {
         this.oneData.name = this.oneData.master.name
@@ -703,7 +636,7 @@ export default {
         this.updateConfigMapList(this.oneData, 'create')
       } else {
         delete this.oneData.type
-        // this.updateConfigMapList(this.oneData,'update')
+        this.updateConfigMapList(this.oneData, 'update')
       }
     },
     // 获取右边搜索的list
@@ -715,13 +648,18 @@ export default {
       }
       this.getList(data)
     },
+    // config | mysqloperator | redisoperator 编辑
     editData(row) {
-      console.log(row)
-      console.log(11121211)
-      this.oneData = row
-      this.createFlag = true
-      this.dialogFormVisible = true
-      this.oneData.type = 0
+      if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+        this.handleUpdate(row)
+        this.createFlag = false
+      } else {
+        this.oneData = row
+        this.createFlag = true
+        this.dialogFormVisible = true
+        this.oneData.type = 0
+        this.dialogStatus = 'update'
+      }
     }
   }
 }
