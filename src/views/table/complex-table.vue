@@ -81,15 +81,6 @@
 
     </el-dialog>
 
-    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
-      <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
-      </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false">{{ $t('table.confirm') }}</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -171,29 +162,11 @@ export default {
         sort: '+id'
       },
       calendarTypeOptions: [],
-      statusOptions: ['published', 'draft', 'deleted'],
-      showReviewer: false,
-      temp: {
-        id: undefined,
-        importance: 1,
-        remark: '',
-        timestamp: new Date(),
-        title: '',
-        type: '',
-        status: 'published'
-      },
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
         update: 'Edit',
         create: 'Create'
-      },
-      dialogPvVisible: false,
-      pvData: [],
-      rules: {
-        type: [{ required: true, message: 'type is required', trigger: 'change' }],
-        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
-        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false,
       nameSpace: '',
@@ -202,7 +175,7 @@ export default {
       showFlag: false,
       nowRow: '', // 当前选中对象
       createFlag: false,
-      oneData: ''
+      oneData: {}
     }
   },
   watch: {
@@ -215,6 +188,7 @@ export default {
   },
   mounted() {
     // this.getList()
+
     this.getResourceList()
 
     // 路由
@@ -271,7 +245,7 @@ export default {
         _self.$socketApi(senddata, function(res) {
           _self.returnResource(res, _self)
         })
-      }, 10000)
+      }, 100000)
     },
     // 获得下拉框列表属性值
     getResourceList() {
@@ -348,7 +322,7 @@ export default {
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           list = []
           dataStr.items.forEach(function(item, index) {
-            const one = []
+            var one = []
             one.name = item.Name
             one.namespace = _self.nameSpace
 
@@ -439,12 +413,12 @@ export default {
     },
 
     returnResource(service, _self) {
-      const result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
           break
-        case 'resource':
+        case 'resource': {
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
           dataStr.items.forEach(function(item, index) {
@@ -453,10 +427,19 @@ export default {
             }
           })
 
-          _self.listQuery.type = calendarTypeOptions[0]
           _self.calendarTypeOptions = calendarTypeOptions
           _self.listQuery.type = 'ConfigMap'
           _self.showFlag = false
+
+          const data = {
+            'nameSpace': _self.nameSpace,
+            'service': 'list',
+            'resourceType': _self.listQuery.type
+          }
+
+          _self.getList(data)
+        }
+
           break
         case 'list':
           var obj = _self.returnMessage(service, _self)
@@ -510,7 +493,7 @@ export default {
               type: 'success',
               duration: 2000
             })
-            var data = {
+            const data = {
               'nameSpace': this.nameSpace,
               'service': 'list',
               'resourceType': this.listQuery.type
@@ -521,7 +504,7 @@ export default {
       }
     },
     selectNameSpace() {
-      const data = {
+      var data = {
         'nameSpace': this.nameSpace,
         'service': 'list',
         'resourceType': this.listQuery.type
@@ -548,6 +531,9 @@ export default {
     },
     // mysql | redis | helixsaga 新增
     handleCreate() {
+      if (this.warning()) {
+        return
+      }
       this.oneData = {}
       if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
         this.createFlag = false
@@ -577,6 +563,9 @@ export default {
       this.yamlData = str
     },
     handleDelete(row, index) {
+      if (this.warning()) {
+        return
+      }
       delete row.namespace
       delete row.resourceVersion
 
@@ -650,6 +639,9 @@ export default {
     },
     // config | mysqloperator | redisoperator 编辑
     editData(row) {
+      if (this.warning()) {
+        return
+      }
       if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
         this.handleUpdate(row)
         this.createFlag = false
@@ -660,6 +652,16 @@ export default {
         this.oneData.type = 0
         this.dialogStatus = 'update'
       }
+    },
+    warning() {
+      if (this.nameSpace === undefined) {
+        this.$message({
+          message: '请先选择命名空间',
+          type: 'warning'
+        })
+        return true
+      }
+      return false
     }
   }
 }
