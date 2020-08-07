@@ -564,12 +564,15 @@ export default {
       if (this.warning()) {
         return
       }
+
       this.oneData = {}
-      if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
-        this.createFlag = false
-      } else {
-        this.createFlag = true
-        this.oneData.type = 1
+
+      this.createFlag = true
+      this.oneData.type = 1
+
+      if (this.listQuery.type === 'HelixSagaOperator') {
+        this.oneData.configList = this.configList
+        this.oneData.typename = 'HelixSagaOperator'
       }
 
       this.dialogStatus = 'create'

@@ -322,44 +322,51 @@ export default {
   },
   watch: {
     oneData() {
-      if (this.oneData.name === '') {
-        this.oneData.master = Form
-        this.oneData.slave = Form
-      }
+      console.log(2222222)
+      console.log(this.oneData)
+      // if (this.oneData.name === '') {
+      //   this.oneData.master = Form
+      //   this.oneData.slave = Form
+      // }
 
-      this.getCreateData()
-      this.secret()
+      // this.getCreateData()
+      // this.secret()
 
-      if (this.oneData.typename === 'HelixSagaOperator') {
-        this.initHelixSaga()
-        this.activeNames = ['1']
-      } else {
-        this.activeNames = ['2']
-        this.flag = false
-        this.initForm()
-      }
+      // if (this.oneData.typename === 'HelixSagaOperator') {
+      //   this.initHelixSaga()
+      //   this.activeNames = ['1']
+      // } else {
+      //   this.activeNames = ['2']
+      //   this.flag = false
+      //   this.initForm()
+      // }
     },
     'volume_map.volume.name': function(val) {
       this.volume_map.volumeMount.name = this.volume_map.volume.name
     }
   },
   mounted() {
-    if (this.oneData.name === '') {
+    console.log(111111111)
+    console.log(this.oneData)
+    if (this.oneData.name === '' && this.oneData.tyname !== 'HelixSagaOperator') {
       this.oneData.master = Form
       this.oneData.slave = Form
-    }
-
-    this.getCreateData()
-    this.secret()
-
-    if (this.oneData.typename === 'HelixSagaOperator') {
-      this.initHelixSaga()
-      this.activeNames = ['1']
     } else {
-      this.activeNames = ['2']
-      this.flag = false
-      this.initForm()
+      console.log(33333)
+      this.oneData.applications
     }
+
+    // this.getCreateData()
+    // this.secret()
+
+    // if (this.oneData.typename === 'HelixSagaOperator') {
+    //   this.initHelixSaga()
+    //   this.activeNames = ['1']
+    // } else {
+    //   this.activeNames = ['2']
+    //   this.flag = false
+    //   this.initForm()
+    // }
   },
   methods: {
     getCreateData() {
@@ -401,11 +408,8 @@ export default {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
       this.form.image = str
     },
-    changesecre(value) {
-      console.log(value)
-    },
-    changeConfigName(value) {
-    },
+    changesecre(value) {},
+    changeConfigName(value) {},
     changePart(value) {},
     initParam(type, url = '', id = 0, imageName = '') {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
