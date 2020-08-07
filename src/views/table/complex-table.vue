@@ -29,7 +29,7 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="listQuery.type !== 'Service'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column v-if="listQuery.type !== 'Service' && listQuery.type !== 'Secret'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
 
           <el-button type="primary" size="mini" @click="editData(row)">
@@ -118,12 +118,18 @@ const ServiceTable = {
   port: 'port'
 }
 
+const SecretTable = {
+  name: 'Name',
+  namespace: 'NameSpace'
+}
+
 const table = {
   'ConfigMap': configMapTable,
   'MysqlOperator': mysqlOperatorTable,
   'RedisOperator': RedisOperatorTable,
   'HelixSagaOperator': HelixSagaOperatorTable,
-  'Service': ServiceTable
+  'Service': ServiceTable,
+  'Secret': SecretTable
 }
 
 export default {
@@ -175,7 +181,8 @@ export default {
       showFlag: false,
       nowRow: '', // 当前选中对象
       createFlag: false,
-      oneData: {}
+      oneData: {},
+      configList: []
     }
   },
   watch: {
@@ -245,7 +252,7 @@ export default {
         _self.$socketApi(senddata, function(res) {
           _self.returnResource(res, _self)
         })
-      }, 100000)
+      }, 10000)
     },
     // 获得下拉框列表属性值
     getResourceList() {
@@ -321,8 +328,10 @@ export default {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           list = []
+          var config_list = []
           dataStr.items.forEach(function(item, index) {
             var one = []
+            var tmp = ''
             one.name = item.Name
             one.namespace = _self.nameSpace
 
@@ -330,11 +339,15 @@ export default {
             one.value = Object.values(item.data)
             one.item = item
 
+            tmp = item.Name
+
             list.push(one)
+            config_list.push(tmp)
           })
 
           total = dataStr.items.length
           _self.showFlag = false
+          _self.configList = config_list
           break
         case 'MysqlOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.decode(result.result)
@@ -370,11 +383,10 @@ export default {
         case 'HelixSagaOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.decode(result.result)
 
-          console.log(dataStr)
-
           list = []
           dataStr.items.forEach(function(item, index) {
             item.namespace = _self.nameSpace
+            item.typename = 'HelixSagaOperator'
 
             list.push(item)
           })
@@ -396,6 +408,22 @@ export default {
             one.port = item.ports[0].port
 
             list.push(one)
+          })
+          total = dataStr.items.length
+          isTiny = true
+
+          _self.showFlag = false
+
+          break
+
+        case 'Secret':
+          dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
+          console.log(dataStr)
+          list = []
+          dataStr.items.forEach(function(item, index) {
+            item.namespace = _self.nameSpace
+
+            list.push(item)
           })
           total = dataStr.items.length
           isTiny = true
@@ -650,6 +678,11 @@ export default {
         this.createFlag = true
         this.dialogFormVisible = true
         this.oneData.type = 0
+
+        if (this.listQuery.type === 'HelixSagaOperator') {
+          this.oneData.configList = this.configList
+        }
+
         this.dialogStatus = 'update'
       }
     },

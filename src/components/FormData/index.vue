@@ -1,143 +1,226 @@
 <template>
-  <el-form ref="form" label-width="150px">
-    <el-form-item>
-      <el-select v-model="branch" @change="changeBranch">
-        <el-option
-          v-for="item in select"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
-    </el-form-item>
 
-    <el-form-item label="Name">
-      <el-input v-model="form.name" />
-    </el-form-item>
+  <div>
+    <el-collapse v-if="flag === true" v-model="activeNames" @change="changePart">
+      <el-collapse-item title="volume" name="1">
+        <el-tabs type="border-card">
 
-    <el-form-item label="image">
-      <el-input v-model="form.image" style="width: 400px;" />
+          <el-tab-pane label="name">
+            <el-input v-model="volume_map.volume.name" />
+          </el-tab-pane>
 
-      <el-cascader
-        v-model="value"
-        :options="options"
-        style="width: 580px;"
-        @change="handleChange"
-      />
+          <el-tab-pane label="volumeSource">
+            <!-- volumeSource -->
 
-    </el-form-item>
+            <!-- configmap name select 选择 -->
 
-    <el-form-item label="imagePullSecrets">
-      <el-select v-model="form.imagePullSecrets" @change="changesecre">
-        <el-option
-          v-for="item in secretData"
-          :key="item.name"
-          :label="item.name"
-          :value="item.name"
-        />
-      </el-select>
-      <!-- <el-input v-model="form.imagePullSecrets" /> -->
-    </el-form-item>
+            <el-select v-model="volume_map.volume.volumeSource.name" style="width: 300px;" @change="changeConfigName">
+              <el-option
+                v-for="item in oneData.configList"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
 
-    <el-form-item label="replicas">
-      <el-input v-model="form.replicas" />
-    </el-form-item>
+            <!-- <el-input v-model="volume_map.volume.volumeSource.name" /> -->
 
-    <el-form-item label="volumePath">
-      <el-input v-model="form.volumePath" />
-    </el-form-item>
+            <el-row style="margin-top: 10px;">
+              <el-col>
+                <el-table size="mini" :data="volume_map.volume.volumeSource.configMap.items" border style="width: 100%" highlight-current-row>
 
-    <el-form-item label="containerPorts">
-      <!-- containerPorts -->
+                  <el-table-column v-for="v in volumeColumn" :key="v.field" :label="v.title">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.isSet">
+                        <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                      </span>
+                      <span v-else>{{ scope.row[v.field] }}</span>
+                    </template>
+                  </el-table-column>
 
-      <el-row>
-        <el-col>
-          <el-table size="mini" :data="form.containerPorts" border style="width: 100%" highlight-current-row>
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,3)">
+                        {{ scope.row.isSet?'保存':"修改" }}
+                      </span>
+                      <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,3)">
+                        删除
+                      </span>
+                      <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,3)">
+                        取消
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+              <el-col>
+                <div class="el-table-add-row" style="width: 99.2%;" @click="addVolumn()"><span>+ 添加</span></div>
+              </el-col>
+            </el-row>
 
-            <el-table-column v-for="v in containCloumn" :key="v.field" :label="v.title" :width="v.width">
-              <template slot-scope="scope">
-                <span v-if="scope.row.isSet">
-                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
-                </span>
-                <span v-else>{{ scope.row[v.field] }}</span>
-              </template>
-            </el-table-column>
+          </el-tab-pane>
+        </el-tabs>
 
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,1)">
-                  {{ scope.row.isSet?'保存':"修改" }}
-                </span>
-                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
-                  删除
-                </span>
-                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
-                  取消
-                </span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-        <el-col>
-          <div class="el-table-add-row" style="width: 99.2%;" @click="addContainPort()"><span>+ 添加</span></div>
-        </el-col>
-      </el-row>
+        <el-input v-model="volume_map.volumeMount.name" style="width: 30%; margin-top: 10px;" disabled>
+          <template slot="prepend">name</template>
+        </el-input>
+        <el-input v-model="volume_map.volumeMount.mountPath" style="width: 30%; margin-top: 10px;">
+          <template slot="prepend">mountPath</template>
+        </el-input>
+      </el-collapse-item>
 
-    </el-form-item>
+      <!-- master slave  -->
 
-    <el-form-item label="podResource">
-      <el-tabs type="border-card">
-        <el-tab-pane v-for="(pod,pod_key) in form.podResource" :key="pod_key" :label="pod_key">
-          <el-input v-model="pod.cpu">
-            <template slot="prepend">cpu</template>
-          </el-input>
-          <el-input v-model="pod.memory">
-            <template slot="prepend">memory</template>
-          </el-input>
-        </el-tab-pane>
-      </el-tabs>
-    </el-form-item>
+      <el-collapse-item title="NodeSpec" name="2">
 
-    <el-form-item label="servicePorts">
+        <el-form ref="form" label-width="150px" style="margin-top: 10px;">
 
-      <!-- servicePorts -->
+          <el-form-item v-if="flag === false">
+            <el-select v-model="branch" @change="changeBranch">
+              <el-option
+                v-for="item in select"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
 
-      <el-row>
-        <el-col>
-          <el-table size="mini" :data="form.servicePorts" border style="width: 100%" highlight-current-row>
+          <el-form-item label="Name">
+            <el-input v-model="form.name" />
+          </el-form-item>
 
-            <el-table-column v-for="v in serviceCloumn" :key="v.field" :label="v.title" :width="v.width">
-              <template slot-scope="scope">
-                <span v-if="scope.row.isSet">
-                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
-                </span>
-                <span v-else>{{ scope.row[v.field] }}</span>
-              </template>
-            </el-table-column>
+          <el-form-item label="image">
+            <el-input v-model="form.image" style="width: 400px;" />
 
-            <el-table-column label="操作">
-              <template slot-scope="scope">
-                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,2)">
-                  {{ scope.row.isSet?'保存':"修改" }}
-                </span>
-                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
-                  删除
-                </span>
-                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
-                  取消
-                </span>
-              </template>
-            </el-table-column>
-          </el-table>
-        </el-col>
-        <el-col>
-          <div class="el-table-add-row" style="width: 99.2%;" @click="addServicePort()"><span>+ 添加</span></div>
-        </el-col>
-      </el-row>
+            <el-cascader
+              :key="isResouceShow"
+              v-model="value"
+              :options="options"
+              style="width: 580px;"
+              @change="handleChange"
+            />
 
-    </el-form-item>
+          </el-form-item>
 
-  </el-form>
+          <el-form-item label="imagePullSecrets">
+            <el-select v-model="form.imagePullSecrets" @change="changesecre">
+              <el-option
+                v-for="item in secretData"
+                :key="item.name"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="replicas">
+            <el-input v-model="form.replicas" />
+          </el-form-item>
+
+          <el-form-item label="volumePath">
+            <el-input v-model="form.volumePath" />
+          </el-form-item>
+
+          <el-form-item label="containerPorts">
+            <!-- containerPorts -->
+
+            <el-row>
+              <el-col>
+                <el-table size="mini" :data="form.containerPorts" border style="width: 100%" highlight-current-row>
+
+                  <el-table-column v-for="v in containCloumn" :key="v.field" :label="v.title" :width="v.width">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.isSet">
+                        <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                      </span>
+                      <span v-else>{{ scope.row[v.field] }}</span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,1)">
+                        {{ scope.row.isSet?'保存':"修改" }}
+                      </span>
+                      <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                        删除
+                      </span>
+                      <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                        取消
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+              <el-col>
+                <div class="el-table-add-row" style="width: 99.2%;" @click="addContainPort()"><span>+ 添加</span></div>
+              </el-col>
+            </el-row>
+
+          </el-form-item>
+
+          <el-form-item label="podResource">
+            <el-tabs type="border-card">
+              <el-tab-pane v-for="(pod,pod_key) in form.podResource" :key="pod_key" :label="pod_key">
+                <el-input v-model="pod.cpu">
+                  <template slot="prepend">cpu</template>
+                </el-input>
+                <el-input v-model="pod.memory">
+                  <template slot="prepend">memory</template>
+                </el-input>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form-item>
+
+          <el-form-item label="servicePorts">
+
+            <!-- servicePorts -->
+
+            <el-row>
+              <el-col>
+                <el-table size="mini" :data="form.servicePorts" border style="width: 100%" highlight-current-row>
+
+                  <el-table-column v-for="v in serviceCloumn" :key="v.field" :label="v.title" :width="v.width">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.isSet">
+                        <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                      </span>
+                      <span v-else>{{ scope.row[v.field] }}</span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,2)">
+                        {{ scope.row.isSet?'保存':"修改" }}
+                      </span>
+                      <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                        删除
+                      </span>
+                      <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                        取消
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+              <el-col>
+                <div class="el-table-add-row" style="width: 99.2%;" @click="addServicePort()"><span>+ 添加</span></div>
+              </el-col>
+            </el-row>
+
+          </el-form-item>
+
+        </el-form>
+      </el-collapse-item>
+
+    </el-collapse>
+
+    <!-- applications spec -->
+
+  </div>
+
 </template>
 
 <script>
@@ -145,6 +228,7 @@
 const Form = {
   name: '',
   containerPorts: [],
+  env: [],
   image: '',
   imagePullSecrets: '',
   podResource: {
@@ -184,6 +268,12 @@ const servicePort = {
   isSet: true
 }
 
+const volumnTmp = {
+  key: '',
+  path: '',
+  isSet: true
+}
+
 export default {
   name: 'FormData',
   props: {
@@ -219,19 +309,36 @@ export default {
         { field: 'port', title: 'port', width: 150 },
         { field: 'protocol', title: 'protocol', width: 150 },
         { field: 'targetPort', title: 'targetPort', width: 380 }
-      ]
+      ],
+      isResouceShow: 1,
+      flag: false,
+      volume_map: [],
+      volumeColumn: [
+        { field: 'key', title: 'key' },
+        { field: 'path', title: 'path' }
+      ],
+      activeNames: ['1']
     }
   },
   watch: {
     oneData() {
+      console.log(222222)
       if (this.oneData.name === '') {
         this.oneData.master = Form
         this.oneData.slave = Form
       }
 
       this.getCreateData()
-      this.initForm()
       this.secret()
+
+      if (this.oneData.typename === 'HelixSagaOperator') {
+        this.initHelixSaga()
+      } else {
+        this.initForm()
+      }
+    },
+    'volume_map.volume.name': function(val) {
+      this.volume_map.volumeMount.name = this.volume_map.volume.name
     }
   },
   mounted() {
@@ -239,15 +346,34 @@ export default {
       this.oneData.master = Form
       this.oneData.slave = Form
     }
+
     this.getCreateData()
-    this.initForm()
     this.secret()
+
+    if (this.oneData.typename === 'HelixSagaOperator') {
+      this.initHelixSaga()
+    } else {
+      this.initForm()
+    }
   },
   methods: {
     getCreateData() {
       // 初始化 hubs
       this.options = []
+      // cascader 渲染更新
+      ++this.isResouceShow
       this.initParam('hubs')
+    },
+    initHelixSaga() {
+      this.flag = true
+      this.volume_map = this.oneData.configMap
+      this.form = this.oneData.applications[0]['spec']
+
+      if (this.volume_map.volume.volumeSource.configMap.items !== '') {
+        this.volume_map.volume.volumeSource.configMap.items.forEach(element => {
+          element.isSet = false
+        })
+      }
     },
     handleChange(value) {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
@@ -256,6 +382,9 @@ export default {
     changesecre(value) {
       console.log(value)
     },
+    changeConfigName(value) {
+    },
+    changePart(value) {},
     initParam(type, url = '', id = 0, imageName = '') {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
 
@@ -449,22 +578,40 @@ export default {
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
 
+      console.log(row)
+      console.log(index)
+      console.log(cg)
+      console.log(type)
+      console.log(this.volume_map.volume.volumeSource.configMap.items[index])
+
       var param = ''
 
       if (type === 1) {
         param = 'containerPorts'
-      } else {
+      } if (type === 2) {
         param = 'servicePorts'
+      } else {
+        param = 'volumn'
       }
 
       var flag = 0
 
-      this.form[param].forEach((element, key) => {
-        if (element.isSet && key !== index) {
-          this.$message.warning('请先保存当前编辑项')
-          flag = 1
-        }
-      })
+      if (type === 3) {
+        // volume_map.volume.volumeSource.configMap.items
+        this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
+          if (element.isSet && key !== index) {
+            this.$message.warning('请先保存当前编辑项')
+            flag = 1
+          }
+        })
+      } else {
+        this.form[param].forEach((element, key) => {
+          if (element.isSet && key !== index) {
+            this.$message.warning('请先保存当前编辑项')
+            flag = 1
+          }
+        })
+      }
 
       if (flag) {
         return
@@ -472,8 +619,12 @@ export default {
 
       // 是否是取消操作
       if (!cg) {
-        if (this.form[param][index]) {
-          this.form[param].splice(index, 1)
+        if (type === 3) {
+          this.volume_map.volume.volumeSource.configMap.items.splice(index, 1)
+        } else {
+          if (this.form[param][index]) {
+            this.form[param].splice(index, 1)
+          }
         }
       } else {
         // 提交数据
@@ -481,10 +632,19 @@ export default {
           if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
+
+          if (type === 3) {
+            this.volume_map.volume.volumeSource.configMap.items[index]['isSet'] = false
+          }
+
           row.isSet = false
         } else {
           if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
+          }
+
+          if (type === 3) {
+            this.volume_map.volume.volumeSource.configMap.items[index]['isSet'] = true
           }
 
           row.isSet = true
@@ -523,6 +683,22 @@ export default {
       if (mark) {
         servicePort.targetPort = JSON.stringify(servicePort.targetPort)
         this.form.servicePorts.push(servicePort)
+      }
+    },
+    addVolumn() {
+      var mark = true
+      this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
       }
     }
   }
