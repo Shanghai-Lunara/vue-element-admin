@@ -308,6 +308,9 @@ export default {
         case 'RedisOperator':
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd
           break
+        case 'HelixSagaOperator':
+          data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd
+          break
       }
 
       var data_message = data_request.create(data)
@@ -418,7 +421,6 @@ export default {
 
         case 'Secret':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
-          console.log(dataStr)
           list = []
           dataStr.items.forEach(function(item, index) {
             item.namespace = _self.nameSpace
@@ -621,8 +623,51 @@ export default {
     // 更新mysqloperate
     makeConfirm() {
       delete this.oneData.namespace
-      // delete this.oneData.resourceVersion
 
+      if (this.oneData.typename === 'HelixSagaOperator') {
+        this.checkSaga()
+      } else {
+        this.checkData()
+      }
+
+      if (this.oneData.type) {
+        if (this.oneData.typename === 'HelixSagaOperator') {
+          delete this.oneData.type
+        } else {
+          this.oneData.name = this.oneData.master.name
+        }
+
+        delete this.oneData.type
+        this.updateConfigMapList(this.oneData, 'create')
+      } else {
+        delete this.oneData.type
+        this.updateConfigMapList(this.oneData, 'update')
+      }
+    },
+    // 处理helixsaga 数据
+    checkSaga() {
+      delete this.oneData.configList
+
+      if (this.oneData.configMap.volume.volumeSource.configMap.items !== '') {
+        this.oneData.configMap.volume.volumeSource.configMap.items.forEach(element => {
+          delete element.isSet
+        })
+      }
+
+      if (this.oneData.applications[0]['spec']['containerPorts'] !== '') {
+        this.oneData.applications[0]['spec']['containerPorts'].forEach(element => {
+          delete element.isSet
+        })
+      }
+
+      if (this.oneData.applications[0]['spec']['servicePorts'] !== '') {
+        this.oneData.applications[0]['spec']['servicePorts'].forEach(element => {
+          delete element.isSet
+        })
+      }
+    },
+    // 处理mysql | redis 修改数据
+    checkData() {
       if (this.oneData.master.containerPorts !== '') {
         this.oneData.master.containerPorts.forEach(element => {
           delete element.isSet
@@ -645,15 +690,6 @@ export default {
         this.oneData.slave.servicePorts.forEach(element => {
           delete element.isSet
         })
-      }
-
-      if (this.oneData.type) {
-        this.oneData.name = this.oneData.master.name
-        delete this.oneData.type
-        this.updateConfigMapList(this.oneData, 'create')
-      } else {
-        delete this.oneData.type
-        this.updateConfigMapList(this.oneData, 'update')
       }
     },
     // 获取右边搜索的list

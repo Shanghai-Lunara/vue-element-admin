@@ -1,8 +1,8 @@
 <template>
 
   <div>
-    <el-collapse v-if="flag === true" v-model="activeNames" @change="changePart">
-      <el-collapse-item title="volume" name="1">
+    <el-collapse v-model="activeNames" @change="changePart">
+      <el-collapse-item v-if="flag === true" title="volume" name="1">
         <el-tabs type="border-card">
 
           <el-tab-pane label="name">
@@ -322,7 +322,6 @@ export default {
   },
   watch: {
     oneData() {
-      console.log(222222)
       if (this.oneData.name === '') {
         this.oneData.master = Form
         this.oneData.slave = Form
@@ -333,7 +332,10 @@ export default {
 
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.initHelixSaga()
+        this.activeNames = ['1']
       } else {
+        this.activeNames = ['2']
+        this.flag = false
         this.initForm()
       }
     },
@@ -352,7 +354,10 @@ export default {
 
     if (this.oneData.typename === 'HelixSagaOperator') {
       this.initHelixSaga()
+      this.activeNames = ['1']
     } else {
+      this.activeNames = ['2']
+      this.flag = false
       this.initForm()
     }
   },
@@ -373,6 +378,23 @@ export default {
         this.volume_map.volume.volumeSource.configMap.items.forEach(element => {
           element.isSet = false
         })
+
+        this.volume_map.volume.volumeSource.configMap.items = JSON.parse(JSON.stringify(this.volume_map.volume.volumeSource.configMap.items))
+      }
+
+      if (this.form.containerPorts !== '') {
+        this.form.containerPorts.forEach(value => {
+          value.isSet = false
+        })
+
+        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
+      }
+
+      if (this.form.servicePorts !== '') {
+        this.form.servicePorts.forEach(element => {
+          element.isSet = false
+        })
+        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
     },
     handleChange(value) {
@@ -456,16 +478,20 @@ export default {
         this.form.containerPorts.forEach(value => {
           value.isSet = false
         })
+
+        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
       }
 
       if (this.form.servicePorts !== '') {
         this.form.servicePorts.forEach(element => {
           element.isSet = false
         })
+        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
     },
     // 初始化form数据
     initForm() {
+      console.log(5555555)
       this.branch = 'master'
       this.form = this.oneData.master
 
@@ -473,12 +499,14 @@ export default {
         this.form.containerPorts.forEach(value => {
           value.isSet = false
         })
+        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
       }
 
       if (this.form.servicePorts !== {}) {
         this.form.servicePorts.forEach(element => {
           element.isSet = false
         })
+        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
     },
     responseData(res, _self) {
@@ -578,17 +606,11 @@ export default {
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
 
-      console.log(row)
-      console.log(index)
-      console.log(cg)
-      console.log(type)
-      console.log(this.volume_map.volume.volumeSource.configMap.items[index])
-
       var param = ''
 
       if (type === 1) {
         param = 'containerPorts'
-      } if (type === 2) {
+      } else if (type === 2) {
         param = 'servicePorts'
       } else {
         param = 'volumn'
@@ -633,18 +655,10 @@ export default {
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
 
-          if (type === 3) {
-            this.volume_map.volume.volumeSource.configMap.items[index]['isSet'] = false
-          }
-
           row.isSet = false
         } else {
           if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
-          }
-
-          if (type === 3) {
-            this.volume_map.volume.volumeSource.configMap.items[index]['isSet'] = true
           }
 
           row.isSet = true
