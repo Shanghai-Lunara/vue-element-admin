@@ -393,7 +393,6 @@ export default {
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
-          isTiny = true
           break
         case 'RedisOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -408,7 +407,6 @@ export default {
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
-          isTiny = true
           break
 
         case 'HelixSagaOperator':
@@ -427,7 +425,6 @@ export default {
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
-          isTiny = true
 
           break
 
@@ -458,7 +455,6 @@ export default {
             list.push(item)
           })
           total = dataStr.items.length
-          isTiny = true
 
           _self.showFlag = false
 
