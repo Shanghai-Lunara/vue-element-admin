@@ -91,6 +91,9 @@ import YamlEditor from '@/components/YamlEditor/index.vue'
 // redis | mysql
 import FormData from '@/components/FormData'
 
+// 挂载
+import { mapGetters } from 'vuex'
+
 const configMapTable = {
   name: 'Name',
   namespace: 'NameSpace',
@@ -185,16 +188,30 @@ export default {
       configList: []
     }
   },
+  computed: {
+    ...mapGetters([
+      'permission_routes'
+    ])
+  },
   watch: {
     $route(route) {
       // 监控路由
       var name = route.query.name
       this.nameSpace = name
       this.selectNameSpace()
+    },
+    permission_routes() {
+      if (this.permission_routes === '') {
+        this.itemList()
+      }
     }
   },
   mounted() {
     // this.getList()
+
+    if (this.permission_routes === '') {
+      this.itemList()
+    }
 
     this.getResourceList()
 
@@ -254,6 +271,16 @@ export default {
         })
       }, 10000)
     },
+    // 侧边栏延迟加载
+    itemList() {
+      var data = {
+        'nameSpace': '',
+        'service': 'list',
+        'resourceType': 'NameSpace'
+      }
+
+      this.getList(data)
+    },
     // 获得下拉框列表属性值
     getResourceList() {
       var data = {
@@ -287,6 +314,7 @@ export default {
     },
     // 修改更新数据
     updateConfigMapList(data, type) {
+      console.log(data)
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -394,6 +422,8 @@ export default {
             list.push(item)
           })
 
+          console.log(list)
+
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
@@ -448,6 +478,25 @@ export default {
         case 'ping':
           console.log('ping')
           break
+        case 'NameSpace':
+          var spaceList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+
+          var now_arr = []
+
+          var arr = spaceList.items
+
+          arr.forEach(element => {
+            var now_list = { 'path': 'complex-table' }
+            now_list['name'] = element['Name']
+            now_list['component'] = () => import('@/views/table/complex-table')
+
+            now_list['meta'] = { 'title': element['Name'], 'icon': 'form' }
+            now_arr.push(now_list)
+          })
+
+          this.permission_routes[5]['children'] = now_arr
+
+          break
         case 'resource': {
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
@@ -482,6 +531,7 @@ export default {
           this.total = obj.total
           break
         case 'update':
+          console.log(565656565656)
           if (result.code === 0) {
             this.$notify({
               title: '成功',
@@ -633,6 +683,8 @@ export default {
         this.checkData()
       }
 
+      // console.log(this.oneData)
+
       if (this.oneData.type) {
         if (this.oneData.typename === 'HelixSagaOperator') {
           delete this.oneData.type
@@ -706,6 +758,8 @@ export default {
     },
     // config | mysqloperator | redisoperator 编辑
     editData(row) {
+      console.log('editor')
+      console.log(row)
       if (this.warning()) {
         return
       }

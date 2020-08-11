@@ -1,6 +1,7 @@
 <template>
 
   <div>
+    <el-input v-if="flag === true" v-model="project_name" placeholder="请输入name" />
     <el-collapse v-model="activeNames" @change="changePart">
       <el-collapse-item v-if="flag === true" title="volume" name="1">
         <el-tabs type="border-card">
@@ -69,7 +70,7 @@
         </el-input>
       </el-collapse-item>
 
-      <!-- master slave  -->
+      <!-- master slave spec -->
 
       <el-collapse-item title="NodeSpec" name="2">
 
@@ -120,6 +121,43 @@
 
           <el-form-item label="volumePath">
             <el-input v-model="form.volumePath" />
+          </el-form-item>
+
+          <el-form-item v-if="flag === true" label="env">
+            <!-- env -->
+            <el-row>
+              <el-col>
+                <el-table size="mini" :data="form.env" border style="width: 100%" highlight-current-row>
+
+                  <el-table-column v-for="v in envColumn" :key="v.field" :label="v.title" :width="v.width">
+                    <template slot-scope="scope">
+                      <span v-if="scope.row.isSet">
+                        <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                      </span>
+                      <span v-else>{{ scope.row[v.field] }}</span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="操作">
+                    <template slot-scope="scope">
+                      <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,4)">
+                        {{ scope.row.isSet?'保存':"修改" }}
+                      </span>
+                      <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,4)">
+                        删除
+                      </span>
+                      <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,4)">
+                        取消
+                      </span>
+                    </template>
+                  </el-table-column>
+                </el-table>
+              </el-col>
+              <el-col>
+                <div class="el-table-add-row" style="width: 99.2%;" @click="addEnv()"><span>+ 添加</span></div>
+              </el-col>
+            </el-row>
+
           </el-form-item>
 
           <el-form-item label="containerPorts">
@@ -225,6 +263,32 @@
 
 <script>
 
+const Applications = [
+  {
+    args: [],
+    command: []
+  }
+]
+
+const Configmap = {
+  volume: {
+    name: '',
+    volumeSource: {
+      configMap: {
+        items: [],
+        name: ''
+      }
+    }
+  },
+  volumeMount: {
+    mountPath: '/var/www/app/conf',
+    name: '',
+    readOnly: false,
+    subPath: '',
+    subPathExpr: ''
+  }
+}
+
 const Form = {
   name: '',
   containerPorts: [],
@@ -265,6 +329,12 @@ const servicePort = {
     strVal: '',
     type: 0
   },
+  isSet: true
+}
+
+const envTmp = {
+  name: '',
+  value: '',
   isSet: true
 }
 
@@ -317,58 +387,53 @@ export default {
         { field: 'key', title: 'key' },
         { field: 'path', title: 'path' }
       ],
-      activeNames: ['1']
+      activeNames: ['1'],
+      project_name: '',
+      envColumn: [
+        { field: 'name', title: 'name' },
+        { field: 'value', title: 'value' }
+      ]
     }
   },
   watch: {
     oneData() {
-      console.log(2222222)
-      console.log(this.oneData)
-      // if (this.oneData.name === '') {
-      //   this.oneData.master = Form
-      //   this.oneData.slave = Form
-      // }
-
-      // this.getCreateData()
-      // this.secret()
-
-      // if (this.oneData.typename === 'HelixSagaOperator') {
-      //   this.initHelixSaga()
-      //   this.activeNames = ['1']
-      // } else {
-      //   this.activeNames = ['2']
-      //   this.flag = false
-      //   this.initForm()
-      // }
+      this.initSaga()
     },
     'volume_map.volume.name': function(val) {
       this.volume_map.volumeMount.name = this.volume_map.volume.name
     }
   },
   mounted() {
-    console.log(111111111)
-    console.log(this.oneData)
-    if (this.oneData.name === '' && this.oneData.tyname !== 'HelixSagaOperator') {
-      this.oneData.master = Form
-      this.oneData.slave = Form
-    } else {
-      console.log(33333)
-      this.oneData.applications
-    }
-
-    // this.getCreateData()
-    // this.secret()
-
-    // if (this.oneData.typename === 'HelixSagaOperator') {
-    //   this.initHelixSaga()
-    //   this.activeNames = ['1']
-    // } else {
-    //   this.activeNames = ['2']
-    //   this.flag = false
-    //   this.initForm()
-    // }
+    this.initSaga()
   },
   methods: {
+    initSaga() {
+      if (this.oneData.name === '') {
+        if (this.oneData.hasOwnProperty('typename')) {
+          this.oneData.applications = Applications
+          this.oneData.applications[0]['spec'] = Form
+          this.oneData.configMap = Configmap
+        } else {
+          this.oneData.master = JSON.parse(JSON.stringify(Form))
+          this.oneData.slave = JSON.parse(JSON.stringify(Form))
+        }
+        this.oneData.name = this.project_name
+      } else {
+        this.project_name = this.oneData.name
+      }
+
+      this.getCreateData()
+      this.secret()
+
+      if (this.oneData.typename === 'HelixSagaOperator') {
+        this.initHelixSaga()
+        this.activeNames = ['1']
+      } else {
+        this.activeNames = ['2']
+        this.flag = false
+        this.initForm()
+      }
+    },
     getCreateData() {
       // 初始化 hubs
       this.options = []
@@ -387,6 +452,14 @@ export default {
         })
 
         this.volume_map.volume.volumeSource.configMap.items = JSON.parse(JSON.stringify(this.volume_map.volume.volumeSource.configMap.items))
+      }
+
+      if (this.form.env !== '') {
+        this.form.env.forEach(value => {
+          value.isSet = false
+        })
+
+        this.form.env = JSON.parse(JSON.stringify(this.form.env))
       }
 
       if (this.form.containerPorts !== '') {
@@ -492,10 +565,17 @@ export default {
         })
         this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
+
+      if (this.form.env !== '') {
+        this.form.env.forEach(value => {
+          value.isSet = false
+        })
+
+        this.form.env = JSON.parse(JSON.stringify(this.form.env))
+      }
     },
     // 初始化form数据
     initForm() {
-      console.log(5555555)
       this.branch = 'master'
       this.form = this.oneData.master
 
@@ -511,6 +591,14 @@ export default {
           element.isSet = false
         })
         this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
+      }
+
+      if (this.form.env !== '') {
+        this.form.env.forEach(value => {
+          value.isSet = false
+        })
+
+        this.form.env = JSON.parse(JSON.stringify(this.form.env))
       }
     },
     responseData(res, _self) {
@@ -616,8 +704,10 @@ export default {
         param = 'containerPorts'
       } else if (type === 2) {
         param = 'servicePorts'
-      } else {
+      } else if (type === 3) {
         param = 'volumn'
+      } else {
+        param = 'env'
       }
 
       var flag = 0
@@ -717,6 +807,22 @@ export default {
 
       if (mark) {
         this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
+      }
+    },
+    addEnv() {
+      var mark = true
+      this.form.env.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        this.form.env.push(envTmp)
       }
     }
   }
