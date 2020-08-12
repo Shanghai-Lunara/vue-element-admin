@@ -1,8 +1,14 @@
 <template>
 
   <div>
-    <el-input v-if="flag === true" v-model="project_name" placeholder="请输入name" />
-    <el-collapse v-model="activeNames" @change="changePart">
+    <!-- name  -->
+    <!-- <el-input v-model="project_name" placeholder="请输入name" /> -->
+
+    <el-input v-model="project_name">
+      <template slot="prepend">{{ typeName }}</template>
+    </el-input>
+
+    <el-collapse v-model="activeNames" style="margin-top: 5px;" @change="changePart">
       <el-collapse-item v-if="flag === true" title="volume" name="1">
         <el-tabs type="border-card">
 
@@ -68,6 +74,18 @@
         <el-input v-model="volume_map.volumeMount.mountPath" style="width: 30%; margin-top: 10px;">
           <template slot="prepend">mountPath</template>
         </el-input>
+      </el-collapse-item>
+
+      <!-- args -->
+      <el-collapse-item title="args" name="3">
+        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数</div>
+        <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
+      </el-collapse-item>
+
+      <!-- command -->
+      <el-collapse-item title="command" name="4">
+        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数</div>
+        <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
       </el-collapse-item>
 
       <!-- master slave spec -->
@@ -392,7 +410,10 @@ export default {
       envColumn: [
         { field: 'name', title: 'name' },
         { field: 'value', title: 'value' }
-      ]
+      ],
+      typeName: '',
+      argsStr: '',
+      commandStr: ''
     }
   },
   watch: {
@@ -401,13 +422,39 @@ export default {
     },
     'volume_map.volume.name': function(val) {
       this.volume_map.volumeMount.name = this.volume_map.volume.name
+    },
+    argsStr() {
+      this.oneData.applications[0]['args'] = JSON.parse(this.argsStr)
+    },
+    commandStr() {
+      this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
     }
   },
   mounted() {
+    // console.log(this.oneData)
     this.initSaga()
   },
   methods: {
     initSaga() {
+      // this.oneData.typename
+
+      var i = 0
+
+      switch (this.oneData.typename) {
+        case 'MysqlOperator':
+          this.typeName = 'mo-'
+          i = 2
+          break
+        case 'RedisOperator':
+          this.typeName = 'ro-'
+          i = 2
+          break
+        case 'HelixSagaOperator':
+          this.typeName = 'hso-'
+          i = 3
+          break
+      }
+
       if (this.oneData.name === '') {
         if (this.oneData.hasOwnProperty('typename')) {
           this.oneData.applications = Applications
@@ -419,7 +466,21 @@ export default {
         }
         this.oneData.name = this.project_name
       } else {
-        this.project_name = this.oneData.name
+        if (this.oneData.name.indexOf(this.typeName) !== -1) {
+          this.oneData.name = this.oneData.name.splice(i)
+        } else {
+          this.project_name = this.oneData.name
+        }
+
+        if (this.oneData.hasOwnProperty('typename')) {
+          if (this.oneData.applications[0]['args'] !== '') {
+            this.argsStr = JSON.stringify(this.oneData.applications[0]['args'])
+          }
+
+          if (this.oneData.applications[0]['command'] !== '') {
+            this.commandStr = JSON.stringify(this.oneData.applications[0]['command'])
+          }
+        }
       }
 
       this.getCreateData()

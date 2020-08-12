@@ -201,7 +201,7 @@ export default {
       this.selectNameSpace()
     },
     permission_routes() {
-      if (this.permission_routes === '') {
+      if (this.permission_routes[5]['children'].length === 0) {
         this.itemList()
       }
     }
@@ -209,7 +209,7 @@ export default {
   mounted() {
     // this.getList()
 
-    if (this.permission_routes === '') {
+    if (this.permission_routes[5]['children'].length === 0) {
       this.itemList()
     }
 
@@ -314,7 +314,6 @@ export default {
     },
     // 修改更新数据
     updateConfigMapList(data, type) {
-      console.log(data)
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
@@ -527,7 +526,6 @@ export default {
           this.total = obj.total
           break
         case 'update':
-          console.log(565656565656)
           if (result.code === 0) {
             this.$notify({
               title: '成功',
@@ -618,8 +616,9 @@ export default {
 
       if (this.listQuery.type === 'HelixSagaOperator') {
         this.oneData.configList = this.configList
-        this.oneData.typename = 'HelixSagaOperator'
       }
+
+      this.oneData.typename = this.listQuery.type
 
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
@@ -645,10 +644,26 @@ export default {
       if (this.warning()) {
         return
       }
-      delete row.namespace
-      delete row.resourceVersion
 
-      this.updateConfigMapList(row, 'delete')
+      this.$confirm('确认删除此项?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delete row.namespace
+        delete row.resourceVersion
+
+        this.updateConfigMapList(row, 'delete')
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
     },
     makeSureEdit() {
       // 获取,更改编辑框里的值
@@ -673,21 +688,29 @@ export default {
     makeConfirm() {
       delete this.oneData.namespace
 
+      var str = ''
+      switch (this.oneData.typename) {
+        case 'MysqlOperator':
+          str = 'mo-'
+          break
+        case 'RedisOperator':
+          str = 'ro-'
+          break
+        case 'HelixSagaOperator':
+          str = 'hso-'
+          break
+      }
+
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()
       } else {
         this.checkData()
       }
 
-      // console.log(this.oneData)
+      this.oneData.name = str + this.oneData.name
 
+      delete this.oneData.typename
       if (this.oneData.type) {
-        if (this.oneData.typename === 'HelixSagaOperator') {
-          delete this.oneData.type
-        } else {
-          this.oneData.name = this.oneData.master.name
-        }
-
         delete this.oneData.type
         this.updateConfigMapList(this.oneData, 'create')
       } else {
@@ -767,6 +790,7 @@ export default {
         this.createFlag = true
         this.dialogFormVisible = true
         this.oneData.type = 0
+        this.oneData.typename = this.listQuery.type
 
         if (this.listQuery.type === 'HelixSagaOperator') {
           this.oneData.configList = this.configList
