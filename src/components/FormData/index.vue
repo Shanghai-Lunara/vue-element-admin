@@ -76,16 +76,16 @@
         </el-input>
       </el-collapse-item>
 
-      <!-- args -->
-      <el-collapse-item title="args" name="3">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数</div>
-        <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
+      <!-- command -->
+      <el-collapse-item v-if="flag === true" title="command" name="3">
+        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["php",""]</div>
+        <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
       </el-collapse-item>
 
-      <!-- command -->
-      <el-collapse-item title="command" name="4">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数</div>
-        <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
+      <!-- args -->
+      <el-collapse-item v-if="flag === true" title="args" name="4">
+        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/var/www/app/extensions/queue_server.php","debug"]</div>
+        <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
       </el-collapse-item>
 
       <!-- master slave spec -->
@@ -417,6 +417,7 @@ export default {
     }
   },
   watch: {
+
     oneData() {
       this.initSaga()
     },
@@ -424,10 +425,14 @@ export default {
       this.volume_map.volumeMount.name = this.volume_map.volume.name
     },
     argsStr() {
-      this.oneData.applications[0]['args'] = JSON.parse(this.argsStr)
+      if (this.oneData.applications[0]['args'] !== '') {
+        this.oneData.applications[0]['args'] = JSON.parse(this.argsStr)
+      }
     },
     commandStr() {
-      this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
+      if (this.oneData.applications[0]['command'] !== '') {
+        this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
+      }
     }
   },
   mounted() {
@@ -456,7 +461,7 @@ export default {
       }
 
       if (this.oneData.name === '') {
-        if (this.oneData.hasOwnProperty('typename')) {
+        if (this.oneData.typename === 'HelixSagaOperator') {
           this.oneData.applications = Applications
           this.oneData.applications[0]['spec'] = Form
           this.oneData.configMap = Configmap
@@ -472,7 +477,7 @@ export default {
           this.project_name = this.oneData.name
         }
 
-        if (this.oneData.hasOwnProperty('typename')) {
+        if (this.oneData.typename === 'HelixSagaOperator') {
           if (this.oneData.applications[0]['args'] !== '') {
             this.argsStr = JSON.stringify(this.oneData.applications[0]['args'])
           }
