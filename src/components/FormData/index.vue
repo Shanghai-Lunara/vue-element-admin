@@ -106,7 +106,8 @@
           </el-form-item>
 
           <el-form-item label="Name">
-            <el-input v-model="form.name" />
+            <el-input v-if="flag === false" v-model="form.name" disabled />
+            <el-input v-else v-model="form.name" />
           </el-form-item>
 
           <el-form-item label="image">
@@ -432,6 +433,14 @@ export default {
     commandStr() {
       if (this.oneData.applications[0]['command'] !== '') {
         this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
+      }
+    },
+    project_name() {
+      if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
+        this.oneData.master.name = this.typeName + this.project_name
+        this.oneData.slave.name = this.typeName + this.project_name
+      } else if (this.oneData.typename === 'HelixSagaOperator') {
+        this.oneData.applications[0]['spec']['name'] = this.typeName + this.project_name
       }
     }
   },
