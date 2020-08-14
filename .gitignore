@@ -12,6 +12,8 @@ selenium-debug.log
 
 # local env files
 .env.*
+.env.local
+.env.*.local
 
 # Editor directories and files
 .idea
