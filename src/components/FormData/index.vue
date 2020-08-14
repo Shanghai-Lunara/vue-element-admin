@@ -452,20 +452,20 @@ export default {
     initSaga() {
       // this.oneData.typename
 
-      // var i = 0
+      var i = 0
 
       switch (this.oneData.typename) {
         case 'MysqlOperator':
           this.typeName = 'mo-'
-          // i = 2
+          i = 2
           break
         case 'RedisOperator':
           this.typeName = 'ro-'
-          // i = 2
+          i = 2
           break
         case 'HelixSagaOperator':
           this.typeName = 'hso-'
-          // i = 3
+          i = 3
           break
       }
 
@@ -480,11 +480,11 @@ export default {
         }
         this.oneData.name = this.project_name
       } else {
-        // if (this.oneData.name.indexOf(this.typeName) !== -1) {
-        //   this.oneData.name = this.oneData.name.splice(i)
-        // } else {
-        this.project_name = this.oneData.name
-        // }
+        if (this.oneData.name.indexOf(this.typeName) !== -1) {
+          this.oneData.name = this.oneData.name.splice(i)
+        } else {
+          this.project_name = this.oneData.name
+        }
 
         if (this.oneData.typename === 'HelixSagaOperator') {
           if (this.oneData.applications[0]['args'] !== '') {
