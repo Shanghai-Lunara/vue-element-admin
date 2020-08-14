@@ -1,110 +1,186 @@
 <template>
 
-  <div>
-    <!-- name  -->
-    <!-- <el-input v-model="project_name" placeholder="请输入name" /> -->
+  <el-form ref="form" label-width="150px" style="margin-top: 10px;">
 
-    <el-input v-model="project_name">
-      <template slot="prepend">{{ typeName }}</template>
-    </el-input>
+    <el-form-item v-if="flag === false">
+      <el-select v-model="branch" @change="changeBranch">
+        <el-option
+          v-for="item in select"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+        />
+      </el-select>
+    </el-form-item>
 
-    <el-collapse v-model="activeNames" style="margin-top: 5px;" @change="changePart">
-      <el-collapse-item v-if="flag === true" title="volume" name="1">
-        <el-tabs type="border-card">
+    <el-form-item label="Name">
+      <el-input v-if="flag === false" v-model="form.name" disabled />
+      <el-input v-else v-model="form.name" />
+    </el-form-item>
 
-          <el-tab-pane label="name">
-            <el-input v-model="volume_map.volume.name" />
-          </el-tab-pane>
+    <el-form-item label="image">
+      <el-input v-model="form.image" style="width: 400px;" />
 
-          <el-tab-pane label="volumeSource">
-            <!-- volumeSource -->
+      <el-cascader
+        :key="isResouceShow"
+        v-model="value"
+        :options="options"
+        style="width: 580px;"
+        @change="handleChange"
+      />
 
-            <!-- configmap name select 选择 -->
+    </el-form-item>
 
-            <el-select v-model="volume_map.volume.volumeSource.name" style="width: 300px;" @change="changeConfigName">
-              <el-option
-                v-for="item in oneData.configList"
-                :key="item"
-                :label="item"
-                :value="item"
-              />
-            </el-select>
+    <el-form-item label="imagePullSecrets">
+      <el-select v-model="form.imagePullSecrets" @change="changesecre">
+        <el-option
+          v-for="item in secretData"
+          :key="item.name"
+          :label="item.name"
+          :value="item.name"
+        />
+      </el-select>
+    </el-form-item>
 
-            <!-- <el-input v-model="volume_map.volume.volumeSource.name" /> -->
+    <el-form-item label="replicas">
+      <el-input v-model="form.replicas" />
+    </el-form-item>
 
-            <el-row style="margin-top: 10px;">
-              <el-col>
-                <el-table size="mini" :data="volume_map.volume.volumeSource.configMap.items" border style="width: 100%" highlight-current-row>
+    <el-form-item label="volumePath">
+      <el-input v-model="form.volumePath" />
+    </el-form-item>
 
-                  <el-table-column v-for="v in volumeColumn" :key="v.field" :label="v.title">
-                    <template slot-scope="scope">
-                      <span v-if="scope.row.isSet">
-                        <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
-                      </span>
-                      <span v-else>{{ scope.row[v.field] }}</span>
-                    </template>
-                  </el-table-column>
+    <el-form-item v-if="flag === true" label="env">
+      <!-- env -->
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="form.env" border style="width: 100%" highlight-current-row>
 
-                  <el-table-column label="操作">
-                    <template slot-scope="scope">
-                      <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,3)">
-                        {{ scope.row.isSet?'保存':"修改" }}
-                      </span>
-                      <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,3)">
-                        删除
-                      </span>
-                      <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,3)">
-                        取消
-                      </span>
-                    </template>
-                  </el-table-column>
-                </el-table>
-              </el-col>
-              <el-col>
-                <div class="el-table-add-row" style="width: 99.2%;" @click="addVolumn()"><span>+ 添加</span></div>
-              </el-col>
-            </el-row>
+            <el-table-column v-for="v in envColumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
 
-          </el-tab-pane>
-        </el-tabs>
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,4)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,4)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,4)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addEnv()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
 
-        <el-input v-model="volume_map.volumeMount.name" style="width: 30%; margin-top: 10px;" disabled>
-          <template slot="prepend">name</template>
-        </el-input>
-        <el-input v-model="volume_map.volumeMount.mountPath" style="width: 30%; margin-top: 10px;">
-          <template slot="prepend">mountPath</template>
-        </el-input>
-      </el-collapse-item>
+    </el-form-item>
 
-      <!-- command -->
-      <el-collapse-item v-if="flag === true" title="command" name="3">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["php",""]</div>
-        <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
-      </el-collapse-item>
+    <el-form-item label="containerPorts">
+      <!-- containerPorts -->
 
-      <!-- args -->
-      <el-collapse-item v-if="flag === true" title="args" name="4">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/var/www/app/extensions/queue_server.php","debug"]</div>
-        <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
-      </el-collapse-item>
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="form.containerPorts" border style="width: 100%" highlight-current-row>
 
-      <!-- master slave spec -->
+            <el-table-column v-for="v in containCloumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
 
-      <el-collapse-item title="NodeSpec" name="2" />
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,1)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,1)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addContainPort()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
 
-    </el-collapse>
+    </el-form-item>
 
-    <!-- applications spec -->
+    <el-form-item label="podResource">
+      <el-tabs type="border-card">
+        <el-tab-pane v-for="(pod,pod_key) in form.podResource" :key="pod_key" :label="pod_key">
+          <el-input v-model="pod.cpu">
+            <template slot="prepend">cpu</template>
+          </el-input>
+          <el-input v-model="pod.memory">
+            <template slot="prepend">memory</template>
+          </el-input>
+        </el-tab-pane>
+      </el-tabs>
+    </el-form-item>
 
-  </div>
+    <el-form-item label="servicePorts">
 
+      <!-- servicePorts -->
+
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="form.servicePorts" border style="width: 100%" highlight-current-row>
+
+            <el-table-column v-for="v in serviceCloumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,2)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,2)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addServicePort()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
+
+    </el-form-item>
+
+  </el-form>
 </template>
 
 <script>
-
-// nodespec
-
-// import NodeSpec from '@/components/NodeSpec'
 
 const Applications = [
   {
@@ -189,9 +265,6 @@ const volumnTmp = {
 
 export default {
   name: 'FormData',
-  // components: {
-  //   NodeSpec
-  // },
   props: {
     oneData: {
       type: Object,
@@ -272,10 +345,13 @@ export default {
     }
   },
   mounted() {
+    // console.log(this.oneData)
     this.initSaga()
   },
   methods: {
     initSaga() {
+      // this.oneData.typename
+
       var i = 0
 
       switch (this.oneData.typename) {

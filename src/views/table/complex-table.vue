@@ -88,7 +88,7 @@
 import waves from '@/directive/waves' // waves directive
 import Pagination from '@/components/Pagination'
 import YamlEditor from '@/components/YamlEditor/index.vue'
-// redis | mysql
+// redis | mysql | helixsaga
 import FormData from '@/components/FormData'
 
 // 挂载
