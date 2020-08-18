@@ -2,7 +2,6 @@
 
   <div>
     <!-- name  -->
-    <!-- <el-input v-model="project_name" placeholder="请输入name" /> -->
 
     <el-input v-model="project_name">
       <template slot="prepend">{{ typeName }}</template>
@@ -76,21 +75,40 @@
         </el-input>
       </el-collapse-item>
 
-      <!-- command -->
-      <el-collapse-item v-if="flag === true" title="command" name="3">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["php",""]</div>
-        <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
-      </el-collapse-item>
-
-      <!-- args -->
-      <el-collapse-item v-if="flag === true" title="args" name="4">
-        <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/var/www/app/extensions/queue_server.php","debug"]</div>
-        <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
-      </el-collapse-item>
-
       <!-- master slave spec -->
 
-      <el-collapse-item title="NodeSpec" name="2" />
+      <el-collapse-item title="applications" name="2">
+        <el-tag
+          v-for="tag in tagsList"
+          :key="tag"
+          :closable="closeFlag"
+          :disable-transitions="false"
+          @close="handleClose(tag)"
+          @click="openData(tag)"
+        >
+          {{ tag }}
+        </el-tag>
+
+        <el-input
+          v-if="inputVisible"
+          ref="saveTagInput"
+          v-model="inputValue"
+          class="input-new-tag"
+          size="medium"
+          @keyup.enter.native="handleInputConfirm"
+          @blur="handleInputConfirm"
+        />
+        <el-button v-else class="button-new-tag" :disabled="disabledFlag" @click="showInput">+ New Spec</el-button>
+
+        <el-dialog
+          title="内容"
+          :visible.sync="dialogVisible"
+          append-to-body
+        >
+          <NodeSpec ref="NodeSpec" :spec-data="specData" />
+        </el-dialog>
+
+      </el-collapse-item>
 
     </el-collapse>
 
@@ -104,33 +122,26 @@
 
 // nodespec
 
-// import NodeSpec from '@/components/NodeSpec'
+import NodeSpec from '@/components/NodeSpec'
 
-const Applications = [
-  {
-    args: [],
-    command: []
-  }
-]
-
-const Configmap = {
-  volume: {
-    name: '',
-    volumeSource: {
-      configMap: {
-        items: [],
-        name: ''
-      }
-    }
-  },
-  volumeMount: {
-    mountPath: '/var/www/app/conf',
-    name: '',
-    readOnly: false,
-    subPath: '',
-    subPathExpr: ''
-  }
-}
+// const Configmap = {
+//   volume: {
+//     name: '',
+//     volumeSource: {
+//       configMap: {
+//         items: [],
+//         name: ''
+//       }
+//     }
+//   },
+//   volumeMount: {
+//     mountPath: '/var/www/app/conf',
+//     name: '',
+//     readOnly: false,
+//     subPath: '',
+//     subPathExpr: ''
+//   }
+// }
 
 const Form = {
   name: '',
@@ -153,34 +164,6 @@ const Form = {
   volumePath: ''
 }
 
-const contain = {
-  containerPort: 3306,
-  hostIP: '',
-  hostPort: 0,
-  name: '',
-  protocol: 'TCP',
-  isSet: true
-}
-
-const servicePort = {
-  name: '',
-  nodePort: 0,
-  port: 3306,
-  protocol: 'TCP',
-  targetPort: {
-    intVal: 3306,
-    strVal: '',
-    type: 0
-  },
-  isSet: true
-}
-
-const envTmp = {
-  name: '',
-  value: '',
-  isSet: true
-}
-
 const volumnTmp = {
   key: '',
   path: '',
@@ -189,9 +172,9 @@ const volumnTmp = {
 
 export default {
   name: 'FormData',
-  // components: {
-  //   NodeSpec
-  // },
+  components: {
+    NodeSpec
+  },
   props: {
     oneData: {
       type: Object,
@@ -207,25 +190,7 @@ export default {
         value: 'slave',
         label: 'slave'
       }],
-      branch: '',
-      form: [],
       options: [],
-      value: [],
-      secretData: '',
-      containCloumn: [
-        { field: 'containerPort', title: 'containerPort', width: 150 },
-        { field: 'hostIP', title: 'hostIP', width: 150 },
-        { field: 'hostPort', title: 'hostPort', width: 150 },
-        { field: 'name', title: 'name', width: 150 },
-        { field: 'protocol', title: 'protocol', width: 150 }
-      ],
-      serviceCloumn: [
-        { field: 'name', title: 'name', width: 150 },
-        { field: 'nodePort', title: 'nodePort', width: 150 },
-        { field: 'port', title: 'port', width: 150 },
-        { field: 'protocol', title: 'protocol', width: 150 },
-        { field: 'targetPort', title: 'targetPort', width: 380 }
-      ],
       isResouceShow: 1,
       flag: false,
       volume_map: [],
@@ -233,15 +198,19 @@ export default {
         { field: 'key', title: 'key' },
         { field: 'path', title: 'path' }
       ],
-      activeNames: ['1'],
+      activeNames: ['1', '2', '3', '4'],
       project_name: '',
-      envColumn: [
-        { field: 'name', title: 'name' },
-        { field: 'value', title: 'value' }
-      ],
       typeName: '',
-      argsStr: '',
-      commandStr: ''
+
+      specData: {},
+
+      //  标签使用
+      tagsList: [],
+      inputVisible: false,
+      inputValue: '',
+      closeFlag: false,
+      disabledFlag: true,
+      dialogVisible: false
     }
   },
   watch: {
@@ -252,23 +221,15 @@ export default {
     'volume_map.volume.name': function(val) {
       this.volume_map.volumeMount.name = this.volume_map.volume.name
     },
-    argsStr() {
-      if (this.oneData.applications[0]['args'] !== '') {
-        this.oneData.applications[0]['args'] = JSON.parse(this.argsStr)
-      }
-    },
-    commandStr() {
-      if (this.oneData.applications[0]['command'] !== '') {
-        this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
-      }
-    },
     project_name() {
       if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
         this.oneData.master.name = this.typeName + this.project_name
         this.oneData.slave.name = this.typeName + this.project_name
-      } else if (this.oneData.typename === 'HelixSagaOperator') {
-        this.oneData.applications[0]['spec']['name'] = this.typeName + this.project_name
+        this.oneData.name = this.project_name
       }
+      // else if (this.oneData.typename === 'HelixSagaOperator') {
+      //   this.oneData.applications[0]['spec']['name'] = this.typeName + this.project_name
+      // }
     }
   },
   mounted() {
@@ -276,61 +237,145 @@ export default {
   },
   methods: {
     initSaga() {
+      // public data
+      this.getCreateData()
+      this.secret()
+
       var i = 0
 
+      // name
       switch (this.oneData.typename) {
         case 'MysqlOperator':
           this.typeName = 'mo-'
-          i = 2
+          i = 3
+          this.tagsList = ['master', 'slave']
+          this.closeFlag = false
+          this.disabledFlag = true
           break
         case 'RedisOperator':
           this.typeName = 'ro-'
-          i = 2
+          i = 3
+          this.tagsList = ['master', 'slave']
+          this.closeFlag = false
+          this.disabledFlag = true
           break
         case 'HelixSagaOperator':
           this.typeName = 'hso-'
-          i = 3
+          i = 4
+          this.tagsList = JSON.parse(JSON.stringify(this.getAppList()))
+          this.closeFlag = true
+          this.disabledFlag = false
           break
       }
 
       if (this.oneData.name === '') {
+        //  create
         if (this.oneData.typename === 'HelixSagaOperator') {
-          this.oneData.applications = Applications
-          this.oneData.applications[0]['spec'] = Form
-          this.oneData.configMap = Configmap
+          // this.oneData.applications = Applications
+          // this.oneData.applications[0]['spec'] = Form
+          // this.oneData.configMap = Configmap
         } else {
           this.oneData.master = JSON.parse(JSON.stringify(Form))
           this.oneData.slave = JSON.parse(JSON.stringify(Form))
         }
-        this.oneData.name = this.project_name
+        this.oneData.name = ''
+        this.project_name = ''
       } else {
+        // update
+
         if (this.oneData.name.indexOf(this.typeName) !== -1) {
-          this.oneData.name = this.oneData.name.splice(i)
+          this.project_name = this.oneData.name.slice(i)
         } else {
           this.project_name = this.oneData.name
         }
-
-        if (this.oneData.typename === 'HelixSagaOperator') {
-          if (this.oneData.applications[0]['args'] !== '') {
-            this.argsStr = JSON.stringify(this.oneData.applications[0]['args'])
-          }
-
-          if (this.oneData.applications[0]['command'] !== '') {
-            this.commandStr = JSON.stringify(this.oneData.applications[0]['command'])
-          }
-        }
       }
 
-      this.getCreateData()
-      this.secret()
-
       if (this.oneData.typename === 'HelixSagaOperator') {
-        this.initHelixSaga()
-        this.activeNames = ['1']
+        this.specData.flag = true
+        this.flag = true
+        this.volume_map = this.oneData.configMap
+
+        if (this.volume_map.volume.volumeSource.configMap.items !== '') {
+          this.volume_map.volume.volumeSource.configMap.items.forEach(element => {
+            element.isSet = false
+          })
+
+          this.volume_map.volume.volumeSource.configMap.items = JSON.parse(JSON.stringify(this.volume_map.volume.volumeSource.configMap.items))
+        }
       } else {
-        this.activeNames = ['2']
+        this.specData.flag = false
         this.flag = false
-        this.initForm()
+      }
+    },
+    handleClose(tag) {
+      console.log(33333333)
+      this.tagsList.splice(this.tagsList.indexOf(tag), 1)
+
+      this.oneData.applications.forEach((element, key) => {
+        if (element.spec.name === tag) {
+          this.oneData.applications.splice(key, 1)
+        }
+      })
+    },
+    showInput() {
+      console.log(111111111)
+      this.inputVisible = true
+      this.inputValue = this.typeName + this.project_name
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
+    },
+    handleInputConfirm() {
+      console.log(222222222)
+      const inputValue = this.inputValue
+      if (inputValue) {
+        this.tagsList.push(inputValue)
+        // console.log(this.oneData.applications.)
+        Form.name = inputValue
+        const app = {
+          args: [],
+          command: [],
+          spec: Form
+        }
+
+        this.oneData.applications.push(app)
+      }
+      this.inputVisible = false
+      this.inputValue = ''
+    },
+    getAppList() {
+      const arr = []
+
+      this.oneData.applications.forEach(element => {
+        arr.push(element.spec.name)
+      })
+
+      return arr
+    },
+    openData(tag) {
+      this.dialogVisible = true
+      switch (this.oneData.typename) {
+        case 'MysqlOperator':
+        case 'RedisOperator':
+          this.specData.data = this.oneData[tag]
+
+          this.$nextTick(_ => {
+            this.$refs.NodeSpec.initForm()
+          })
+          break
+        case 'HelixSagaOperator':
+
+          this.oneData.applications.forEach(element => {
+            if (element.spec.name === tag) {
+              this.specData.data = element
+            }
+          })
+
+          this.specData.flag = true
+          this.$nextTick(_ => {
+            this.$refs.NodeSpec.initHelixSaga()
+          })
+          break
       }
     },
     getCreateData() {
@@ -340,47 +385,6 @@ export default {
       ++this.isResouceShow
       this.initParam('hubs')
     },
-    initHelixSaga() {
-      this.flag = true
-      this.volume_map = this.oneData.configMap
-      this.form = this.oneData.applications[0]['spec']
-
-      if (this.volume_map.volume.volumeSource.configMap.items !== '') {
-        this.volume_map.volume.volumeSource.configMap.items.forEach(element => {
-          element.isSet = false
-        })
-
-        this.volume_map.volume.volumeSource.configMap.items = JSON.parse(JSON.stringify(this.volume_map.volume.volumeSource.configMap.items))
-      }
-
-      if (this.form.env !== '') {
-        this.form.env.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.env = JSON.parse(JSON.stringify(this.form.env))
-      }
-
-      if (this.form.containerPorts !== '') {
-        this.form.containerPorts.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
-      }
-
-      if (this.form.servicePorts !== '') {
-        this.form.servicePorts.forEach(element => {
-          element.isSet = false
-        })
-        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
-      }
-    },
-    handleChange(value) {
-      var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
-      this.form.image = str
-    },
-    changesecre(value) {},
     changeConfigName(value) {},
     changePart(value) {},
     initParam(type, url = '', id = 0, imageName = '') {
@@ -445,68 +449,13 @@ export default {
         _self.responseData(res, _self)
       })
     },
-    // master | slave 切换
-    changeBranch(value) {
-      this.branch = value
-      this.form = this.oneData[value]
-
-      if (this.form.containerPorts !== '') {
-        this.form.containerPorts.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
-      }
-
-      if (this.form.servicePorts !== '') {
-        this.form.servicePorts.forEach(element => {
-          element.isSet = false
-        })
-        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
-      }
-
-      if (this.form.env !== '') {
-        this.form.env.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.env = JSON.parse(JSON.stringify(this.form.env))
-      }
-    },
-    // 初始化form数据
-    initForm() {
-      this.branch = 'master'
-      this.form = this.oneData.master
-
-      if (this.form.containerPorts !== {}) {
-        this.form.containerPorts.forEach(value => {
-          value.isSet = false
-        })
-        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
-      }
-
-      if (this.form.servicePorts !== {}) {
-        this.form.servicePorts.forEach(element => {
-          element.isSet = false
-        })
-        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
-      }
-
-      if (this.form.env !== '') {
-        this.form.env.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.env = JSON.parse(JSON.stringify(this.form.env))
-      }
-    },
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
 
       if (result.param.service === 'list') {
         var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
 
-        _self.secretData = list.items
+        _self.specData.secretData = list.items
       }
 
       switch (result.param.harborRequest.command) {
@@ -590,10 +539,27 @@ export default {
             }
           })
 
+          _self.specData.options = _self.options
+
           break
       }
     },
-    // 修改 | 保存
+    addVolumn() {
+      var mark = true
+      this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
+      }
+    },
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
 
@@ -657,72 +623,6 @@ export default {
           row.isSet = true
         }
       }
-    },
-    // 添加 containport
-    addContainPort() {
-      var mark = true
-      this.form.containerPorts.forEach((element, key) => {
-        if (element.isSet) {
-          mark = false
-          this.$message({
-            message: '请先保存当前修改项',
-            type: 'warning'
-          })
-        }
-      })
-
-      if (mark) {
-        this.form.containerPorts.push(contain)
-      }
-    },
-    addServicePort() {
-      var mark = true
-      this.form.servicePorts.forEach((element, key) => {
-        if (element.isSet) {
-          mark = false
-          this.$message({
-            message: '请先保存当前修改项',
-            type: 'warning'
-          })
-        }
-      })
-
-      if (mark) {
-        servicePort.targetPort = JSON.stringify(servicePort.targetPort)
-        this.form.servicePorts.push(servicePort)
-      }
-    },
-    addVolumn() {
-      var mark = true
-      this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
-        if (element.isSet) {
-          mark = false
-          this.$message({
-            message: '请先保存当前修改项',
-            type: 'warning'
-          })
-        }
-      })
-
-      if (mark) {
-        this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
-      }
-    },
-    addEnv() {
-      var mark = true
-      this.form.env.forEach((element, key) => {
-        if (element.isSet) {
-          mark = false
-          this.$message({
-            message: '请先保存当前修改项',
-            type: 'warning'
-          })
-        }
-      })
-
-      if (mark) {
-        this.form.env.push(envTmp)
-      }
     }
   }
 }
@@ -747,4 +647,20 @@ export default {
   width: 20%;
   margin-top: 5px;
 }
+
+.el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
+  }
 </style>

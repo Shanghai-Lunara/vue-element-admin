@@ -1,20 +1,24 @@
 <template>
 
-  <el-form ref="form" label-width="150px" style="margin-top: 10px;">
+  <el-form label-width="150px" style="margin-top: 10px;">
 
-    <el-form-item v-if="flag === false">
-      <el-select v-model="branch" @change="changeBranch">
-        <el-option
-          v-for="item in select"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value"
-        />
-      </el-select>
+    <!-- command -->
+    <el-form-item v-if="specData.flag" label="command">
+      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["php",""]</div>
+      <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
     </el-form-item>
 
+    <!-- args -->
+
+    <el-form-item v-if="specData.flag" label="args">
+      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/var/www/app/extensions/queue_server.php","debug"]</div>
+      <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
+    </el-form-item>
+
+    <!-- spec -->
+
     <el-form-item label="Name">
-      <el-input v-if="flag === false" v-model="form.name" disabled />
+      <el-input v-if="specData.flag === false" v-model="form.name" disabled />
       <el-input v-else v-model="form.name" />
     </el-form-item>
 
@@ -22,9 +26,8 @@
       <el-input v-model="form.image" style="width: 400px;" />
 
       <el-cascader
-        :key="isResouceShow"
         v-model="value"
-        :options="options"
+        :options="specData.options"
         style="width: 580px;"
         @change="handleChange"
       />
@@ -34,7 +37,7 @@
     <el-form-item label="imagePullSecrets">
       <el-select v-model="form.imagePullSecrets" @change="changesecre">
         <el-option
-          v-for="item in secretData"
+          v-for="item in specData.secretData"
           :key="item.name"
           :label="item.name"
           :value="item.name"
@@ -50,7 +53,7 @@
       <el-input v-model="form.volumePath" />
     </el-form-item>
 
-    <el-form-item v-if="flag === true" label="env">
+    <el-form-item v-if="specData.flag === true" label="env">
       <!-- env -->
       <el-row>
         <el-col>
@@ -182,53 +185,6 @@
 
 <script>
 
-const Applications = [
-  {
-    args: [],
-    command: []
-  }
-]
-
-const Configmap = {
-  volume: {
-    name: '',
-    volumeSource: {
-      configMap: {
-        items: [],
-        name: ''
-      }
-    }
-  },
-  volumeMount: {
-    mountPath: '/var/www/app/conf',
-    name: '',
-    readOnly: false,
-    subPath: '',
-    subPathExpr: ''
-  }
-}
-
-const Form = {
-  name: '',
-  containerPorts: [],
-  env: [],
-  image: '',
-  imagePullSecrets: '',
-  podResource: {
-    limits: {
-      cpu: '100m',
-      memory: '1Gi'
-    },
-    requests: {
-      cpu: '10m',
-      memory: '512Mi'
-    }
-  },
-  replicas: 0,
-  servicePorts: [],
-  volumePath: ''
-}
-
 const contain = {
   containerPort: 3306,
   hostIP: '',
@@ -257,16 +213,10 @@ const envTmp = {
   isSet: true
 }
 
-const volumnTmp = {
-  key: '',
-  path: '',
-  isSet: true
-}
-
 export default {
-  name: 'FormData',
+  name: 'NodeSpec',
   props: {
-    oneData: {
+    specData: {
       type: Object,
       required: true
     }
@@ -280,11 +230,6 @@ export default {
         value: 'slave',
         label: 'slave'
       }],
-      branch: '',
-      form: [],
-      options: [],
-      value: [],
-      secretData: '',
       containCloumn: [
         { field: 'containerPort', title: 'containerPort', width: 150 },
         { field: 'hostIP', title: 'hostIP', width: 150 },
@@ -299,135 +244,72 @@ export default {
         { field: 'protocol', title: 'protocol', width: 150 },
         { field: 'targetPort', title: 'targetPort', width: 380 }
       ],
-      isResouceShow: 1,
-      flag: false,
-      volume_map: [],
-      volumeColumn: [
-        { field: 'key', title: 'key' },
-        { field: 'path', title: 'path' }
-      ],
-      activeNames: ['1'],
-      project_name: '',
       envColumn: [
         { field: 'name', title: 'name' },
         { field: 'value', title: 'value' }
       ],
-      typeName: '',
       argsStr: '',
-      commandStr: ''
+      commandStr: '',
+      form: [],
+      value: []
     }
   },
   watch: {
 
-    oneData() {
-      this.initSaga()
-    },
-    'volume_map.volume.name': function(val) {
-      this.volume_map.volumeMount.name = this.volume_map.volume.name
-    },
     argsStr() {
-      if (this.oneData.applications[0]['args'] !== '') {
-        this.oneData.applications[0]['args'] = JSON.parse(this.argsStr)
+      if (this.specData.data['args'] !== '') {
+        this.specData.data['args'] = JSON.parse(this.argsStr)
       }
     },
     commandStr() {
-      if (this.oneData.applications[0]['command'] !== '') {
-        this.oneData.applications[0]['command'] = JSON.parse(this.commandStr)
-      }
-    },
-    project_name() {
-      if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
-        this.oneData.master.name = this.typeName + this.project_name
-        this.oneData.slave.name = this.typeName + this.project_name
-      } else if (this.oneData.typename === 'HelixSagaOperator') {
-        this.oneData.applications[0]['spec']['name'] = this.typeName + this.project_name
+      if (this.specData.data['command'] !== '') {
+        this.specData.data['command'] = JSON.parse(this.commandStr)
       }
     }
+
   },
   mounted() {
-    // console.log(this.oneData)
-    this.initSaga()
   },
   methods: {
-    initSaga() {
-      // this.oneData.typename
+    // 初始化form数据
+    initForm() {
+      this.form = this.specData.data
 
-      var i = 0
-
-      switch (this.oneData.typename) {
-        case 'MysqlOperator':
-          this.typeName = 'mo-'
-          i = 2
-          break
-        case 'RedisOperator':
-          this.typeName = 'ro-'
-          i = 2
-          break
-        case 'HelixSagaOperator':
-          this.typeName = 'hso-'
-          i = 3
-          break
+      if (this.form.containerPorts !== {}) {
+        this.form.containerPorts.forEach(value => {
+          value.isSet = false
+        })
+        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
       }
 
-      if (this.oneData.name === '') {
-        if (this.oneData.typename === 'HelixSagaOperator') {
-          this.oneData.applications = Applications
-          this.oneData.applications[0]['spec'] = Form
-          this.oneData.configMap = Configmap
-        } else {
-          this.oneData.master = JSON.parse(JSON.stringify(Form))
-          this.oneData.slave = JSON.parse(JSON.stringify(Form))
-        }
-        this.oneData.name = this.project_name
-      } else {
-        if (this.oneData.name.indexOf(this.typeName) !== -1) {
-          this.oneData.name = this.oneData.name.splice(i)
-        } else {
-          this.project_name = this.oneData.name
-        }
-
-        if (this.oneData.typename === 'HelixSagaOperator') {
-          if (this.oneData.applications[0]['args'] !== '') {
-            this.argsStr = JSON.stringify(this.oneData.applications[0]['args'])
-          }
-
-          if (this.oneData.applications[0]['command'] !== '') {
-            this.commandStr = JSON.stringify(this.oneData.applications[0]['command'])
-          }
-        }
-      }
-
-      this.getCreateData()
-      this.secret()
-
-      if (this.oneData.typename === 'HelixSagaOperator') {
-        this.initHelixSaga()
-        this.activeNames = ['1']
-      } else {
-        this.activeNames = ['2']
-        this.flag = false
-        this.initForm()
-      }
-    },
-    getCreateData() {
-      // 初始化 hubs
-      this.options = []
-      // cascader 渲染更新
-      ++this.isResouceShow
-      this.initParam('hubs')
-    },
-    initHelixSaga() {
-      this.flag = true
-      this.volume_map = this.oneData.configMap
-      this.form = this.oneData.applications[0]['spec']
-
-      if (this.volume_map.volume.volumeSource.configMap.items !== '') {
-        this.volume_map.volume.volumeSource.configMap.items.forEach(element => {
+      if (this.form.servicePorts !== {}) {
+        this.form.servicePorts.forEach(element => {
           element.isSet = false
         })
-
-        this.volume_map.volume.volumeSource.configMap.items = JSON.parse(JSON.stringify(this.volume_map.volume.volumeSource.configMap.items))
+        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
+
+      if (this.form.env !== '') {
+        this.form.env.forEach(value => {
+          value.isSet = false
+        })
+
+        this.form.env = JSON.parse(JSON.stringify(this.form.env))
+      }
+    },
+    initHelixSaga() {
+      console.log(99999999)
+      console.log(this.specData)
+
+      if (this.specData.data.args !== '') {
+        this.argsStr = JSON.stringify(this.specData.data.args)
+      }
+
+      if (this.specData.data.command !== '') {
+        this.commandStr = JSON.stringify(this.specData.data.command)
+      }
+
+      this.form = this.specData.data.spec
 
       if (this.form.env !== '') {
         this.form.env.forEach(value => {
@@ -457,218 +339,6 @@ export default {
       this.form.image = str
     },
     changesecre(value) {},
-    changeConfigName(value) {},
-    changePart(value) {},
-    initParam(type, url = '', id = 0, imageName = '') {
-      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
-
-      var data = {
-        'harborUrl': url,
-        'command': type,
-        'projectId': id,
-        'imageName': imageName
-      }
-
-      var param = {
-        'nameSpace': this.oneData.namespace,
-        'service': 'harbor',
-        'resourceType': '',
-        'harborRequest': data
-      }
-
-      var errData = Proto.Param.verify(param)
-
-      if (errData) { throw Error(errData) }
-
-      var msg = {
-        'param': param,
-        'data': ''
-      }
-
-      var message = Proto.Request.create(msg)
-
-      var senddata = Proto.Request.encode(message).finish()
-
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
-    },
-    secret() {
-      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
-
-      var param = {
-        'nameSpace': this.oneData.namespace,
-        'service': 'list',
-        'resourceType': 'Secret'
-      }
-
-      var errData = Proto.Param.verify(param)
-
-      if (errData) { throw Error(errData) }
-
-      var msg = {
-        'param': param,
-        'data': ''
-      }
-
-      var message = Proto.Request.create(msg)
-
-      var senddata = Proto.Request.encode(message).finish()
-
-      var _self = this
-      this.$socketApi(senddata, function(res) {
-        _self.responseData(res, _self)
-      })
-    },
-    // master | slave 切换
-    changeBranch(value) {
-      this.branch = value
-      this.form = this.oneData[value]
-
-      if (this.form.containerPorts !== '') {
-        this.form.containerPorts.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
-      }
-
-      if (this.form.servicePorts !== '') {
-        this.form.servicePorts.forEach(element => {
-          element.isSet = false
-        })
-        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
-      }
-
-      if (this.form.env !== '') {
-        this.form.env.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.env = JSON.parse(JSON.stringify(this.form.env))
-      }
-    },
-    // 初始化form数据
-    initForm() {
-      this.branch = 'master'
-      this.form = this.oneData.master
-
-      if (this.form.containerPorts !== {}) {
-        this.form.containerPorts.forEach(value => {
-          value.isSet = false
-        })
-        this.form.containerPorts = JSON.parse(JSON.stringify(this.form.containerPorts))
-      }
-
-      if (this.form.servicePorts !== {}) {
-        this.form.servicePorts.forEach(element => {
-          element.isSet = false
-        })
-        this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
-      }
-
-      if (this.form.env !== '') {
-        this.form.env.forEach(value => {
-          value.isSet = false
-        })
-
-        this.form.env = JSON.parse(JSON.stringify(this.form.env))
-      }
-    },
-    responseData(res, _self) {
-      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-
-      if (result.param.service === 'list') {
-        var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
-
-        _self.secretData = list.items
-      }
-
-      switch (result.param.harborRequest.command) {
-        case 'hubs':
-          var hublist = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.decode(result.result)
-
-          hublist.items.forEach(element => {
-            _self.options.push(
-              {
-                'value': element.name,
-                'label': element.name,
-                'children': []
-              }
-            )
-
-            _self.initParam('projects', element.name)
-          })
-
-          break
-        case 'projects':
-          var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.decode(result.result)
-
-          _self.options.forEach(value => {
-            if (value.value === result.param.harborRequest.harborUrl) {
-              dataStr.items.forEach((element, key) => {
-                value.children.push(
-                  {
-                    'value': element.projectId,
-                    'label': element.name,
-                    'children': []
-                  }
-                )
-
-                _self.initParam('repositories', result.param.harborRequest.harborUrl, element.projectId)
-              })
-            }
-          })
-
-          break
-        case 'repositories':
-          // HarborRepositoryList
-          var repositories = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList.decode(result.result)
-
-          _self.options.forEach(value => {
-            if (value.value === result.param.harborRequest.harborUrl) {
-              value.children.forEach(repos_value => {
-                if (repos_value.value === result.param.harborRequest.projectId) {
-                  repositories.items.forEach(element => {
-                    repos_value.children.push({
-                      'value': element.name,
-                      'label': element.name,
-                      'children': []
-                    })
-                    _self.initParam('tags', result.param.harborRequest.harborUrl, element.projectId, element.name)
-                  })
-                }
-              })
-            }
-          })
-
-          break
-        case 'tags':
-          var tags = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList.decode(result.result)
-
-          _self.options.forEach(value => {
-            if (value.value === result.param.harborRequest.harborUrl) {
-              value.children.forEach(repos_value => {
-                if (repos_value.value === result.param.harborRequest.projectId) {
-                  repos_value.children.forEach(tags_value => {
-                    if (tags_value.label === result.param.harborRequest.imageName) {
-                      tags.items.forEach(element => {
-                        tags_value.children.push({
-                          'value': element.name,
-                          'label': element.name
-                        })
-                      })
-                    }
-                  })
-                }
-              })
-            }
-          })
-
-          break
-      }
-    },
     // 修改 | 保存
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
@@ -764,24 +434,13 @@ export default {
       })
 
       if (mark) {
-        servicePort.targetPort = JSON.stringify(servicePort.targetPort)
-        this.form.servicePorts.push(servicePort)
-      }
-    },
-    addVolumn() {
-      var mark = true
-      this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
-        if (element.isSet) {
-          mark = false
-          this.$message({
-            message: '请先保存当前修改项',
-            type: 'warning'
-          })
+        const new_port = {
+          intVal: 3306,
+          strVal: '',
+          type: 0
         }
-      })
-
-      if (mark) {
-        this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
+        servicePort.targetPort = JSON.stringify(new_port)
+        this.form.servicePorts.push(servicePort)
       }
     },
     addEnv() {
@@ -800,6 +459,7 @@ export default {
         this.form.env.push(envTmp)
       }
     }
+
   }
 }
 

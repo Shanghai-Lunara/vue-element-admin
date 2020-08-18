@@ -419,8 +419,6 @@ export default {
             list.push(item)
           })
 
-          console.log(list)
-
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
@@ -543,6 +541,9 @@ export default {
           }
           break
         case 'create':
+          console.log(55555555)
+          console.log(result)
+          console.log(this.binaryToStr(result.result))
           if (result.code === 0) {
             this.$notify({
               title: '成功',
@@ -577,6 +578,14 @@ export default {
           break
       }
     },
+    binaryToStr(fileData) {
+      var dataString = ''
+      for (var i = 0; i < fileData.length; i++) {
+        dataString += String.fromCharCode(fileData[i])
+      }
+
+      return dataString
+    },
     selectNameSpace() {
       var data = {
         'nameSpace': this.nameSpace,
@@ -605,6 +614,7 @@ export default {
     },
     // mysql | redis | helixsaga 新增
     handleCreate() {
+      console.log('add')
       if (this.warning()) {
         return
       }
@@ -778,7 +788,6 @@ export default {
     // config | mysqloperator | redisoperator 编辑
     editData(row) {
       console.log('editor')
-      console.log(row)
       if (this.warning()) {
         return
       }
