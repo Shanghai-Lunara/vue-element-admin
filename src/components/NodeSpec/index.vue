@@ -18,8 +18,9 @@
     <!-- spec -->
 
     <el-form-item label="Name">
-      <el-input v-if="specData.flag === false" v-model="form.name" disabled />
-      <el-input v-else v-model="form.name" />
+      <el-input v-model="form.name" disabled />
+      <!-- <el-input v-if="specData.flag === false" v-model="form.name" disabled /> -->
+      <!-- <el-input v-else v-model="form.name" /> -->
     </el-form-item>
 
     <el-form-item label="image">
@@ -257,13 +258,13 @@ export default {
   watch: {
 
     argsStr() {
-      if (this.specData.data['args'] !== '') {
-        this.specData.data['args'] = JSON.parse(this.argsStr)
+      if (this.argsStr !== '') {
+        this.specData.data.args = JSON.parse(this.argsStr)
       }
     },
     commandStr() {
-      if (this.specData.data['command'] !== '') {
-        this.specData.data['command'] = JSON.parse(this.commandStr)
+      if (this.commandStr !== '') {
+        this.specData.data.command = JSON.parse(this.commandStr)
       }
     }
 
@@ -298,9 +299,6 @@ export default {
       }
     },
     initHelixSaga() {
-      console.log(99999999)
-      console.log(this.specData)
-
       if (this.specData.data.args !== '') {
         this.argsStr = JSON.stringify(this.specData.data.args)
       }

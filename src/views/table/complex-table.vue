@@ -456,21 +456,7 @@ export default {
           _self.showFlag = false
 
           break
-      }
 
-      return {
-        list: list,
-        total: total,
-        isTiny: isTiny
-      }
-    },
-
-    returnResource(service, _self) {
-      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
-      switch (result.param.service) {
-        case 'ping':
-          console.log('ping')
-          break
         case 'NameSpace':
           var spaceList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
 
@@ -490,6 +476,23 @@ export default {
           this.permission_routes[5]['children'] = now_arr
 
           break
+      }
+
+      return {
+        list: list,
+        total: total,
+        isTiny: isTiny
+      }
+    },
+
+    returnResource(service, _self) {
+      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+
+      switch (result.param.service) {
+        case 'ping':
+          console.log('ping')
+          break
+
         case 'resource': {
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
@@ -538,12 +541,16 @@ export default {
               'resourceType': this.listQuery.type
             }
             this.getList(data)
+          } else {
+            this.$notify({
+              title: '失败',
+              message: this.binaryToStr(result.result),
+              type: 'error',
+              duration: 2000
+            })
           }
           break
         case 'create':
-          console.log(55555555)
-          console.log(result)
-          console.log(this.binaryToStr(result.result))
           if (result.code === 0) {
             this.$notify({
               title: '成功',
@@ -558,6 +565,13 @@ export default {
               'resourceType': this.listQuery.type
             }
             this.getList(data)
+          } else {
+            this.$notify({
+              title: '失败',
+              message: this.binaryToStr(result.result),
+              type: 'error',
+              duration: 2000
+            })
           }
           break
         case 'delete':
@@ -614,7 +628,6 @@ export default {
     },
     // mysql | redis | helixsaga 新增
     handleCreate() {
-      console.log('add')
       if (this.warning()) {
         return
       }
@@ -730,6 +743,7 @@ export default {
     },
     // 处理helixsaga 数据
     checkSaga() {
+      // console.log(this.oneData)
       delete this.oneData.configList
 
       if (this.oneData.configMap.volume.volumeSource.configMap.items !== '') {
@@ -738,15 +752,19 @@ export default {
         })
       }
 
-      if (this.oneData.applications[0]['spec']['containerPorts'] !== '') {
-        this.oneData.applications[0]['spec']['containerPorts'].forEach(element => {
-          delete element.isSet
-        })
-      }
+      if (this.oneData.applications !== '') {
+        this.oneData.applications.forEach(element => {
+          if (element.spec.containerPorts !== '') {
+            element.spec.containerPorts.forEach(value => [
+              delete value.isSet
+            ])
+          }
 
-      if (this.oneData.applications[0]['spec']['servicePorts'] !== '') {
-        this.oneData.applications[0]['spec']['servicePorts'].forEach(element => {
-          delete element.isSet
+          if (element.spec.servicePorts !== '') {
+            element.spec.servicePorts.forEach(value => [
+              delete value.isSet
+            ])
+          }
         })
       }
     },
@@ -787,7 +805,6 @@ export default {
     },
     // config | mysqloperator | redisoperator 编辑
     editData(row) {
-      console.log('editor')
       if (this.warning()) {
         return
       }

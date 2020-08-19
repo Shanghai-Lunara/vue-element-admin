@@ -124,44 +124,23 @@
 
 import NodeSpec from '@/components/NodeSpec'
 
-// const Configmap = {
-//   volume: {
-//     name: '',
-//     volumeSource: {
-//       configMap: {
-//         items: [],
-//         name: ''
-//       }
-//     }
-//   },
-//   volumeMount: {
-//     mountPath: '/var/www/app/conf',
-//     name: '',
-//     readOnly: false,
-//     subPath: '',
-//     subPathExpr: ''
-//   }
-// }
-
-const Form = {
-  name: '',
-  containerPorts: [],
-  env: [],
-  image: '',
-  imagePullSecrets: '',
-  podResource: {
-    limits: {
-      cpu: '100m',
-      memory: '1Gi'
-    },
-    requests: {
-      cpu: '10m',
-      memory: '512Mi'
+const Configmap = {
+  volume: {
+    name: '',
+    volumeSource: {
+      configMap: {
+        items: [],
+        name: ''
+      }
     }
   },
-  replicas: 0,
-  servicePorts: [],
-  volumePath: ''
+  volumeMount: {
+    mountPath: '/var/www/app/conf',
+    name: '',
+    readOnly: false,
+    subPath: '',
+    subPathExpr: ''
+  }
 }
 
 const volumnTmp = {
@@ -225,11 +204,9 @@ export default {
       if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
         this.oneData.master.name = this.typeName + this.project_name
         this.oneData.slave.name = this.typeName + this.project_name
-        this.oneData.name = this.project_name
       }
-      // else if (this.oneData.typename === 'HelixSagaOperator') {
-      //   this.oneData.applications[0]['spec']['name'] = this.typeName + this.project_name
-      // }
+
+      this.oneData.name = this.project_name
     }
   },
   mounted() {
@@ -271,12 +248,11 @@ export default {
       if (this.oneData.name === '') {
         //  create
         if (this.oneData.typename === 'HelixSagaOperator') {
-          // this.oneData.applications = Applications
-          // this.oneData.applications[0]['spec'] = Form
-          // this.oneData.configMap = Configmap
+          this.oneData.applications = []
+          this.oneData.configMap = Configmap
         } else {
-          this.oneData.master = JSON.parse(JSON.stringify(Form))
-          this.oneData.slave = JSON.parse(JSON.stringify(Form))
+          this.oneData.master = JSON.parse(JSON.stringify(this.generateForm()))
+          this.oneData.slave = JSON.parse(JSON.stringify(this.generateForm()))
         }
         this.oneData.name = ''
         this.project_name = ''
@@ -307,8 +283,31 @@ export default {
         this.flag = false
       }
     },
+    generateForm() {
+      const form = {
+        name: '',
+        containerPorts: [],
+        env: [],
+        image: '',
+        imagePullSecrets: '',
+        podResource: {
+          limits: {
+            cpu: '100m',
+            memory: '1Gi'
+          },
+          requests: {
+            cpu: '10m',
+            memory: '512Mi'
+          }
+        },
+        replicas: 0,
+        servicePorts: [],
+        volumePath: ''
+      }
+
+      return form
+    },
     handleClose(tag) {
-      console.log(33333333)
       this.tagsList.splice(this.tagsList.indexOf(tag), 1)
 
       this.oneData.applications.forEach((element, key) => {
@@ -318,24 +317,22 @@ export default {
       })
     },
     showInput() {
-      console.log(111111111)
       this.inputVisible = true
-      this.inputValue = this.typeName + this.project_name
       this.$nextTick(_ => {
         this.$refs.saveTagInput.$refs.input.focus()
       })
     },
     handleInputConfirm() {
-      console.log(222222222)
       const inputValue = this.inputValue
       if (inputValue) {
-        this.tagsList.push(inputValue)
-        // console.log(this.oneData.applications.)
-        Form.name = inputValue
+        const new_inputValue = this.typeName + this.project_name + '-' + inputValue
+        this.tagsList.push(new_inputValue)
+        const form = this.generateForm()
+        form.name = new_inputValue
         const app = {
           args: [],
           command: [],
-          spec: Form
+          spec: form
         }
 
         this.oneData.applications.push(app)
@@ -346,9 +343,14 @@ export default {
     getAppList() {
       const arr = []
 
-      this.oneData.applications.forEach(element => {
-        arr.push(element.spec.name)
-      })
+      if (this.oneData.applications !== undefined) {
+        this.oneData.applications.forEach(element => {
+          // const flagName = this.typeName + this.project_name + '-'
+
+          // arr.push(element.spec.name.replace(flagName, ''))
+          arr.push(element.spec.name)
+        })
+      }
 
       return arr
     },
