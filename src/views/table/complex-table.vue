@@ -728,9 +728,8 @@ export default {
         this.checkSaga()
       } else {
         this.checkData()
+        this.oneData.name = str + this.oneData.name
       }
-
-      this.oneData.name = str + this.oneData.name
 
       delete this.oneData.typename
       if (this.oneData.type) {

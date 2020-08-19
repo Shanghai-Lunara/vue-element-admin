@@ -206,7 +206,7 @@ export default {
         this.oneData.slave.name = this.typeName + this.project_name
       }
 
-      this.oneData.name = this.project_name
+      // this.oneData.name = this.project_name
     }
   },
   mounted() {
