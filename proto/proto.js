@@ -97,36 +97,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              ConfigMap.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap()
-                if (object.Name != null) { message.Name = String(object.Name) }
-                if (object.data) {
-                  if (typeof object.data !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.data: object expected') }
-                  message.data = {}
-                  for (let keys = Object.keys(object.data), i = 0; i < keys.length; ++i) { message.data[keys[i]] = String(object.data[keys[i]]) }
-                }
-                return message
-              }
-
-              ConfigMap.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.objects || options.defaults) { object.data = {} }
-                if (options.defaults) { object.Name = '' }
-                if (message.Name != null && message.hasOwnProperty('Name')) { object.Name = message.Name }
-                let keys2
-                if (message.data && (keys2 = Object.keys(message.data)).length) {
-                  object.data = {}
-                  for (let j = 0; j < keys2.length; ++j) { object.data[keys2[j]] = message.data[keys2[j]] }
-                }
-                return object
-              }
-
-              ConfigMap.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return ConfigMap
             })()
 
@@ -191,35 +161,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              ConfigMapList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              ConfigMapList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              ConfigMapList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return ConfigMapList
@@ -302,43 +243,6 @@ export const github = $root.github = (() => {
                   if (typeof message.optional !== 'boolean') { return 'optional: boolean expected' }
                 }
                 return null
-              }
-
-              ConfigMapVolumeSource.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.KeyToPath.fromObject(object.items[i])
-                  }
-                }
-                if (object.defaultMode != null) { message.defaultMode = object.defaultMode | 0 }
-                if (object.optional != null) { message.optional = Boolean(object.optional) }
-                return message
-              }
-
-              ConfigMapVolumeSource.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (options.defaults) {
-                  object.defaultMode = 0
-                  object.optional = false
-                }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.KeyToPath.toObject(message.items[j], options) }
-                }
-                if (message.defaultMode != null && message.hasOwnProperty('defaultMode')) { object.defaultMode = message.defaultMode }
-                if (message.optional != null && message.hasOwnProperty('optional')) { object.optional = message.optional }
-                return object
-              }
-
-              ConfigMapVolumeSource.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return ConfigMapVolumeSource
@@ -431,39 +335,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              ContainerPort.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.hostPort != null) { message.hostPort = object.hostPort | 0 }
-                if (object.containerPort != null) { message.containerPort = object.containerPort | 0 }
-                if (object.protocol != null) { message.protocol = String(object.protocol) }
-                if (object.hostIP != null) { message.hostIP = String(object.hostIP) }
-                return message
-              }
-
-              ContainerPort.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.hostPort = 0
-                  object.containerPort = 0
-                  object.protocol = ''
-                  object.hostIP = ''
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.hostPort != null && message.hasOwnProperty('hostPort')) { object.hostPort = message.hostPort }
-                if (message.containerPort != null && message.hasOwnProperty('containerPort')) { object.containerPort = message.containerPort }
-                if (message.protocol != null && message.hasOwnProperty('protocol')) { object.protocol = message.protocol }
-                if (message.hostIP != null && message.hasOwnProperty('hostIP')) { object.hostIP = message.hostIP }
-                return object
-              }
-
-              ContainerPort.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return ContainerPort
             })()
 
@@ -530,30 +401,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              EnvVar.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.value != null) { message.value = String(object.value) }
-                return message
-              }
-
-              EnvVar.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.value = ''
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.value != null && message.hasOwnProperty('value')) { object.value = message.value }
-                return object
-              }
-
-              EnvVar.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return EnvVar
             })()
 
@@ -610,25 +457,6 @@ export const github = $root.github = (() => {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
                 return null
-              }
-
-              HarborHub.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHub) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHub()
-                if (object.name != null) { message.name = String(object.name) }
-                return message
-              }
-
-              HarborHub.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) { object.name = '' }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                return object
-              }
-
-              HarborHub.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HarborHub
@@ -697,35 +525,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HarborHubList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHubList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHub.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              HarborHubList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborHub.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              HarborHubList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HarborHubList
             })()
 
@@ -792,30 +591,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HarborProject.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProject) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProject()
-                if (object.projectId != null) { message.projectId = object.projectId | 0 }
-                if (object.name != null) { message.name = String(object.name) }
-                return message
-              }
-
-              HarborProject.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.projectId = 0
-                  object.name = ''
-                }
-                if (message.projectId != null && message.hasOwnProperty('projectId')) { object.projectId = message.projectId }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                return object
-              }
-
-              HarborProject.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HarborProject
             })()
 
@@ -880,35 +655,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              HarborProjectList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProjectList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProject.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              HarborProjectList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborProject.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              HarborProjectList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HarborProjectList
@@ -985,33 +731,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HarborRepository.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepository) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepository()
-                if (object.repositoryId != null) { message.repositoryId = object.repositoryId | 0 }
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.projectId != null) { message.projectId = object.projectId | 0 }
-                return message
-              }
-
-              HarborRepository.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.repositoryId = 0
-                  object.name = ''
-                  object.projectId = 0
-                }
-                if (message.repositoryId != null && message.hasOwnProperty('repositoryId')) { object.repositoryId = message.repositoryId }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.projectId != null && message.hasOwnProperty('projectId')) { object.projectId = message.projectId }
-                return object
-              }
-
-              HarborRepository.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HarborRepository
             })()
 
@@ -1076,35 +795,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              HarborRepositoryList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepositoryList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepository.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              HarborRepositoryList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRepository.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              HarborRepositoryList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HarborRepositoryList
@@ -1189,36 +879,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HarborRequest.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest()
-                if (object.harborUrl != null) { message.harborUrl = String(object.harborUrl) }
-                if (object.command != null) { message.command = String(object.command) }
-                if (object.projectId != null) { message.projectId = object.projectId | 0 }
-                if (object.imageName != null) { message.imageName = String(object.imageName) }
-                return message
-              }
-
-              HarborRequest.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.harborUrl = ''
-                  object.command = ''
-                  object.projectId = 0
-                  object.imageName = ''
-                }
-                if (message.harborUrl != null && message.hasOwnProperty('harborUrl')) { object.harborUrl = message.harborUrl }
-                if (message.command != null && message.hasOwnProperty('command')) { object.command = message.command }
-                if (message.projectId != null && message.hasOwnProperty('projectId')) { object.projectId = message.projectId }
-                if (message.imageName != null && message.hasOwnProperty('imageName')) { object.imageName = message.imageName }
-                return object
-              }
-
-              HarborRequest.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HarborRequest
             })()
 
@@ -1285,30 +945,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HarborTag.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTag) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTag()
-                if (object.digest != null) { message.digest = String(object.digest) }
-                if (object.name != null) { message.name = String(object.name) }
-                return message
-              }
-
-              HarborTag.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.digest = ''
-                  object.name = ''
-                }
-                if (message.digest != null && message.hasOwnProperty('digest')) { object.digest = message.digest }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                return object
-              }
-
-              HarborTag.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HarborTag
             })()
 
@@ -1373,35 +1009,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              HarborTagList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTagList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTag.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              HarborTagList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborTag.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              HarborTagList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HarborTagList
@@ -1493,50 +1100,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HelixSagaApp.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp()
-                if (object.spec != null) {
-                  if (typeof object.spec !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.spec: object expected') }
-                  message.spec = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.spec)
-                }
-                if (object.command) {
-                  if (!Array.isArray(object.command)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.command: array expected') }
-                  message.command = []
-                  for (let i = 0; i < object.command.length; ++i) { message.command[i] = String(object.command[i]) }
-                }
-                if (object.args) {
-                  if (!Array.isArray(object.args)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.args: array expected') }
-                  message.args = []
-                  for (let i = 0; i < object.args.length; ++i) { message.args[i] = String(object.args[i]) }
-                }
-                return message
-              }
-
-              HelixSagaApp.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) {
-                  object.command = []
-                  object.args = []
-                }
-                if (options.defaults) { object.spec = null }
-                if (message.spec != null && message.hasOwnProperty('spec')) { object.spec = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.spec, options) }
-                if (message.command && message.command.length) {
-                  object.command = []
-                  for (let j = 0; j < message.command.length; ++j) { object.command[j] = message.command[j] }
-                }
-                if (message.args && message.args.length) {
-                  object.args = []
-                  for (let j = 0; j < message.args.length; ++j) { object.args[j] = message.args[j] }
-                }
-                return object
-              }
-
-              HelixSagaApp.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HelixSagaApp
             })()
 
@@ -1605,36 +1168,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              HelixSagaConfigMapVolume.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume()
-                if (object.volume != null) {
-                  if (typeof object.volume !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.volume: object expected') }
-                  message.volume = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Volume.fromObject(object.volume)
-                }
-                if (object.volumeMount != null) {
-                  if (typeof object.volumeMount !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.volumeMount: object expected') }
-                  message.volumeMount = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeMount.fromObject(object.volumeMount)
-                }
-                return message
-              }
-
-              HelixSagaConfigMapVolume.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.volume = null
-                  object.volumeMount = null
-                }
-                if (message.volume != null && message.hasOwnProperty('volume')) { object.volume = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Volume.toObject(message.volume, options) }
-                if (message.volumeMount != null && message.hasOwnProperty('volumeMount')) { object.volumeMount = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeMount.toObject(message.volumeMount, options) }
-                return object
-              }
-
-              HelixSagaConfigMapVolume.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return HelixSagaConfigMapVolume
             })()
 
@@ -1649,6 +1182,7 @@ export const github = $root.github = (() => {
               }
 
               HelixSagaCrd.prototype.name = ''
+              HelixSagaCrd.prototype.resourceVersion = ''
               HelixSagaCrd.prototype.configMap = null
               HelixSagaCrd.prototype.applications = $util.emptyArray
 
@@ -1659,9 +1193,10 @@ export const github = $root.github = (() => {
               HelixSagaCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.configMap != null && Object.hasOwnProperty.call(message, 'configMap')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.encode(message.configMap, writer.uint32(18).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.configMap != null && Object.hasOwnProperty.call(message, 'configMap')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.encode(message.configMap, writer.uint32(26).fork()).ldelim() }
                 if (message.applications != null && message.applications.length) {
-                  for (let i = 0; i < message.applications.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.encode(message.applications[i], writer.uint32(26).fork()).ldelim() }
+                  for (let i = 0; i < message.applications.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.encode(message.applications[i], writer.uint32(34).fork()).ldelim() }
                 }
                 return writer
               }
@@ -1680,9 +1215,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       if (!(message.applications && message.applications.length)) { message.applications = [] }
                       message.applications.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.decode(reader, reader.uint32()))
                       break
@@ -1704,6 +1242,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.configMap != null && message.hasOwnProperty('configMap')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.verify(message.configMap)
                   if (error) { return 'configMap.' + error }
@@ -1716,46 +1257,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              HelixSagaCrd.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.configMap != null) {
-                  if (typeof object.configMap !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.configMap: object expected') }
-                  message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.fromObject(object.configMap)
-                }
-                if (object.applications) {
-                  if (!Array.isArray(object.applications)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.applications: array expected') }
-                  message.applications = []
-                  for (let i = 0; i < object.applications.length; ++i) {
-                    if (typeof object.applications[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.applications: object expected') }
-                    message.applications[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.fromObject(object.applications[i])
-                  }
-                }
-                return message
-              }
-
-              HelixSagaCrd.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.applications = [] }
-                if (options.defaults) {
-                  object.name = ''
-                  object.configMap = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.configMap != null && message.hasOwnProperty('configMap')) { object.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaConfigMapVolume.toObject(message.configMap, options) }
-                if (message.applications && message.applications.length) {
-                  object.applications = []
-                  for (let j = 0; j < message.applications.length; ++j) { object.applications[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp.toObject(message.applications[j], options) }
-                }
-                return object
-              }
-
-              HelixSagaCrd.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HelixSagaCrd
@@ -1822,35 +1323,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              HelixSagaCrdList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              HelixSagaCrdList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              HelixSagaCrdList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return HelixSagaCrdList
@@ -1927,33 +1399,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              IntOrString.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.IntOrString) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.IntOrString()
-                if (object.type != null) { message.type = object.type | 0 }
-                if (object.intVal != null) { message.intVal = object.intVal | 0 }
-                if (object.strVal != null) { message.strVal = String(object.strVal) }
-                return message
-              }
-
-              IntOrString.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.type = 0
-                  object.intVal = 0
-                  object.strVal = ''
-                }
-                if (message.type != null && message.hasOwnProperty('type')) { object.type = message.type }
-                if (message.intVal != null && message.hasOwnProperty('intVal')) { object.intVal = message.intVal }
-                if (message.strVal != null && message.hasOwnProperty('strVal')) { object.strVal = message.strVal }
-                return object
-              }
-
-              IntOrString.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return IntOrString
             })()
 
@@ -2028,33 +1473,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              KeyToPath.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.KeyToPath) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.KeyToPath()
-                if (object.key != null) { message.key = String(object.key) }
-                if (object.path != null) { message.path = String(object.path) }
-                if (object.mode != null) { message.mode = object.mode | 0 }
-                return message
-              }
-
-              KeyToPath.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.key = ''
-                  object.path = ''
-                  object.mode = 0
-                }
-                if (message.key != null && message.hasOwnProperty('key')) { object.key = message.key }
-                if (message.path != null && message.hasOwnProperty('path')) { object.path = message.path }
-                if (message.mode != null && message.hasOwnProperty('mode')) { object.mode = message.mode }
-                return object
-              }
-
-              KeyToPath.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return KeyToPath
             })()
 
@@ -2068,6 +1486,7 @@ export const github = $root.github = (() => {
               }
 
               MysqlCrd.prototype.name = ''
+              MysqlCrd.prototype.resourceVersion = ''
               MysqlCrd.prototype.master = null
               MysqlCrd.prototype.slave = null
 
@@ -2078,8 +1497,9 @@ export const github = $root.github = (() => {
               MysqlCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim() }
-                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(26).fork()).ldelim() }
+                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(34).fork()).ldelim() }
                 return writer
               }
 
@@ -2097,9 +1517,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
                       break
                     default:
@@ -2120,6 +1543,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.master != null && message.hasOwnProperty('master')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master)
                   if (error) { return 'master.' + error }
@@ -2129,39 +1555,6 @@ export const github = $root.github = (() => {
                   if (error) { return 'slave.' + error }
                 }
                 return null
-              }
-
-              MysqlCrd.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.master != null) {
-                  if (typeof object.master !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.master: object expected') }
-                  message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master)
-                }
-                if (object.slave != null) {
-                  if (typeof object.slave !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.slave: object expected') }
-                  message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.slave)
-                }
-                return message
-              }
-
-              MysqlCrd.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.master = null
-                  object.slave = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.master != null && message.hasOwnProperty('master')) { object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options) }
-                if (message.slave != null && message.hasOwnProperty('slave')) { object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options) }
-                return object
-              }
-
-              MysqlCrd.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return MysqlCrd
@@ -2230,35 +1623,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              MysqlCrdList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrdList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              MysqlCrdList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              MysqlCrdList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return MysqlCrdList
             })()
 
@@ -2315,25 +1679,6 @@ export const github = $root.github = (() => {
                   if (!$util.isString(message.Name)) { return 'Name: string expected' }
                 }
                 return null
-              }
-
-              NameSpace.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace()
-                if (object.Name != null) { message.Name = String(object.Name) }
-                return message
-              }
-
-              NameSpace.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) { object.Name = '' }
-                if (message.Name != null && message.hasOwnProperty('Name')) { object.Name = message.Name }
-                return object
-              }
-
-              NameSpace.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return NameSpace
@@ -2400,35 +1745,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              NameSpaceList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              NameSpaceList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpace.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              NameSpaceList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return NameSpaceList
@@ -2578,86 +1894,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              NodeSpec.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.replicas != null) { message.replicas = object.replicas | 0 }
-                if (object.image != null) { message.image = String(object.image) }
-                if (object.imagePullSecrets != null) { message.imagePullSecrets = String(object.imagePullSecrets) }
-                if (object.volumePath != null) { message.volumePath = String(object.volumePath) }
-                if (object.podResource != null) {
-                  if (typeof object.podResource !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.podResource: object expected') }
-                  message.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.fromObject(object.podResource)
-                }
-                if (object.containerPorts) {
-                  if (!Array.isArray(object.containerPorts)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.containerPorts: array expected') }
-                  message.containerPorts = []
-                  for (let i = 0; i < object.containerPorts.length; ++i) {
-                    if (typeof object.containerPorts[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.containerPorts: object expected') }
-                    message.containerPorts[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort.fromObject(object.containerPorts[i])
-                  }
-                }
-                if (object.servicePorts) {
-                  if (!Array.isArray(object.servicePorts)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.servicePorts: array expected') }
-                  message.servicePorts = []
-                  for (let i = 0; i < object.servicePorts.length; ++i) {
-                    if (typeof object.servicePorts[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.servicePorts: object expected') }
-                    message.servicePorts[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.fromObject(object.servicePorts[i])
-                  }
-                }
-                if (object.env) {
-                  if (!Array.isArray(object.env)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.env: array expected') }
-                  message.env = []
-                  for (let i = 0; i < object.env.length; ++i) {
-                    if (typeof object.env[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.env: object expected') }
-                    message.env[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.fromObject(object.env[i])
-                  }
-                }
-                return message
-              }
-
-              NodeSpec.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) {
-                  object.containerPorts = []
-                  object.servicePorts = []
-                  object.env = []
-                }
-                if (options.defaults) {
-                  object.name = ''
-                  object.replicas = 0
-                  object.image = ''
-                  object.imagePullSecrets = ''
-                  object.volumePath = ''
-                  object.podResource = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.replicas != null && message.hasOwnProperty('replicas')) { object.replicas = message.replicas }
-                if (message.image != null && message.hasOwnProperty('image')) { object.image = message.image }
-                if (message.imagePullSecrets != null && message.hasOwnProperty('imagePullSecrets')) { object.imagePullSecrets = message.imagePullSecrets }
-                if (message.volumePath != null && message.hasOwnProperty('volumePath')) { object.volumePath = message.volumePath }
-                if (message.podResource != null && message.hasOwnProperty('podResource')) { object.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.toObject(message.podResource, options) }
-                if (message.containerPorts && message.containerPorts.length) {
-                  object.containerPorts = []
-                  for (let j = 0; j < message.containerPorts.length; ++j) { object.containerPorts[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort.toObject(message.containerPorts[j], options) }
-                }
-                if (message.servicePorts && message.servicePorts.length) {
-                  object.servicePorts = []
-                  for (let j = 0; j < message.servicePorts.length; ++j) { object.servicePorts[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.toObject(message.servicePorts[j], options) }
-                }
-                if (message.env && message.env.length) {
-                  object.env = []
-                  for (let j = 0; j < message.env.length; ++j) { object.env[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.toObject(message.env[j], options) }
-                }
-                return object
-              }
-
-              NodeSpec.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return NodeSpec
             })()
 
@@ -2739,39 +1975,6 @@ export const github = $root.github = (() => {
                   if (error) { return 'harborRequest.' + error }
                 }
                 return null
-              }
-
-              Param.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param()
-                if (object.service != null) { message.service = String(object.service) }
-                if (object.resourceType != null) { message.resourceType = String(object.resourceType) }
-                if (object.nameSpace != null) { message.nameSpace = String(object.nameSpace) }
-                if (object.harborRequest != null) {
-                  if (typeof object.harborRequest !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.harborRequest: object expected') }
-                  message.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.fromObject(object.harborRequest)
-                }
-                return message
-              }
-
-              Param.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.service = ''
-                  object.resourceType = ''
-                  object.nameSpace = ''
-                  object.harborRequest = null
-                }
-                if (message.service != null && message.hasOwnProperty('service')) { object.service = message.service }
-                if (message.resourceType != null && message.hasOwnProperty('resourceType')) { object.resourceType = message.resourceType }
-                if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) { object.nameSpace = message.nameSpace }
-                if (message.harborRequest != null && message.hasOwnProperty('harborRequest')) { object.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.toObject(message.harborRequest, options) }
-                return object
-              }
-
-              Param.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return Param
@@ -2862,45 +2065,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              PodResourceRequirements.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements()
-                if (object.limits) {
-                  if (typeof object.limits !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.limits: object expected') }
-                  message.limits = {}
-                  for (let keys = Object.keys(object.limits), i = 0; i < keys.length; ++i) { message.limits[keys[i]] = String(object.limits[keys[i]]) }
-                }
-                if (object.requests) {
-                  if (typeof object.requests !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.requests: object expected') }
-                  message.requests = {}
-                  for (let keys = Object.keys(object.requests), i = 0; i < keys.length; ++i) { message.requests[keys[i]] = String(object.requests[keys[i]]) }
-                }
-                return message
-              }
-
-              PodResourceRequirements.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.objects || options.defaults) {
-                  object.limits = {}
-                  object.requests = {}
-                }
-                let keys2
-                if (message.limits && (keys2 = Object.keys(message.limits)).length) {
-                  object.limits = {}
-                  for (let j = 0; j < keys2.length; ++j) { object.limits[keys2[j]] = message.limits[keys2[j]] }
-                }
-                if (message.requests && (keys2 = Object.keys(message.requests)).length) {
-                  object.requests = {}
-                  for (let j = 0; j < keys2.length; ++j) { object.requests[keys2[j]] = message.requests[keys2[j]] }
-                }
-                return object
-              }
-
-              PodResourceRequirements.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return PodResourceRequirements
             })()
 
@@ -2914,6 +2078,7 @@ export const github = $root.github = (() => {
               }
 
               RedisCrd.prototype.name = ''
+              RedisCrd.prototype.resourceVersion = ''
               RedisCrd.prototype.master = null
               RedisCrd.prototype.slave = null
 
@@ -2924,8 +2089,9 @@ export const github = $root.github = (() => {
               RedisCrd.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
-                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(18).fork()).ldelim() }
-                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(26).fork()).ldelim() }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(18).string(message.resourceVersion) }
+                if (message.master != null && Object.hasOwnProperty.call(message, 'master')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.master, writer.uint32(26).fork()).ldelim() }
+                if (message.slave != null && Object.hasOwnProperty.call(message, 'slave')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.slave, writer.uint32(34).fork()).ldelim() }
                 return writer
               }
 
@@ -2943,9 +2109,12 @@ export const github = $root.github = (() => {
                       message.name = reader.string()
                       break
                     case 2:
-                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      message.resourceVersion = reader.string()
                       break
                     case 3:
+                      message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      break
+                    case 4:
                       message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
                       break
                     default:
@@ -2966,6 +2135,9 @@ export const github = $root.github = (() => {
                 if (message.name != null && message.hasOwnProperty('name')) {
                   if (!$util.isString(message.name)) { return 'name: string expected' }
                 }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
                 if (message.master != null && message.hasOwnProperty('master')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.master)
                   if (error) { return 'master.' + error }
@@ -2975,39 +2147,6 @@ export const github = $root.github = (() => {
                   if (error) { return 'slave.' + error }
                 }
                 return null
-              }
-
-              RedisCrd.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.master != null) {
-                  if (typeof object.master !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.master: object expected') }
-                  message.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.master)
-                }
-                if (object.slave != null) {
-                  if (typeof object.slave !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.slave: object expected') }
-                  message.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.fromObject(object.slave)
-                }
-                return message
-              }
-
-              RedisCrd.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.master = null
-                  object.slave = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.master != null && message.hasOwnProperty('master')) { object.master = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.master, options) }
-                if (message.slave != null && message.hasOwnProperty('slave')) { object.slave = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.toObject(message.slave, options) }
-                return object
-              }
-
-              RedisCrd.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return RedisCrd
@@ -3074,35 +2213,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              RedisCrdList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              RedisCrdList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              RedisCrdList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return RedisCrdList
@@ -3172,38 +2282,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              Request.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request()
-                if (object.param != null) {
-                  if (typeof object.param !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request.param: object expected') }
-                  message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param)
-                }
-                if (object.data != null) {
-                  if (typeof object.data === 'string') { $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0) } else if (object.data.length) { message.data = object.data }
-                }
-                return message
-              }
-
-              Request.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.param = null
-                  if (options.bytes === String) { object.data = '' } else {
-                    object.data = []
-                    if (options.bytes !== Array) { object.data = $util.newBuffer(object.data) }
-                  }
-                }
-                if (message.param != null && message.hasOwnProperty('param')) { object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options) }
-                if (message.data != null && message.hasOwnProperty('data')) { object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data }
-                return object
-              }
-
-              Request.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return Request
             })()
 
@@ -3267,32 +2345,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              ResourceList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) { message.items[i] = String(object.items[i]) }
-                }
-                return message
-              }
-
-              ResourceList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = message.items[j] }
-                }
-                return object
-              }
-
-              ResourceList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return ResourceList
@@ -3370,41 +2422,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              Response.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response()
-                if (object.code != null) { message.code = object.code | 0 }
-                if (object.param != null) {
-                  if (typeof object.param !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.param: object expected') }
-                  message.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.fromObject(object.param)
-                }
-                if (object.result != null) {
-                  if (typeof object.result === 'string') { $util.base64.decode(object.result, message.result = $util.newBuffer($util.base64.length(object.result)), 0) } else if (object.result.length) { message.result = object.result }
-                }
-                return message
-              }
-
-              Response.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.code = 0
-                  object.param = null
-                  if (options.bytes === String) { object.result = '' } else {
-                    object.result = []
-                    if (options.bytes !== Array) { object.result = $util.newBuffer(object.result) }
-                  }
-                }
-                if (message.code != null && message.hasOwnProperty('code')) { object.code = message.code }
-                if (message.param != null && message.hasOwnProperty('param')) { object.param = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.toObject(message.param, options) }
-                if (message.result != null && message.hasOwnProperty('result')) { object.result = options.bytes === String ? $util.base64.encode(message.result, 0, message.result.length) : options.bytes === Array ? Array.prototype.slice.call(message.result) : message.result }
-                return object
-              }
-
-              Response.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return Response
             })()
 
@@ -3471,30 +2488,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              Secret.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.nameSpace != null) { message.nameSpace = String(object.nameSpace) }
-                return message
-              }
-
-              Secret.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.nameSpace = ''
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) { object.nameSpace = message.nameSpace }
-                return object
-              }
-
-              Secret.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return Secret
             })()
 
@@ -3559,35 +2552,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              SecretList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              SecretList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Secret.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              SecretList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return SecretList
@@ -3695,58 +2659,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              Service.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service()
-                if (object.Name != null) { message.Name = String(object.Name) }
-                if (object.ports) {
-                  if (!Array.isArray(object.ports)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service.ports: array expected') }
-                  message.ports = []
-                  for (let i = 0; i < object.ports.length; ++i) {
-                    if (typeof object.ports[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service.ports: object expected') }
-                    message.ports[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.fromObject(object.ports[i])
-                  }
-                }
-                if (object.clusterIP != null) { message.clusterIP = String(object.clusterIP) }
-                if (object.type != null) { message.type = String(object.type) }
-                if (object.externalIPs) {
-                  if (!Array.isArray(object.externalIPs)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service.externalIPs: array expected') }
-                  message.externalIPs = []
-                  for (let i = 0; i < object.externalIPs.length; ++i) { message.externalIPs[i] = String(object.externalIPs[i]) }
-                }
-                return message
-              }
-
-              Service.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) {
-                  object.ports = []
-                  object.externalIPs = []
-                }
-                if (options.defaults) {
-                  object.Name = ''
-                  object.clusterIP = ''
-                  object.type = ''
-                }
-                if (message.Name != null && message.hasOwnProperty('Name')) { object.Name = message.Name }
-                if (message.ports && message.ports.length) {
-                  object.ports = []
-                  for (let j = 0; j < message.ports.length; ++j) { object.ports[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.toObject(message.ports[j], options) }
-                }
-                if (message.clusterIP != null && message.hasOwnProperty('clusterIP')) { object.clusterIP = message.clusterIP }
-                if (message.type != null && message.hasOwnProperty('type')) { object.type = message.type }
-                if (message.externalIPs && message.externalIPs.length) {
-                  object.externalIPs = []
-                  for (let j = 0; j < message.externalIPs.length; ++j) { object.externalIPs[j] = message.externalIPs[j] }
-                }
-                return object
-              }
-
-              Service.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return Service
             })()
 
@@ -3811,35 +2723,6 @@ export const github = $root.github = (() => {
                   }
                 }
                 return null
-              }
-
-              ServiceList.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList()
-                if (object.items) {
-                  if (!Array.isArray(object.items)) { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.items: array expected') }
-                  message.items = []
-                  for (let i = 0; i < object.items.length; ++i) {
-                    if (typeof object.items[i] !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.items: object expected') }
-                    message.items[i] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service.fromObject(object.items[i])
-                  }
-                }
-                return message
-              }
-
-              ServiceList.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.arrays || options.defaults) { object.items = [] }
-                if (message.items && message.items.length) {
-                  object.items = []
-                  for (let j = 0; j < message.items.length; ++j) { object.items[j] = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Service.toObject(message.items[j], options) }
-                }
-                return object
-              }
-
-              ServiceList.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return ServiceList
@@ -3933,42 +2816,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              ServicePort.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.protocol != null) { message.protocol = String(object.protocol) }
-                if (object.port != null) { message.port = object.port | 0 }
-                if (object.targetPort != null) {
-                  if (typeof object.targetPort !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.targetPort: object expected') }
-                  message.targetPort = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.IntOrString.fromObject(object.targetPort)
-                }
-                if (object.nodePort != null) { message.nodePort = object.nodePort | 0 }
-                return message
-              }
-
-              ServicePort.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.protocol = ''
-                  object.port = 0
-                  object.targetPort = null
-                  object.nodePort = 0
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.protocol != null && message.hasOwnProperty('protocol')) { object.protocol = message.protocol }
-                if (message.port != null && message.hasOwnProperty('port')) { object.port = message.port }
-                if (message.targetPort != null && message.hasOwnProperty('targetPort')) { object.targetPort = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.IntOrString.toObject(message.targetPort, options) }
-                if (message.nodePort != null && message.hasOwnProperty('nodePort')) { object.nodePort = message.nodePort }
-                return object
-              }
-
-              ServicePort.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return ServicePort
             })()
 
@@ -4034,33 +2881,6 @@ export const github = $root.github = (() => {
                   if (error) { return 'volumeSource.' + error }
                 }
                 return null
-              }
-
-              Volume.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Volume) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Volume()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.volumeSource != null) {
-                  if (typeof object.volumeSource !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.Volume.volumeSource: object expected') }
-                  message.volumeSource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeSource.fromObject(object.volumeSource)
-                }
-                return message
-              }
-
-              Volume.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.volumeSource = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.volumeSource != null && message.hasOwnProperty('volumeSource')) { object.volumeSource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeSource.toObject(message.volumeSource, options) }
-                return object
-              }
-
-              Volume.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return Volume
@@ -4153,39 +2973,6 @@ export const github = $root.github = (() => {
                 return null
               }
 
-              VolumeMount.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeMount) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeMount()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.readOnly != null) { message.readOnly = Boolean(object.readOnly) }
-                if (object.mountPath != null) { message.mountPath = String(object.mountPath) }
-                if (object.subPath != null) { message.subPath = String(object.subPath) }
-                if (object.subPathExpr != null) { message.subPathExpr = String(object.subPathExpr) }
-                return message
-              }
-
-              VolumeMount.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.readOnly = false
-                  object.mountPath = ''
-                  object.subPath = ''
-                  object.subPathExpr = ''
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.readOnly != null && message.hasOwnProperty('readOnly')) { object.readOnly = message.readOnly }
-                if (message.mountPath != null && message.hasOwnProperty('mountPath')) { object.mountPath = message.mountPath }
-                if (message.subPath != null && message.hasOwnProperty('subPath')) { object.subPath = message.subPath }
-                if (message.subPathExpr != null && message.hasOwnProperty('subPathExpr')) { object.subPathExpr = message.subPathExpr }
-                return object
-              }
-
-              VolumeMount.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
-              }
-
               return VolumeMount
             })()
 
@@ -4251,33 +3038,6 @@ export const github = $root.github = (() => {
                   if (error) { return 'configMap.' + error }
                 }
                 return null
-              }
-
-              VolumeSource.fromObject = function fromObject(object) {
-                if (object instanceof $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeSource) { return object }
-                const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeSource()
-                if (object.name != null) { message.name = String(object.name) }
-                if (object.configMap != null) {
-                  if (typeof object.configMap !== 'object') { throw TypeError('.github.com.nevercase.k8s_controller_custom_resource.api.proto.VolumeSource.configMap: object expected') }
-                  message.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource.fromObject(object.configMap)
-                }
-                return message
-              }
-
-              VolumeSource.toObject = function toObject(message, options) {
-                if (!options) { options = {} }
-                const object = {}
-                if (options.defaults) {
-                  object.name = ''
-                  object.configMap = null
-                }
-                if (message.name != null && message.hasOwnProperty('name')) { object.name = message.name }
-                if (message.configMap != null && message.hasOwnProperty('configMap')) { object.configMap = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapVolumeSource.toObject(message.configMap, options) }
-                return object
-              }
-
-              VolumeSource.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
               }
 
               return VolumeSource

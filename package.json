@@ -14,7 +14,7 @@
     "test:ci": "npm run lint && npm run test:unit",
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml",
     "new": "plop",
-    "proto": "./node_modules/protobufjs/bin/pbjs -t static-module --es6 -w commonjs -o ./proto/proto.js ./proto/*.proto --no-comments"
+    "proto": "./node_modules/protobufjs/bin/pbjs -t static-module --es6 -w commonjs -o ./proto/proto.js ./proto/*.proto --no-convert --no-comments"
   },
   "husky": {
     "hooks": {
