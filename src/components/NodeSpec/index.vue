@@ -186,34 +186,6 @@
 
 <script>
 
-const contain = {
-  containerPort: 3306,
-  hostIP: '',
-  hostPort: 0,
-  name: '',
-  protocol: 'TCP',
-  isSet: true
-}
-
-const servicePort = {
-  name: '',
-  nodePort: 0,
-  port: 3306,
-  protocol: 'TCP',
-  targetPort: {
-    intVal: 3306,
-    strVal: '',
-    type: 0
-  },
-  isSet: true
-}
-
-const envTmp = {
-  name: '',
-  value: '',
-  isSet: true
-}
-
 export default {
   name: 'NodeSpec',
   props: {
@@ -335,6 +307,7 @@ export default {
     handleChange(value) {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
       this.form.image = str
+      this.value = []
     },
     changesecre(value) {},
     // 修改 | 保存
@@ -389,12 +362,14 @@ export default {
         // 提交数据
         if (row.isSet) {
           if (type === 2) {
+            console.log(555555)
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
 
           row.isSet = false
         } else {
           if (type === 2) {
+            console.log(666666)
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
           }
 
@@ -415,6 +390,15 @@ export default {
         }
       })
 
+      const contain = {
+        containerPort: 3306,
+        hostIP: '',
+        hostPort: 0,
+        name: '',
+        protocol: 'TCP',
+        isSet: true
+      }
+
       if (mark) {
         this.form.containerPorts.push(contain)
       }
@@ -432,6 +416,19 @@ export default {
       })
 
       if (mark) {
+        const servicePort = {
+          name: '',
+          nodePort: 0,
+          port: 3306,
+          protocol: 'TCP',
+          targetPort: {
+            intVal: 3306,
+            strVal: '',
+            type: 0
+          },
+          isSet: true
+        }
+
         const new_port = {
           intVal: 3306,
           strVal: '',
@@ -454,6 +451,11 @@ export default {
       })
 
       if (mark) {
+        const envTmp = {
+          name: '',
+          value: '',
+          isSet: true
+        }
         this.form.env.push(envTmp)
       }
     }

@@ -46,7 +46,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="closeDia()">
 
       <!-- mysql | redis -->
 
@@ -108,7 +108,8 @@ const mysqlOperatorTable = {
 
 const RedisOperatorTable = {
   name: 'Name',
-  namespace: 'NameSpace'
+  namespace: 'NameSpace',
+  status: 'Status'
 }
 
 const HelixSagaOperatorTable = {
@@ -248,6 +249,24 @@ export default {
         }, 1.5 * 1000)
       })
     },*/
+    closeDia() {
+      var str = ''
+      switch (this.oneData.typename) {
+        case 'MysqlOperator':
+          str = 'mo-'
+          break
+        case 'RedisOperator':
+          str = 'ro-'
+          break
+        case 'HelixSagaOperator':
+          str = 'hso-'
+          break
+      }
+
+      if (this.oneData.name.indexOf(str) === -1) {
+        this.oneData.name = str + this.oneData.name
+      }
+    },
     timer() {
       return setInterval(() => {
         const data = {
@@ -314,14 +333,14 @@ export default {
       })
     },
     // 修改更新数据
-    updateConfigMapList(data, type) {
+    updateConfigMapList(data, nameType) {
       var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
 
       if (errData) { throw Error(errData) }
 
       var param = {
         'nameSpace': this.nameSpace,
-        'service': type,
+        'service': nameType,
         'resourceType': this.listQuery.type
       }
 
@@ -402,6 +421,8 @@ export default {
           list = []
           dataStr.items.forEach(function(item, index) {
             item.namespace = _self.nameSpace
+
+            item.status = 'master :' + item.master.status.currentReplicas + ' / ' + item.master.status.replicas + ' ; ' + 'slave : ' + item.slave.status.currentReplicas + '/' + item.slave.status.replicas
 
             list.push(item)
           })
@@ -491,9 +512,6 @@ export default {
     returnResource(service, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
 
-      console.log(11111)
-      console.log(result)
-
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
@@ -523,6 +541,11 @@ export default {
 
           break
         case 'list':
+
+          if (result.param.resourceType !== _self.listQuery.type || result.param.nameSpace !== _self.nameSpace) {
+            return
+          }
+
           var obj = _self.returnMessage(service, _self)
 
           if (obj.isTiny) {
@@ -595,36 +618,17 @@ export default {
       let one_data = ''
       let mark = false
 
+      //  排除无关watch
+      if (res.param.resourceType !== _self.listQuery.type || res.param.nameSpace !== _self.nameSpace) {
+        return
+      }
+
       switch (res.param.resourceType) {
-        case 'ConfigMap':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
-          // list = []
-          // var config_list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   var one = []
-          //   var tmp = ''
-          //   one.name = item.Name
-          //   one.namespace = _self.nameSpace
-
-          //   one.keys = Object.keys(item.data).join(',')
-          //   one.value = Object.values(item.data)
-          //   one.item = item
-
-          //   tmp = item.Name
-
-          //   list.push(one)
-          //   config_list.push(tmp)
-          // })
-
-          // total = dataStr.items.length
-          // _self.showFlag = false
-          // _self.configList = config_list
-          break
         case 'MysqlOperator':
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(res.result)
 
           _self.list.forEach((element, key) => {
-            if (element.name === one_data.name && one_data.resourceVersion > element.resourceVersion) {
+            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
               one_data.namespace = _self.nameSpace
               one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
               mark = true
@@ -640,18 +644,23 @@ export default {
 
           break
         case 'RedisOperator':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+          one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.decode(res.result)
 
-          // list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   item.namespace = _self.nameSpace
+          _self.list.forEach((element, key) => {
+            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              mark = true
+              _self.list.splice(key, 1, one_data)
+            }
+          })
 
-          //   list.push(item)
-          // })
+          if (!mark) {
+            one_data.namespace = _self.nameSpace
+            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+            _self.list.push(one_data)
+          }
 
-          // total = dataStr.items.length
-          // _self.list = list
-          // _self.showFlag = true
           break
 
         case 'HelixSagaOperator':
@@ -668,38 +677,6 @@ export default {
           // total = dataStr.items.length
           // _self.list = list
           // _self.showFlag = true
-
-          break
-
-        case 'Service':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
-          // list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   var one = []
-          //   one.name = item.Name
-          //   one.clusterIP = item.clusterIP
-          //   one.port = item.ports[0].port
-
-          //   list.push(one)
-          // })
-          // total = dataStr.items.length
-          // isTiny = true
-
-          // _self.showFlag = false
-
-          break
-
-        case 'Secret':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
-          // list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   item.namespace = _self.nameSpace
-
-          //   list.push(item)
-          // })
-          // total = dataStr.items.length
-
-          // _self.showFlag = false
 
           break
       }
@@ -786,7 +763,6 @@ export default {
         type: 'warning'
       }).then(() => {
         delete row.namespace
-        delete row.resourceVersion
 
         this.updateConfigMapList(row, 'delete')
         this.$message({
@@ -836,11 +812,14 @@ export default {
           break
       }
 
+      if (this.oneData.name.indexOf(str) === -1) {
+        this.oneData.name = str + this.oneData.name
+      }
+
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()
       } else {
         this.checkData()
-        this.oneData.name = str + this.oneData.name
       }
 
       delete this.oneData.typename
