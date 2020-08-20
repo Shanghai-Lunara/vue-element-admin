@@ -206,7 +206,7 @@ export default {
         this.oneData.slave.name = this.typeName + this.project_name
       }
 
-      // this.oneData.name = this.project_name
+      this.oneData.name = this.project_name
     }
   },
   mounted() {
@@ -261,8 +261,7 @@ export default {
 
         if (this.oneData.name.indexOf(this.typeName) !== -1) {
           this.project_name = this.oneData.name.slice(i)
-        } else {
-          this.project_name = this.oneData.name
+          this.oneData.name = this.project_name
         }
       }
 
@@ -428,7 +427,7 @@ export default {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
 
       var param = {
-        'nameSpace': this.oneData.namespace,
+        'nameSpace': '',
         'service': 'list',
         'resourceType': 'Secret'
       }

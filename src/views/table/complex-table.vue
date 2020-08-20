@@ -102,7 +102,8 @@ const configMapTable = {
 
 const mysqlOperatorTable = {
   name: 'Name',
-  namespace: 'NameSpace'
+  namespace: 'NameSpace',
+  status: 'Status'
 }
 
 const RedisOperatorTable = {
@@ -386,6 +387,8 @@ export default {
           dataStr.items.forEach(function(item, index) {
             item.namespace = _self.nameSpace
 
+            item.status = 'master :' + item.master.status.currentReplicas + ' / ' + item.master.status.replicas + ' ; ' + 'slave : ' + item.slave.status.currentReplicas + '/' + item.slave.status.replicas
+
             list.push(item)
           })
 
@@ -488,6 +491,9 @@ export default {
     returnResource(service, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
 
+      console.log(11111)
+      console.log(result)
+
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
@@ -526,6 +532,10 @@ export default {
           this.list = obj.list
           this.total = obj.total
           break
+        case 'watch':
+          _self.initWatch(result, _self)
+
+          break
         case 'update':
           if (result.code === 0) {
             this.$notify({
@@ -534,21 +544,15 @@ export default {
               type: 'success',
               duration: 2000
             })
-            this.dialogFormVisible = false
-            const data = {
-              'nameSpace': this.nameSpace,
-              'service': 'list',
-              'resourceType': this.listQuery.type
-            }
-            this.getList(data)
           } else {
             this.$notify({
               title: '失败',
               message: this.binaryToStr(result.result),
               type: 'error',
-              duration: 2000
+              duration: 5000
             })
           }
+          this.dialogFormVisible = false
           break
         case 'create':
           if (result.code === 0) {
@@ -558,21 +562,15 @@ export default {
               type: 'success',
               duration: 2000
             })
-            this.dialogFormVisible = false
-            const data = {
-              'nameSpace': this.nameSpace,
-              'service': 'list',
-              'resourceType': this.listQuery.type
-            }
-            this.getList(data)
           } else {
             this.$notify({
               title: '失败',
               message: this.binaryToStr(result.result),
               type: 'error',
-              duration: 2000
+              duration: 5000
             })
           }
+          this.dialogFormVisible = false
           break
         case 'delete':
           if (result.code === 0) {
@@ -582,13 +580,127 @@ export default {
               type: 'success',
               duration: 2000
             })
-            const data = {
-              'nameSpace': this.nameSpace,
-              'service': 'list',
-              'resourceType': this.listQuery.type
-            }
-            this.getList(data)
+          } else {
+            this.$notify({
+              title: '失败',
+              message: this.binaryToStr(result.result),
+              type: 'error',
+              duration: 5000
+            })
           }
+          break
+      }
+    },
+    initWatch(res, _self) {
+      let one_data = ''
+      let mark = false
+
+      switch (res.param.resourceType) {
+        case 'ConfigMap':
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
+          // list = []
+          // var config_list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   var one = []
+          //   var tmp = ''
+          //   one.name = item.Name
+          //   one.namespace = _self.nameSpace
+
+          //   one.keys = Object.keys(item.data).join(',')
+          //   one.value = Object.values(item.data)
+          //   one.item = item
+
+          //   tmp = item.Name
+
+          //   list.push(one)
+          //   config_list.push(tmp)
+          // })
+
+          // total = dataStr.items.length
+          // _self.showFlag = false
+          // _self.configList = config_list
+          break
+        case 'MysqlOperator':
+          one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(res.result)
+
+          _self.list.forEach((element, key) => {
+            if (element.name === one_data.name && one_data.resourceVersion > element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              mark = true
+              _self.list.splice(key, 1, one_data)
+            }
+          })
+
+          if (!mark) {
+            one_data.namespace = _self.nameSpace
+            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+            _self.list.push(one_data)
+          }
+
+          break
+        case 'RedisOperator':
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
+
+          // list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   item.namespace = _self.nameSpace
+
+          //   list.push(item)
+          // })
+
+          // total = dataStr.items.length
+          // _self.list = list
+          // _self.showFlag = true
+          break
+
+        case 'HelixSagaOperator':
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.decode(result.result)
+
+          // list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   item.namespace = _self.nameSpace
+          //   item.typename = 'HelixSagaOperator'
+
+          //   list.push(item)
+          // })
+
+          // total = dataStr.items.length
+          // _self.list = list
+          // _self.showFlag = true
+
+          break
+
+        case 'Service':
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
+          // list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   var one = []
+          //   one.name = item.Name
+          //   one.clusterIP = item.clusterIP
+          //   one.port = item.ports[0].port
+
+          //   list.push(one)
+          // })
+          // total = dataStr.items.length
+          // isTiny = true
+
+          // _self.showFlag = false
+
+          break
+
+        case 'Secret':
+          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
+          // list = []
+          // dataStr.items.forEach(function(item, index) {
+          //   item.namespace = _self.nameSpace
+
+          //   list.push(item)
+          // })
+          // total = dataStr.items.length
+
+          // _self.showFlag = false
+
           break
       }
     },

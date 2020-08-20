@@ -1771,6 +1771,7 @@ export const github = $root.github = (() => {
               NodeSpec.prototype.containerPorts = $util.emptyArray
               NodeSpec.prototype.servicePorts = $util.emptyArray
               NodeSpec.prototype.env = $util.emptyArray
+              NodeSpec.prototype.status = null
 
               NodeSpec.create = function create(properties) {
                 return new NodeSpec(properties)
@@ -1793,6 +1794,7 @@ export const github = $root.github = (() => {
                 if (message.env != null && message.env.length) {
                   for (let i = 0; i < message.env.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.encode(message.env[i], writer.uint32(74).fork()).ldelim() }
                 }
+                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.encode(message.status, writer.uint32(82).fork()).ldelim() }
                 return writer
               }
 
@@ -1835,6 +1837,9 @@ export const github = $root.github = (() => {
                     case 9:
                       if (!(message.env && message.env.length)) { message.env = [] }
                       message.env.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.decode(reader, reader.uint32()))
+                      break
+                    case 10:
+                      message.status = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.decode(reader, reader.uint32())
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -1890,6 +1895,10 @@ export const github = $root.github = (() => {
                     const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.verify(message.env[i])
                     if (error) { return 'env.' + error }
                   }
+                }
+                if (message.status != null && message.hasOwnProperty('status')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.verify(message.status)
+                  if (error) { return 'status.' + error }
                 }
                 return null
               }
@@ -2817,6 +2826,120 @@ export const github = $root.github = (() => {
               }
 
               return ServicePort
+            })()
+
+            proto.Status = (function() {
+              function Status(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              Status.prototype.observedGeneration = $util.Long ? $util.Long.fromBits(0, 0, false) : 0
+              Status.prototype.replicas = 0
+              Status.prototype.readyReplicas = 0
+              Status.prototype.currentReplicas = 0
+              Status.prototype.updatedReplicas = 0
+              Status.prototype.currentRevision = ''
+              Status.prototype.updateRevision = ''
+              Status.prototype.collisionCount = 0
+
+              Status.create = function create(properties) {
+                return new Status(properties)
+              }
+
+              Status.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.observedGeneration != null && Object.hasOwnProperty.call(message, 'observedGeneration')) { writer.uint32(8).int64(message.observedGeneration) }
+                if (message.replicas != null && Object.hasOwnProperty.call(message, 'replicas')) { writer.uint32(16).int32(message.replicas) }
+                if (message.readyReplicas != null && Object.hasOwnProperty.call(message, 'readyReplicas')) { writer.uint32(24).int32(message.readyReplicas) }
+                if (message.currentReplicas != null && Object.hasOwnProperty.call(message, 'currentReplicas')) { writer.uint32(32).int32(message.currentReplicas) }
+                if (message.updatedReplicas != null && Object.hasOwnProperty.call(message, 'updatedReplicas')) { writer.uint32(40).int32(message.updatedReplicas) }
+                if (message.currentRevision != null && Object.hasOwnProperty.call(message, 'currentRevision')) { writer.uint32(50).string(message.currentRevision) }
+                if (message.updateRevision != null && Object.hasOwnProperty.call(message, 'updateRevision')) { writer.uint32(58).string(message.updateRevision) }
+                if (message.collisionCount != null && Object.hasOwnProperty.call(message, 'collisionCount')) { writer.uint32(72).int32(message.collisionCount) }
+                return writer
+              }
+
+              Status.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              Status.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.observedGeneration = reader.int64()
+                      break
+                    case 2:
+                      message.replicas = reader.int32()
+                      break
+                    case 3:
+                      message.readyReplicas = reader.int32()
+                      break
+                    case 4:
+                      message.currentReplicas = reader.int32()
+                      break
+                    case 5:
+                      message.updatedReplicas = reader.int32()
+                      break
+                    case 6:
+                      message.currentRevision = reader.string()
+                      break
+                    case 7:
+                      message.updateRevision = reader.string()
+                      break
+                    case 9:
+                      message.collisionCount = reader.int32()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              Status.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              Status.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.observedGeneration != null && message.hasOwnProperty('observedGeneration')) {
+                  if (!$util.isInteger(message.observedGeneration) && !(message.observedGeneration && $util.isInteger(message.observedGeneration.low) && $util.isInteger(message.observedGeneration.high))) { return 'observedGeneration: integer|Long expected' }
+                }
+                if (message.replicas != null && message.hasOwnProperty('replicas')) {
+                  if (!$util.isInteger(message.replicas)) { return 'replicas: integer expected' }
+                }
+                if (message.readyReplicas != null && message.hasOwnProperty('readyReplicas')) {
+                  if (!$util.isInteger(message.readyReplicas)) { return 'readyReplicas: integer expected' }
+                }
+                if (message.currentReplicas != null && message.hasOwnProperty('currentReplicas')) {
+                  if (!$util.isInteger(message.currentReplicas)) { return 'currentReplicas: integer expected' }
+                }
+                if (message.updatedReplicas != null && message.hasOwnProperty('updatedReplicas')) {
+                  if (!$util.isInteger(message.updatedReplicas)) { return 'updatedReplicas: integer expected' }
+                }
+                if (message.currentRevision != null && message.hasOwnProperty('currentRevision')) {
+                  if (!$util.isString(message.currentRevision)) { return 'currentRevision: string expected' }
+                }
+                if (message.updateRevision != null && message.hasOwnProperty('updateRevision')) {
+                  if (!$util.isString(message.updateRevision)) { return 'updateRevision: string expected' }
+                }
+                if (message.collisionCount != null && message.hasOwnProperty('collisionCount')) {
+                  if (!$util.isInteger(message.collisionCount)) { return 'collisionCount: integer expected' }
+                }
+                return null
+              }
+
+              return Status
             })()
 
             proto.Volume = (function() {
