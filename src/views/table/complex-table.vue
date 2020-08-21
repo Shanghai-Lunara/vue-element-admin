@@ -616,50 +616,28 @@ export default {
     },
     initWatch(res, _self) {
       let one_data = ''
-      let mark = false
 
       //  排除无关watch
       if (res.param.resourceType !== _self.listQuery.type || res.param.nameSpace !== _self.nameSpace) {
         return
       }
 
+      // console.log('watch')
+      // console.log(res)
+
       switch (res.param.resourceType) {
         case 'MysqlOperator':
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(res.result)
 
-          _self.list.forEach((element, key) => {
-            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
-              one_data.namespace = _self.nameSpace
-              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
-              mark = true
-              _self.list.splice(key, 1, one_data)
-            }
-          })
+          // console.log(one_data)
 
-          if (!mark) {
-            one_data.namespace = _self.nameSpace
-            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
-            _self.list.push(one_data)
-          }
+          _self.watchEventType(res.param.watchEventType, one_data, _self)
 
           break
         case 'RedisOperator':
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrd.decode(res.result)
 
-          _self.list.forEach((element, key) => {
-            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
-              one_data.namespace = _self.nameSpace
-              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
-              mark = true
-              _self.list.splice(key, 1, one_data)
-            }
-          })
-
-          if (!mark) {
-            one_data.namespace = _self.nameSpace
-            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
-            _self.list.push(one_data)
-          }
+          _self.watchEventType(res.param.watchEventType, one_data, _self)
 
           break
 
@@ -678,6 +656,52 @@ export default {
           // _self.list = list
           // _self.showFlag = true
 
+          break
+      }
+    },
+    // watchEventType: "ADDED"
+    watchEventType(type, one_data, _self) {
+      switch (type) {
+        case 'ADDED':
+
+          var flag = true
+
+          _self.list.forEach((element, key) => {
+            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              _self.list.splice(key, 1, one_data)
+              flag = false
+            }
+          })
+
+          if (flag) {
+            one_data.namespace = _self.nameSpace
+            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+            _self.list.push(one_data)
+          }
+
+          break
+        case 'MODIFIED':
+          _self.list.forEach((element, key) => {
+            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              _self.list.splice(key, 1, one_data)
+            }
+          })
+          break
+        case 'DELETED':
+          // console.log('delete')
+          _self.list.forEach((element, key) => {
+            if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
+              _self.list.splice(key, 1)
+            }
+          })
+          break
+        case 'BOOKMARK':
+          break
+        case 'ERROR':
           break
       }
     },
