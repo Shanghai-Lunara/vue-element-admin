@@ -1918,6 +1918,7 @@ export const github = $root.github = (() => {
               Param.prototype.service = ''
               Param.prototype.resourceType = ''
               Param.prototype.nameSpace = ''
+              Param.prototype.watchEventType = ''
               Param.prototype.harborRequest = null
 
               Param.create = function create(properties) {
@@ -1929,7 +1930,8 @@ export const github = $root.github = (() => {
                 if (message.service != null && Object.hasOwnProperty.call(message, 'service')) { writer.uint32(10).string(message.service) }
                 if (message.resourceType != null && Object.hasOwnProperty.call(message, 'resourceType')) { writer.uint32(18).string(message.resourceType) }
                 if (message.nameSpace != null && Object.hasOwnProperty.call(message, 'nameSpace')) { writer.uint32(26).string(message.nameSpace) }
-                if (message.harborRequest != null && Object.hasOwnProperty.call(message, 'harborRequest')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.encode(message.harborRequest, writer.uint32(34).fork()).ldelim() }
+                if (message.watchEventType != null && Object.hasOwnProperty.call(message, 'watchEventType')) { writer.uint32(34).string(message.watchEventType) }
+                if (message.harborRequest != null && Object.hasOwnProperty.call(message, 'harborRequest')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.encode(message.harborRequest, writer.uint32(42).fork()).ldelim() }
                 return writer
               }
 
@@ -1953,6 +1955,9 @@ export const github = $root.github = (() => {
                       message.nameSpace = reader.string()
                       break
                     case 4:
+                      message.watchEventType = reader.string()
+                      break
+                    case 5:
                       message.harborRequest = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.decode(reader, reader.uint32())
                       break
                     default:
@@ -1978,6 +1983,9 @@ export const github = $root.github = (() => {
                 }
                 if (message.nameSpace != null && message.hasOwnProperty('nameSpace')) {
                   if (!$util.isString(message.nameSpace)) { return 'nameSpace: string expected' }
+                }
+                if (message.watchEventType != null && message.hasOwnProperty('watchEventType')) {
+                  if (!$util.isString(message.watchEventType)) { return 'watchEventType: string expected' }
                 }
                 if (message.harborRequest != null && message.hasOwnProperty('harborRequest')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HarborRequest.verify(message.harborRequest)
