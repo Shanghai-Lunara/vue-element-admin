@@ -362,14 +362,12 @@ export default {
         // 提交数据
         if (row.isSet) {
           if (type === 2) {
-            console.log(555555)
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
 
           row.isSet = false
         } else {
           if (type === 2) {
-            console.log(666666)
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
           }
 
