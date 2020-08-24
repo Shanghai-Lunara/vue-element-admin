@@ -414,6 +414,9 @@ export default {
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
+
+          // console.log(99999999)
+          // console.log(list)
           break
         case 'RedisOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -659,7 +662,6 @@ export default {
           break
       }
     },
-    // watchEventType: "ADDED"
     watchEventType(type, one_data, _self) {
       switch (type) {
         case 'ADDED':

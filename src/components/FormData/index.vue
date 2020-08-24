@@ -206,7 +206,7 @@ export default {
         this.oneData.slave.name = this.typeName + this.project_name
       }
 
-      this.oneData.name = this.project_name
+      // this.oneData.name = this.project_name
     }
   },
   mounted() {
@@ -254,8 +254,8 @@ export default {
           this.oneData.master = JSON.parse(JSON.stringify(this.generateForm()))
           this.oneData.slave = JSON.parse(JSON.stringify(this.generateForm()))
         }
-        this.oneData.name = ''
         this.project_name = ''
+        this.oneData.name = this.project_name
       } else {
         // update
 
