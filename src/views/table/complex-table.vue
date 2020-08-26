@@ -46,7 +46,7 @@
 
     <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="selectNameSpace" />
 
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="closeDia()">
+    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" @close="closeDia(createFlag)">
 
       <!-- mysql | redis -->
 
@@ -249,22 +249,24 @@ export default {
         }, 1.5 * 1000)
       })
     },*/
-    closeDia() {
-      var str = ''
-      switch (this.oneData.typename) {
-        case 'MysqlOperator':
-          str = 'mo-'
-          break
-        case 'RedisOperator':
-          str = 'ro-'
-          break
-        case 'HelixSagaOperator':
-          str = 'hso-'
-          break
-      }
+    closeDia(tmp) {
+      if (tmp) {
+        var str = ''
+        switch (this.oneData.typename) {
+          case 'MysqlOperator':
+            str = 'mo-'
+            break
+          case 'RedisOperator':
+            str = 'ro-'
+            break
+          case 'HelixSagaOperator':
+            str = 'hso-'
+            break
+        }
 
-      if (this.oneData.name.indexOf(str) === -1) {
-        this.oneData.name = str + this.oneData.name
+        if (this.oneData.name.indexOf(str) === -1) {
+          this.oneData.name = str + this.oneData.name
+        }
       }
     },
     timer() {
@@ -379,6 +381,8 @@ export default {
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           list = []
           var config_list = []
+          console.log('map')
+          // console.log(dataStr)
           dataStr.items.forEach(function(item, index) {
             var one = []
             var tmp = ''
@@ -386,7 +390,9 @@ export default {
             one.namespace = _self.nameSpace
 
             one.keys = Object.keys(item.data).join(',')
-            one.value = Object.values(item.data)
+            // one.value = Object.values(item.data)
+
+            one.value = item.data
             one.item = item
 
             tmp = item.Name
@@ -766,17 +772,22 @@ export default {
     },
     // configmap 内容展示
     handleUpdate(row) {
+      console.log('config 1111')
+      console.log(row)
+
       this.nowRow = row
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      let str = ''
-      const keys = row.keys.split(',')
-      const reg = new RegExp('\n', 'g')
-      row.value.forEach(function(item, index) {
-        const newMsg = item.replace(reg, '\n    ')
-        str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
-      })
-      this.yamlData = str
+      // let str = ''
+      // const list = {}
+      // const keys = row.keys.split(',')
+      // const reg = new RegExp('\n', 'g')
+      // row.value.forEach(function(item, index) {
+      //   const newMsg = item.replace(reg, '\n    ')
+      //   str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
+      //   list[keys[index]] = newMsg
+      // })
+      this.yamlData = row.value
     },
     handleDelete(row, index) {
       if (this.warning()) {
