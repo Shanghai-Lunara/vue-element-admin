@@ -1,22 +1,19 @@
 <template>
   <div>
     <div>
-      <el-select v-model="branch" filterable placeholder="请选择" @change="changeBranch">
-        <el-option
-          v-for="item in list"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
-      <!-- <el-tag
-        v-for="tag in dynamicTags"
-        :key="tag"
+      <el-input v-model="value.Name" placeholder="请输入name" style="width: 300px;" />
+    </div>
+    <div style="margin-top: 5px;">
+      <el-tag
+        v-for="tag in list"
+        :key="tag.name"
         closable
         :disable-transitions="false"
-        @close="handleClose(tag)"
+        :type="tag.status === 1 ? '' : 'danger'"
+        @close="handleClose(tag.name)"
+        @click="changeBranch(tag.name)"
       >
-        {{ tag }}
+        {{ tag.name }}
       </el-tag>
       <el-input
         v-if="inputVisible"
@@ -27,7 +24,7 @@
         @keyup.enter.native="handleInputConfirm"
         @blur="handleInputConfirm"
       />
-      <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button> -->
+      <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
     </div>
     <div class="yaml-editor CodeMirror-wrap" style="margin-top: 5px;">
       <textarea ref="textarea" />
@@ -56,28 +53,39 @@ export default {
     return {
       yamlEditor: false,
       list: [],
-      branch: ''
+      old_branch: '',
+      inputVisible: false,
+      inputValue: '',
+      input: ''
     }
   },
   watch: {
-    value(value) {
-      console.log(8888888)
-      console.log(value)
-      // const editorValue = this.yamlEditor.getValue()
-      // if (value !== editorValue) {
-      //   this.yamlEditor.setValue(this.value)
-      // }
+    'value.data': function() {
+      this.initData()
     }
   },
   mounted() {
-    // console.log(99999999)
-    // console.log(this.value)
-
-    this.initMode()
-
-    this.list = Object.keys(this.value)
+    this.initData()
   },
   methods: {
+    initData() {
+      this.initMode()
+
+      this.yamlEditor.setValue('')
+
+      const now_list = Object.keys(this.value.data)
+
+      const arr = []
+
+      now_list.forEach(element => {
+        arr.push({
+          name: element,
+          status: 1
+        })
+      })
+
+      this.list = arr
+    },
     getValue() {
       return this.yamlEditor.getValue()
     },
@@ -85,18 +93,34 @@ export default {
       this.yamlEditor.setValue(value)
     },
     changeBranch(val) {
-      // console.log(this.$refs.textarea)
+      // console.log(this.yamlEditor.getValue())
+
+      const old_data = this.yamlEditor.getValue()
+
+      if (old_data !== '') {
+        this.value.data[this.old_branch] = old_data
+      }
+
+      this.list.forEach(element => {
+        if (element.name === val) {
+          element.status = 2
+        } else {
+          element.status = 1
+        }
+      })
+
       if (val.indexOf('.php') !== -1) {
         this.yamlEditor.setOption('mode', 'php')
       } else {
         this.yamlEditor.setOption('mode', 'text/x-yaml')
       }
 
-      var current_data = this.value[val]
+      this.old_branch = val
 
-      this.yamlEditor.setValue(current_data)
+      this.yamlEditor.setValue(this.value.data[val])
     },
     initMode() {
+      // console.log(this.$refs)
       this.yamlEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
         lineNumbers: true, // 显示行号
         mode: 'text/x-yaml', // 语法model
@@ -104,13 +128,31 @@ export default {
         theme: 'monokai', // 编辑器主题
         lint: true // 开启语法检查
       })
+    },
+    handleClose(tag) {
+      this.list.splice(this.list.indexOf(tag), 1)
 
-      this.yamlEditor.on('change', (cm) => {
-        console.log(cm)
-        console.log(99999)
-        this.$emit('changed', cm.getValue())
-        this.$emit('input', cm.getValue())
+      delete this.value.data[tag]
+
+      // console.log('delete')
+      // console.log(this.value)
+    },
+
+    showInput() {
+      this.inputVisible = true
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus()
       })
+    },
+
+    handleInputConfirm() {
+      const inputValue = this.inputValue
+      if (inputValue) {
+        this.list.push(inputValue)
+        this.value.data[inputValue] = ''
+      }
+      this.inputVisible = false
+      this.inputValue = ''
     }
   }
 }
@@ -130,5 +172,21 @@ export default {
   }
   .yaml-editor >>> .cm-s-rubyblue span.cm-string {
     color: #F08047;
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+    margin-top: 5px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
   }
 </style>

@@ -203,7 +203,7 @@ export default {
       this.selectNameSpace()
     },
     permission_routes() {
-      if (this.permission_routes[5]['children'].length === 0) {
+      if (this.permission_routes[5]['children'].length === 1) {
         this.itemList()
       }
     }
@@ -211,7 +211,8 @@ export default {
   mounted() {
     // this.getList()
 
-    if (this.permission_routes[5]['children'].length === 0) {
+    if (this.permission_routes[5]['children'].length === 1) {
+      // console.log('itemlist')
       this.itemList()
     }
 
@@ -267,6 +268,12 @@ export default {
         if (this.oneData.name.indexOf(str) === -1) {
           this.oneData.name = str + this.oneData.name
         }
+      } else {
+        console.log('closeDia')
+        // 重置数据
+        // this.$refs.yamlEditor.list = []
+
+        // this.$refs.yamlEditor.setValue()
       }
     },
     timer() {
@@ -382,7 +389,7 @@ export default {
           list = []
           var config_list = []
           console.log('map')
-          // console.log(dataStr)
+          console.log(dataStr.items)
           dataStr.items.forEach(function(item, index) {
             var one = []
             var tmp = ''
@@ -402,7 +409,7 @@ export default {
           })
 
           total = dataStr.items.length
-          _self.showFlag = false
+          _self.showFlag = true
           _self.configList = config_list
           break
         case 'MysqlOperator':
@@ -537,7 +544,7 @@ export default {
 
           _self.calendarTypeOptions = calendarTypeOptions
           _self.listQuery.type = 'ConfigMap'
-          _self.showFlag = false
+          _self.showFlag = true
 
           const data = {
             'nameSpace': _self.nameSpace,
@@ -738,7 +745,8 @@ export default {
         }
         this.table = table[this.listQuery.type]
 
-        if (this.listQuery.type === 'secret' || this.listQuery.type === 'ConfigMap') {
+        // || this.listQuery.type === 'ConfigMap'
+        if (this.listQuery.type === 'secret') {
           this.showFlag = false
         } else {
           this.showFlag = true
@@ -753,22 +761,32 @@ export default {
         return
       }
 
-      this.oneData = {}
+      if (this.listQuery.type === 'ConfigMap') {
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
 
-      this.createFlag = true
-      this.oneData.type = 1
+        this.yamlData = {
+          Name: '',
+          data: {}
+        }
+      } else {
+        this.oneData = {}
 
-      if (this.listQuery.type === 'HelixSagaOperator') {
-        this.oneData.configList = this.configList
+        this.createFlag = true
+        this.oneData.type = 1
+
+        if (this.listQuery.type === 'HelixSagaOperator') {
+          this.oneData.configList = this.configList
+        }
+
+        this.oneData.typename = this.listQuery.type
+
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
+
+        this.oneData.name = ''
+        this.oneData.namespace = this.nameSpace
       }
-
-      this.oneData.typename = this.listQuery.type
-
-      this.dialogStatus = 'create'
-      this.dialogFormVisible = true
-
-      this.oneData.name = ''
-      this.oneData.namespace = this.nameSpace
     },
     // configmap 内容展示
     handleUpdate(row) {
@@ -778,16 +796,7 @@ export default {
       this.nowRow = row
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      // let str = ''
-      // const list = {}
-      // const keys = row.keys.split(',')
-      // const reg = new RegExp('\n', 'g')
-      // row.value.forEach(function(item, index) {
-      //   const newMsg = item.replace(reg, '\n    ')
-      //   str += ' \n ' + keys[index] + ' : | \n    ' + newMsg
-      //   list[keys[index]] = newMsg
-      // })
-      this.yamlData = row.value
+      this.yamlData = row.item
     },
     handleDelete(row, index) {
       if (this.warning()) {
@@ -816,21 +825,20 @@ export default {
     makeSureEdit() {
       // 获取,更改编辑框里的值
       const editValue = this.$refs.yamlEditor.getValue()
-      this.$refs.yamlEditor.setValue(editValue)
-      this.yamlData = editValue
+
+      if (editValue !== '') {
+        const key = this.$refs.yamlEditor.old_branch
+        this.$refs.yamlEditor.value[key] = editValue
+      }
 
       // 取消弹框
       this.dialogFormVisible = false
 
-      // 将编辑框内转化为对象,并update
-      const yaml = require('js-yaml')
-      const obj = yaml.load(this.yamlData)
-
       const data = {
-        Name: this.nowRow.item.Name,
-        data: obj
+        Name: this.$refs.yamlEditor.value.Name,
+        data: this.$refs.yamlEditor.value.data
       }
-      this.updateConfigMapList(data, 'update')
+      this.updateConfigMapList(data, this.dialogStatus)
     },
     // 更新mysqloperate
     makeConfirm() {
