@@ -356,7 +356,9 @@ export default {
       var data_request = ''
       switch (this.listQuery.type) {
         case 'ConfigMap':
+          console.log(data)
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
+
           break
         case 'MysqlOperator':
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd
@@ -397,7 +399,6 @@ export default {
             one.namespace = _self.nameSpace
 
             one.keys = Object.keys(item.data).join(',')
-            // one.value = Object.values(item.data)
 
             one.value = item.data
             one.item = item
@@ -642,6 +643,9 @@ export default {
       // console.log(res)
 
       switch (res.param.resourceType) {
+        case 'ConfigMap':
+
+          break
         case 'MysqlOperator':
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(res.result)
 
@@ -808,6 +812,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
+        console.log(row)
         delete row.namespace
 
         this.updateConfigMapList(row, 'delete')
@@ -826,10 +831,17 @@ export default {
       // 获取,更改编辑框里的值
       const editValue = this.$refs.yamlEditor.getValue()
 
+      console.log(editValue)
+
       if (editValue !== '') {
         const key = this.$refs.yamlEditor.old_branch
-        this.$refs.yamlEditor.value[key] = editValue
+        console.log(key)
+        this.$refs.yamlEditor.value.data[key] = editValue
       }
+
+      // this.$refs.yamlEditor.value = JSON.parse(JSON.stringify(this.$refs.yamlEditor.value))
+
+      console.log(this.$refs.yamlEditor.value)
 
       // 取消弹框
       this.dialogFormVisible = false
@@ -838,6 +850,10 @@ export default {
         Name: this.$refs.yamlEditor.value.Name,
         data: this.$refs.yamlEditor.value.data
       }
+
+      console.log(data)
+      console.log(this.dialogStatus)
+
       this.updateConfigMapList(data, this.dialogStatus)
     },
     // 更新mysqloperate

@@ -27,7 +27,7 @@
       <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
     </div>
     <div class="yaml-editor CodeMirror-wrap" style="margin-top: 5px;">
-      <textarea ref="textarea" />
+      <textarea id="yaml" ref="textarea" />
     </div>
   </div>
 
@@ -61,18 +61,17 @@ export default {
   },
   watch: {
     'value.data': function() {
+      this.old_branch = ''
       this.initData()
     }
   },
   mounted() {
+    this.initMode()
     this.initData()
   },
   methods: {
     initData() {
-      this.initMode()
-
-      this.yamlEditor.setValue('')
-
+      console.log(this.value)
       const now_list = Object.keys(this.value.data)
 
       const arr = []
@@ -85,6 +84,11 @@ export default {
       })
 
       this.list = arr
+
+      if (arr.length === 0) {
+        const value = ''
+        this.setValue(value)
+      }
     },
     getValue() {
       return this.yamlEditor.getValue()
@@ -93,8 +97,6 @@ export default {
       this.yamlEditor.setValue(value)
     },
     changeBranch(val) {
-      // console.log(this.yamlEditor.getValue())
-
       const old_data = this.yamlEditor.getValue()
 
       if (old_data !== '') {
@@ -120,7 +122,6 @@ export default {
       this.yamlEditor.setValue(this.value.data[val])
     },
     initMode() {
-      // console.log(this.$refs)
       this.yamlEditor = CodeMirror.fromTextArea(this.$refs.textarea, {
         lineNumbers: true, // 显示行号
         mode: 'text/x-yaml', // 语法model
@@ -131,11 +132,7 @@ export default {
     },
     handleClose(tag) {
       this.list.splice(this.list.indexOf(tag), 1)
-
       delete this.value.data[tag]
-
-      // console.log('delete')
-      // console.log(this.value)
     },
 
     showInput() {
@@ -148,7 +145,17 @@ export default {
     handleInputConfirm() {
       const inputValue = this.inputValue
       if (inputValue) {
-        this.list.push(inputValue)
+        this.list.push({
+          name: inputValue,
+          status: 2
+        })
+
+        this.list.forEach(element => {
+          if (element.name !== inputValue) {
+            element.status = 1
+          }
+        })
+        this.old_branch = inputValue
         this.value.data[inputValue] = ''
       }
       this.inputVisible = false
