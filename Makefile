@@ -9,3 +9,7 @@ web:
 	docker build -t $(DASHBOARD_IMAGE) .
 	docker push $(DASHBOARD_IMAGE)
 	rm -rf dist
+
+clean:
+	$(shell docker ps | awk '{print $2}' | xargs docker kill)
+	$(shell docker container ls -a | awk '{print $2}' | xargs docker container rm)
