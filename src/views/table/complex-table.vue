@@ -356,7 +356,6 @@ export default {
       var data_request = ''
       switch (this.listQuery.type) {
         case 'ConfigMap':
-          console.log(data)
           data_request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap
 
           break
@@ -639,11 +638,14 @@ export default {
         return
       }
 
-      // console.log('watch')
-      // console.log(res)
+      console.log('watch')
 
       switch (res.param.resourceType) {
         case 'ConfigMap':
+          // ConfigMap
+          one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMap.decode(res.result)
+
+          _self.watchConfigMap(res.param.watchEventType, one_data, _self)
 
           break
         case 'MysqlOperator':
@@ -676,6 +678,41 @@ export default {
           // _self.list = list
           // _self.showFlag = true
 
+          break
+      }
+    },
+    watchConfigMap(type, one_data, _self) {
+      switch (type) {
+        case 'ADDED':
+
+          console.log('added')
+          console.log(_self.list)
+          console.log(one_data)
+
+          // var flag = true
+
+          // _self.list.forEach((element, key) => {
+          //   if (element.name === one_data.Name && one_data.resourceVersion >= element.resourceVersion) {
+          //     one_data.namespace = _self.nameSpace
+          //     _self.list.splice(key, 1, one_data)
+          //     flag = false
+          //   }
+          // })
+
+          // if (flag) {
+          //   one_data.namespace = _self.nameSpace
+          //   one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+          //   _self.list.push(one_data)
+          // }
+
+          break
+        case 'MODIFIED':
+          break
+        case 'DELETED':
+          break
+        case 'BOOKMARK':
+          break
+        case 'ERROR':
           break
       }
     },
