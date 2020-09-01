@@ -204,6 +204,7 @@ export default {
     },
     permission_routes() {
       if (this.permission_routes[5]['children'].length === 1) {
+        console.log(1111111)
         this.itemList()
       }
     }
@@ -212,7 +213,7 @@ export default {
     // this.getList()
 
     if (this.permission_routes[5]['children'].length === 1) {
-      // console.log('itemlist')
+      console.log('itemlist')
       this.itemList()
     }
 
@@ -520,7 +521,9 @@ export default {
             now_arr.push(now_list)
           })
 
-          this.permission_routes[5]['children'] = now_arr
+          _self.permission_routes[5]['children'] = now_arr
+
+          console.log(222222222)
 
           break
       }

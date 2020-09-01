@@ -94,6 +94,9 @@ export default {
       })
 
       _self.permission_routes[5]['children'] = now_arr
+
+      console.log('init')
+      console.log(_self.permission_routes[5]['children'])
     })
   }
 }
