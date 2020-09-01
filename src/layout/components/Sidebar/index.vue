@@ -50,54 +50,54 @@ export default {
     isCollapse() {
       return !this.sidebar.opened
     }
-  },
-  created() {
-    var data = {
-      'nameSpace': '',
-      'service': 'list',
-      'resourceType': 'NameSpace'
-    }
-
-    var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
-
-    if (errData) { throw Error(errData) }
-
-    var msg = {
-      'param': data,
-      'data': ''
-    }
-
-    var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
-
-    var message = request.create(msg)
-
-    var senddata = request.encode(message).finish()
-
-    var _self = this
-
-    this.$socketApi(senddata, function(res) {
-      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
-
-      var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
-
-      var now_arr = []
-
-      var arr = dataStr.items
-
-      arr.forEach(element => {
-        var now_list = { 'path': 'complex-table' }
-        now_list['name'] = element['Name']
-        now_list['component'] = () => import('@/views/table/complex-table')
-
-        now_list['meta'] = { 'title': element['Name'], 'icon': 'form' }
-        now_arr.push(now_list)
-      })
-
-      _self.permission_routes[5]['children'] = now_arr
-
-      console.log('init')
-      console.log(_self.permission_routes[5]['children'])
-    })
   }
+  // created() {
+  //   var data = {
+  //     'nameSpace': '',
+  //     'service': 'list',
+  //     'resourceType': 'NameSpace'
+  //   }
+
+  //   var errData = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Param.verify(data)
+
+  //   if (errData) { throw Error(errData) }
+
+  //   var msg = {
+  //     'param': data,
+  //     'data': ''
+  //   }
+
+  //   var request = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Request
+
+  //   var message = request.create(msg)
+
+  //   var senddata = request.encode(message).finish()
+
+  //   var _self = this
+
+  //   this.$socketApi(senddata, function(res) {
+  //     var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
+
+  //     var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.NameSpaceList.decode(result.result)
+
+  //     var now_arr = []
+
+  //     var arr = dataStr.items
+
+  //     arr.forEach(element => {
+  //       var now_list = { 'path': 'complex-table' }
+  //       now_list['name'] = element['Name']
+  //       now_list['component'] = () => import('@/views/table/complex-table')
+
+  //       now_list['meta'] = { 'title': element['Name'], 'icon': 'form' }
+  //       now_arr.push(now_list)
+  //     })
+
+  //     _self.permission_routes[5]['children'] = now_arr
+
+  //     console.log('init')
+  //     console.log(_self.permission_routes[5]['children'])
+  //   })
+  // }
 }
 </script>

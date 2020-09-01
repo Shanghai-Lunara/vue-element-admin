@@ -204,7 +204,6 @@ export default {
     },
     permission_routes() {
       if (this.permission_routes[5]['children'].length === 1) {
-        console.log(1111111)
         this.itemList()
       }
     }
@@ -213,7 +212,7 @@ export default {
     // this.getList()
 
     if (this.permission_routes[5]['children'].length === 1) {
-      console.log('itemlist')
+      // console.log('itemlist')
       this.itemList()
     }
 
@@ -390,6 +389,9 @@ export default {
 
       let isTiny = false // service时为true, 存贮侧边栏数据
 
+      // console.log(5555555)
+      // console.log(result)
+
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
@@ -523,8 +525,6 @@ export default {
 
           _self.permission_routes[5]['children'] = now_arr
 
-          console.log(222222222)
-
           break
       }
 
@@ -537,6 +537,8 @@ export default {
 
     returnResource(service, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+
+      // console.log(result)
 
       switch (result.param.service) {
         case 'ping':
@@ -567,9 +569,10 @@ export default {
 
           break
         case 'list':
-
-          if (result.param.resourceType !== _self.listQuery.type || result.param.nameSpace !== _self.nameSpace) {
-            return
+          if (_self.nameSpace !== undefined || _self.nameSpace !== '') {
+            if (result.param.resourceType !== _self.listQuery.type || result.param.nameSpace !== _self.nameSpace) {
+              return
+            }
           }
 
           var obj = _self.returnMessage(service, _self)
