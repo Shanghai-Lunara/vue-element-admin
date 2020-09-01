@@ -569,7 +569,7 @@ export default {
 
           break
         case 'list':
-          if (_self.nameSpace !== undefined || _self.nameSpace !== '') {
+          if (_self.nameSpace !== undefined) {
             if (result.param.resourceType !== _self.listQuery.type || result.param.nameSpace !== _self.nameSpace) {
               return
             }
