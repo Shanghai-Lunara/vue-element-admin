@@ -156,6 +156,7 @@ export default {
         })
         this.old_branch = inputValue
         this.value.data[inputValue] = ''
+        this.yamlEditor.setValue('')
       }
       this.inputVisible = false
       this.inputValue = ''
