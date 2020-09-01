@@ -204,9 +204,8 @@ export default {
       if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
         this.oneData.master.name = this.typeName + this.project_name
         this.oneData.slave.name = this.typeName + this.project_name
+        this.oneData.name = this.project_name
       }
-
-      // this.oneData.name = this.project_name
     }
   },
   mounted() {

@@ -71,7 +71,6 @@ export default {
   },
   methods: {
     initData() {
-      // console.log(this.value)
       const now_list = Object.keys(this.value.data)
 
       const arr = []

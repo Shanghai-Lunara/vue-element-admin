@@ -95,7 +95,7 @@ import FormData from '@/components/FormData'
 import { mapGetters } from 'vuex'
 
 const configMapTable = {
-  name: 'Name',
+  Name: 'Name',
   namespace: 'NameSpace',
   keys: 'keys'
 }
@@ -269,11 +269,16 @@ export default {
           this.oneData.name = str + this.oneData.name
         }
       } else {
-        console.log('closeDia')
+        // console.log('closeDia')
         // 重置数据
-        // this.$refs.yamlEditor.list = []
+        if (this.$refs.yamlEditor.list) {
+          // console.log(this.$refs.yamlEditor.list)
+          this.$refs.yamlEditor.list.forEach(element => {
+            element.status = 1
+          })
 
-        // this.$refs.yamlEditor.setValue()
+          this.$refs.yamlEditor.setValue('')
+        }
       }
     },
     timer() {
@@ -389,24 +394,26 @@ export default {
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           list = []
           var config_list = []
-          console.log('map')
-          console.log(dataStr.items)
+          // console.log('map')
+          // console.log(dataStr.items)
           dataStr.items.forEach(function(item, index) {
             var one = []
             var tmp = ''
-            one.name = item.Name
+            one = item
             one.namespace = _self.nameSpace
 
             one.keys = Object.keys(item.data).join(',')
 
-            one.value = item.data
-            one.item = item
+            // one.value = item.data
+            // one.item = item
 
             tmp = item.Name
 
             list.push(one)
             config_list.push(tmp)
           })
+
+          _self.createFlag = false
 
           total = dataStr.items.length
           _self.showFlag = true
@@ -638,8 +645,6 @@ export default {
         return
       }
 
-      console.log('watch')
-
       switch (res.param.resourceType) {
         case 'ConfigMap':
           // ConfigMap
@@ -650,8 +655,6 @@ export default {
           break
         case 'MysqlOperator':
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.MysqlCrd.decode(res.result)
-
-          // console.log(one_data)
 
           _self.watchEventType(res.param.watchEventType, one_data, _self)
 
@@ -685,30 +688,39 @@ export default {
       switch (type) {
         case 'ADDED':
 
-          console.log('added')
-          console.log(_self.list)
-          console.log(one_data)
+          var flag = true
 
-          // var flag = true
+          _self.list.forEach((element, key) => {
+            if (element.Name === one_data.Name && one_data.resourceVersion >= element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.keys = Object.keys(one_data.data).join(',')
+              _self.list.splice(key, 1, one_data)
+              flag = false
+            }
+          })
 
-          // _self.list.forEach((element, key) => {
-          //   if (element.name === one_data.Name && one_data.resourceVersion >= element.resourceVersion) {
-          //     one_data.namespace = _self.nameSpace
-          //     _self.list.splice(key, 1, one_data)
-          //     flag = false
-          //   }
-          // })
-
-          // if (flag) {
-          //   one_data.namespace = _self.nameSpace
-          //   one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
-          //   _self.list.push(one_data)
-          // }
+          if (flag) {
+            one_data.namespace = _self.nameSpace
+            one_data.keys = Object.keys(one_data.data).join(',')
+            _self.list.push(one_data)
+          }
 
           break
         case 'MODIFIED':
+          _self.list.forEach((element, key) => {
+            if (element.Name === one_data.Name && one_data.resourceVersion >= element.resourceVersion) {
+              one_data.namespace = _self.nameSpace
+              one_data.keys = Object.keys(one_data.data).join(',')
+              _self.list.splice(key, 1, one_data)
+            }
+          })
           break
         case 'DELETED':
+          _self.list.forEach((element, key) => {
+            if (element.Name === one_data.Name && one_data.resourceVersion >= element.resourceVersion) {
+              _self.list.splice(key, 1)
+            }
+          })
           break
         case 'BOOKMARK':
           break
@@ -831,13 +843,13 @@ export default {
     },
     // configmap 内容展示
     handleUpdate(row) {
-      console.log('config 1111')
-      console.log(row)
+      // console.log('config 1111')
+      // console.log(row)
 
       this.nowRow = row
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-      this.yamlData = row.item
+      this.yamlData = row
     },
     handleDelete(row, index) {
       if (this.warning()) {
@@ -849,7 +861,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log(row)
         delete row.namespace
 
         this.updateConfigMapList(row, 'delete')
@@ -868,17 +879,12 @@ export default {
       // 获取,更改编辑框里的值
       const editValue = this.$refs.yamlEditor.getValue()
 
-      console.log(editValue)
-
       if (editValue !== '') {
         const key = this.$refs.yamlEditor.old_branch
-        console.log(key)
         this.$refs.yamlEditor.value.data[key] = editValue
       }
 
-      // this.$refs.yamlEditor.value = JSON.parse(JSON.stringify(this.$refs.yamlEditor.value))
-
-      console.log(this.$refs.yamlEditor.value)
+      // console.log(this.$refs.yamlEditor.value)
 
       // 取消弹框
       this.dialogFormVisible = false
@@ -887,9 +893,6 @@ export default {
         Name: this.$refs.yamlEditor.value.Name,
         data: this.$refs.yamlEditor.value.data
       }
-
-      console.log(data)
-      console.log(this.dialogStatus)
 
       this.updateConfigMapList(data, this.dialogStatus)
     },
@@ -919,6 +922,8 @@ export default {
       } else {
         this.checkData()
       }
+
+      // console.log(this.oneData)
 
       delete this.oneData.typename
       if (this.oneData.type) {
