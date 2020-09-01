@@ -28,4 +28,4 @@ package-lock.json
 yarn.lock
 
 *.sh
-
+*.yaml

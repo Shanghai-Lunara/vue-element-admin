@@ -2,7 +2,7 @@
 
 HARBOR_DOMAIN := $(shell echo ${HARBOR})
 PROJECT := lunara-common
-DASHBOARD_IMAGE := "$(HARBOR_DOMAIN)/$(PROJECT)/k8s-api-dashboard:latest"
+DASHBOARD_IMAGE := "$(HARBOR_DOMAIN)/$(PROJECT)/api-dashboard:latest"
 
 web:
 	npm run build:prod
