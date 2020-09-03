@@ -143,12 +143,6 @@ const Configmap = {
   }
 }
 
-const volumnTmp = {
-  key: '',
-  path: '',
-  isSet: true
-}
-
 export default {
   name: 'FormData',
   components: {
@@ -204,9 +198,6 @@ export default {
       if (this.oneData.typename === 'RedisOperator' || this.oneData.typename === 'MysqlOperator') {
         this.oneData.master.name = this.typeName + this.project_name
         this.oneData.slave.name = this.typeName + this.project_name
-        this.oneData.name = this.project_name
-      } else if (this.oneData.typename === 'HelixSagaOperator') {
-        this.oneData.name = this.project_name
       }
     }
   },
@@ -256,13 +247,12 @@ export default {
           this.oneData.slave = JSON.parse(JSON.stringify(this.generateForm()))
         }
         this.project_name = ''
-        this.oneData.name = this.project_name
+        this.oneData.name = this.typeName + this.project_name
       } else {
         // update
 
         if (this.oneData.name.indexOf(this.typeName) !== -1) {
           this.project_name = this.oneData.name.slice(i)
-          // this.oneData.name = this.project_name
         }
       }
 
@@ -558,7 +548,11 @@ export default {
       })
 
       if (mark) {
-        this.volume_map.volume.volumeSource.configMap.items.push(volumnTmp)
+        this.volume_map.volume.volumeSource.configMap.items.push({
+          key: '',
+          path: '',
+          isSet: true
+        })
       }
     },
     edit(row, index, cg, type) {

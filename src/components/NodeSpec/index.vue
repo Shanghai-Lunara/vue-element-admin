@@ -389,7 +389,7 @@ export default {
       })
 
       const contain = {
-        containerPort: 3306,
+        containerPort: 80,
         hostIP: '',
         hostPort: 0,
         name: '',
@@ -417,10 +417,10 @@ export default {
         const servicePort = {
           name: '',
           nodePort: 0,
-          port: 3306,
+          port: 80,
           protocol: 'TCP',
           targetPort: {
-            intVal: 3306,
+            intVal: 80,
             strVal: '',
             type: 0
           },
@@ -428,7 +428,7 @@ export default {
         }
 
         const new_port = {
-          intVal: 3306,
+          intVal: 80,
           strVal: '',
           type: 0
         }

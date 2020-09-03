@@ -231,9 +231,6 @@ export default {
     }
 
     this.timer()
-
-    // 获取右边搜索的list
-    this.getTinyTableList()
   },
   methods: {
     /* getList() {
@@ -252,22 +249,22 @@ export default {
     },*/
     closeDia(tmp) {
       if (tmp) {
-        var str = ''
-        switch (this.oneData.typename) {
-          case 'MysqlOperator':
-            str = 'mo-'
-            break
-          case 'RedisOperator':
-            str = 'ro-'
-            break
-          case 'HelixSagaOperator':
-            str = 'hso-'
-            break
-        }
+        // var str = ''
+        // switch (this.oneData.typename) {
+        //   case 'MysqlOperator':
+        //     str = 'mo-'
+        //     break
+        //   case 'RedisOperator':
+        //     str = 'ro-'
+        //     break
+        //   case 'HelixSagaOperator':
+        //     str = 'hso-'
+        //     break
+        // }
 
-        if (this.oneData.name.indexOf(str) === -1) {
-          this.oneData.name = str + this.oneData.name
-        }
+        // if (this.oneData.name.indexOf(str) === -1) {
+        //   this.oneData.name = str + this.oneData.name
+        // }
       } else {
         // console.log('closeDia')
         // 重置数据
@@ -407,9 +404,6 @@ export default {
 
             one.keys = Object.keys(item.data).join(',')
 
-            // one.value = item.data
-            // one.item = item
-
             tmp = item.Name
 
             list.push(one)
@@ -541,6 +535,8 @@ export default {
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
+          // 获取右边搜索的list
+          this.getTinyTableList()
           break
 
         case 'resource': {
@@ -671,7 +667,9 @@ export default {
           break
 
         case 'HelixSagaOperator':
+          // console.log('watch')
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.decode(res.result)
+          // console.log(one_data)
 
           _self.watchEventType(res.param.watchEventType, one_data, _self)
 
@@ -905,25 +903,6 @@ export default {
     // 更新mysqloperate
     makeConfirm() {
       delete this.oneData.namespace
-
-      console.log(this.oneData)
-
-      var str = ''
-      switch (this.oneData.typename) {
-        case 'MysqlOperator':
-          str = 'mo-'
-          break
-        case 'RedisOperator':
-          str = 'ro-'
-          break
-        case 'HelixSagaOperator':
-          str = 'hso-'
-          break
-      }
-
-      if (this.oneData.name.indexOf(str) === -1) {
-        this.oneData.name = str + this.oneData.name
-      }
 
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()

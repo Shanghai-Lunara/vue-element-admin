@@ -3,43 +3,11 @@
     <div>
       <div style="margin-bottom: 10px">
         <h3 class="drawer-title">{{ $t('tiny_table.title') }}</h3>
-        <el-input v-model="searchValue" v-on:input ="inputFunc" :placeholder="$t('tiny_table.title')" style="width: 200px;" class="filter-item" @keyup.enter.native="" />
+        <el-input v-model="searchValue" :placeholder="$t('tiny_table.title')" style="width: 200px;" class="filter-item" @input="inputFunc" />
         <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="test">
           {{ $t('table.add') }}
         </el-button>
       </div>
-
-      <!--<div class="drawer-item">
-        <span>{{ $t('settings.theme') }}</span>
-        <theme-picker style="float: right;height: 26px;margin: -3px 8px 0 0;" @change="themeChange" />
-      </div>
-
-      <div class="drawer-item">
-        <span>{{ $t('settings.tagsView') }}</span>
-        <el-switch v-model="tagsView" class="drawer-switch" />
-      </div>
-
-      <div class="drawer-item">
-        <span>{{ $t('settings.fixedHeader') }}</span>
-        <el-switch v-model="fixedHeader" class="drawer-switch" />
-      </div>
-
-      <div class="drawer-item">
-        <span>{{ $t('settings.sidebarLogo') }}</span>
-        <el-switch v-model="sidebarLogo" class="drawer-switch" />
-      </div>
-      <a v-if="isShowJob" href="https://panjiachen.github.io/vue-element-admin-site/zh/job/" target="_blank" class="job-link">
-        <el-alert
-          title="部门目前非常缺人！有兴趣的可以点击了解详情。坐标: 字节跳动"
-          type="success"
-          :closable="false"
-        />
-      </a>
-
-      <div v-if="lang === 'zh'" class="drawer-item">
-        <span>菜单支持拼音搜索</span>
-        <el-switch v-model="supportPinyinSearch" class="drawer-switch" />
-      </div>-->
 
       <div style="max-height: 500px">
         <el-table
@@ -69,10 +37,10 @@
 </template>
 
 <script>
-import ThemePicker from '@/components/ThemePicker'
+// import ThemePicker from '@/components/ThemePicker'
 
 export default {
-  components: { ThemePicker },
+  // components: { ThemePicker },
   data() {
     return {
       tableKey: 0,
@@ -81,58 +49,6 @@ export default {
       searchValue: ''
     }
   },
-  /*computed: {
-    isShowJob() {
-      return this.$store.getters.language === 'zh'
-    },
-    fixedHeader: {
-      get() {
-        return this.$store.state.settings.fixedHeader
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'fixedHeader',
-          value: val
-        })
-      }
-    },
-    tagsView: {
-      get() {
-        return this.$store.state.settings.tagsView
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'tagsView',
-          value: val
-        })
-      }
-    },
-    sidebarLogo: {
-      get() {
-        return this.$store.state.settings.sidebarLogo
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'sidebarLogo',
-          value: val
-        })
-      }
-    },
-    supportPinyinSearch: {
-      get() {
-        return this.$store.state.settings.supportPinyinSearch
-      },
-      set(val) {
-        this.$store.dispatch('settings/changeSetting', {
-          key: 'supportPinyinSearch',
-          value: val
-        })
-      }
-    },
-    lang() {
-      return this.$store.getters.language
-    }
-  },*/
   methods: {
     themeChange(val) {
       this.$store.dispatch('settings/changeSetting', {
@@ -143,18 +59,18 @@ export default {
     test() {
       this.tmpList = this.list = this.$store.list
     },
-    inputFunc(){
-      let value = this.searchValue
-      console.log(this.searchValue);
+    inputFunc() {
+      const value = this.searchValue
+      console.log(this.searchValue)
       this.tmpList = []
-      let tmp = []
+      const tmp = []
       this.list.forEach(function(item, index) {
         if (item.name.indexOf(value) !== -1) {
           tmp.push(item)
         }
       })
-      console.log('tmp');
-      console.log(tmp);
+      console.log('tmp')
+      console.log(tmp)
 
       this.tmpList = tmp
     }
