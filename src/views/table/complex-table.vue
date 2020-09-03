@@ -538,8 +538,6 @@ export default {
     returnResource(service, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
 
-      // console.log(result)
-
       switch (result.param.service) {
         case 'ping':
           console.log('ping')
@@ -673,19 +671,9 @@ export default {
           break
 
         case 'HelixSagaOperator':
-          // dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrdList.decode(result.result)
+          one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.decode(res.result)
 
-          // list = []
-          // dataStr.items.forEach(function(item, index) {
-          //   item.namespace = _self.nameSpace
-          //   item.typename = 'HelixSagaOperator'
-
-          //   list.push(item)
-          // })
-
-          // total = dataStr.items.length
-          // _self.list = list
-          // _self.showFlag = true
+          _self.watchEventType(res.param.watchEventType, one_data, _self)
 
           break
       }
@@ -743,7 +731,11 @@ export default {
           _self.list.forEach((element, key) => {
             if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
               one_data.namespace = _self.nameSpace
-              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              if (_self.listQuery.type === 'HelixSagaOperator') {
+                one_data.typename = 'HelixSagaOperator'
+              } else {
+                one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              }
               _self.list.splice(key, 1, one_data)
               flag = false
             }
@@ -751,7 +743,11 @@ export default {
 
           if (flag) {
             one_data.namespace = _self.nameSpace
-            one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+            if (_self.listQuery.type === 'HelixSagaOperator') {
+              one_data.typename = 'HelixSagaOperator'
+            } else {
+              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+            }
             _self.list.push(one_data)
           }
 
@@ -760,7 +756,11 @@ export default {
           _self.list.forEach((element, key) => {
             if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
               one_data.namespace = _self.nameSpace
-              one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              if (_self.listQuery.type === 'HelixSagaOperator') {
+                one_data.typename = 'HelixSagaOperator'
+              } else {
+                one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
+              }
               _self.list.splice(key, 1, one_data)
             }
           })
@@ -905,6 +905,8 @@ export default {
     // 更新mysqloperate
     makeConfirm() {
       delete this.oneData.namespace
+
+      console.log(this.oneData)
 
       var str = ''
       switch (this.oneData.typename) {
