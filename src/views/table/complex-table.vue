@@ -429,6 +429,8 @@ export default {
             list.push(item)
           })
 
+          console.log(list)
+
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
@@ -465,7 +467,7 @@ export default {
 
             if (item.applications !== '') {
               item.applications.forEach(value => {
-                arr = arr + value.spec.name + '_ports: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
               })
             }
 
@@ -747,7 +749,7 @@ export default {
 
                 if (one_data.applications !== '') {
                   one_data.applications.forEach(value => {
-                    arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                    arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
                   })
                 }
 
@@ -769,7 +771,7 @@ export default {
 
               if (one_data.applications !== '') {
                 one_data.applications.forEach(value => {
-                  arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                  arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
                 })
               }
 
@@ -792,7 +794,7 @@ export default {
 
                 if (one_data.applications !== '') {
                   one_data.applications.forEach(value => {
-                    arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                    arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
                   })
                 }
 
