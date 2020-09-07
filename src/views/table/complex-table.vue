@@ -114,7 +114,8 @@ const RedisOperatorTable = {
 
 const HelixSagaOperatorTable = {
   name: 'Name',
-  namespace: 'NameSpace'
+  namespace: 'NameSpace',
+  status: 'Status'
 }
 
 const ServiceTable = {
@@ -460,6 +461,16 @@ export default {
             item.namespace = _self.nameSpace
             item.typename = 'HelixSagaOperator'
 
+            var arr = ''
+
+            if (item.applications !== '') {
+              item.applications.forEach(value => {
+                arr = arr + value.spec.name + '_ports: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+              })
+            }
+
+            item.status = arr
+
             list.push(item)
           })
 
@@ -731,6 +742,16 @@ export default {
               one_data.namespace = _self.nameSpace
               if (_self.listQuery.type === 'HelixSagaOperator') {
                 one_data.typename = 'HelixSagaOperator'
+
+                var arr = ''
+
+                if (one_data.applications !== '') {
+                  one_data.applications.forEach(value => {
+                    arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                  })
+                }
+
+                one_data.status = arr
               } else {
                 one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
               }
@@ -743,6 +764,16 @@ export default {
             one_data.namespace = _self.nameSpace
             if (_self.listQuery.type === 'HelixSagaOperator') {
               one_data.typename = 'HelixSagaOperator'
+
+              var arr = ''
+
+              if (one_data.applications !== '') {
+                one_data.applications.forEach(value => {
+                  arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                })
+              }
+
+              one_data.status = arr
             } else {
               one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
             }
@@ -756,6 +787,16 @@ export default {
               one_data.namespace = _self.nameSpace
               if (_self.listQuery.type === 'HelixSagaOperator') {
                 one_data.typename = 'HelixSagaOperator'
+
+                var arr = ''
+
+                if (one_data.applications !== '') {
+                  one_data.applications.forEach(value => {
+                    arr = arr + value.spec.name + '-pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                  })
+                }
+
+                one_data.status = arr
               } else {
                 one_data.status = 'master :' + one_data.master.status.currentReplicas + ' / ' + one_data.master.status.replicas + ' ; ' + 'slave : ' + one_data.slave.status.currentReplicas + '/' + one_data.slave.status.replicas
               }
@@ -903,6 +944,9 @@ export default {
     // 更新mysqloperate
     makeConfirm() {
       delete this.oneData.namespace
+      delete this.oneData.status
+
+      console.log(this.oneData)
 
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()
@@ -1018,9 +1062,13 @@ export default {
   }
 }
 </script>
-<style scoped>
+<style>
   .editor-container{
     position: relative;
     height: 100%;
+  }
+
+  .el-table .cell{
+    white-space: pre-line
   }
 </style>
