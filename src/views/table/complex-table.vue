@@ -429,8 +429,6 @@ export default {
             list.push(item)
           })
 
-          console.log(list)
-
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
@@ -947,8 +945,6 @@ export default {
     makeConfirm() {
       delete this.oneData.namespace
       delete this.oneData.status
-
-      console.log(this.oneData)
 
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()

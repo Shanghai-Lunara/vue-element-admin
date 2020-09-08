@@ -142,6 +142,17 @@
       </el-tabs>
     </el-form-item>
 
+    <el-form-item label="serviceType">
+      <el-select v-model="form.serviceType" @change="changeServiceType">
+        <el-option
+          v-for="item in serviceType_list"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="servicePorts">
 
       <!-- servicePorts -->
@@ -224,7 +235,13 @@ export default {
       argsStr: '',
       commandStr: '',
       form: [],
-      value: []
+      value: [],
+      serviceType_list: [
+        'ExternalName',
+        'ClusterIP',
+        'NodePort',
+        'LoadBalance'
+      ]
     }
   },
   watch: {
@@ -310,6 +327,7 @@ export default {
       this.value = []
     },
     changesecre(value) {},
+    changeServiceType() {},
     // 修改 | 保存
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
