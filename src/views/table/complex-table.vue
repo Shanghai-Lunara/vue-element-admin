@@ -32,13 +32,25 @@
       <el-table-column v-if="listQuery.type !== 'Service' && listQuery.type !== 'Secret'" :label="$t('table.actions')" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row,$index}">
 
-          <el-button type="primary" size="mini" @click="editData(row)">
-            {{ $t('table.edit') }}
-          </el-button>
+          <div v-if="listQuery.type !== 'Pod'">
+            <el-button type="primary" size="mini" @click="editData(row)">
+              {{ $t('table.edit') }}
+            </el-button>
 
-          <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
-            {{ $t('table.delete') }}
-          </el-button>
+            <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
+              {{ $t('table.delete') }}
+            </el-button>
+          </div>
+
+          <div v-else>
+            <el-button type="primary" size="mini">
+              log
+            </el-button>
+
+            <el-button size="mini" type="primary">
+              bash
+            </el-button>
+          </div>
 
         </template>
       </el-table-column>
@@ -130,13 +142,22 @@ const SecretTable = {
   namespace: 'NameSpace'
 }
 
+const PodTable = {
+  name: 'Name',
+  namespace: 'Namespace',
+  hostIP: 'hostIP',
+  podIP: 'podIP',
+  phase: 'Phase'
+}
+
 const table = {
   'ConfigMap': configMapTable,
   'MysqlOperator': mysqlOperatorTable,
   'RedisOperator': RedisOperatorTable,
   'HelixSagaOperator': HelixSagaOperatorTable,
   'Service': ServiceTable,
-  'Secret': SecretTable
+  'Secret': SecretTable,
+  'Pod': PodTable
 }
 
 export default {
@@ -544,6 +565,30 @@ export default {
 
           _self.permission_routes[5]['children'] = now_arr
 
+          break
+        case 'Pod':
+
+          var podList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodList.decode(result.result)
+
+          list = []
+
+          podList.items.forEach(element => {
+            var one = []
+
+            one.name = element.name
+            one.namespace = element.namespace
+
+            one.hostIP = element.status.hostIP
+            one.podIP = element.status.podIP
+            one.phase = element.status.phase
+
+            list.push(one)
+          })
+
+          total = podList.items.length
+          _self.list = list
+
+          _self.showFlag = false
           break
       }
 

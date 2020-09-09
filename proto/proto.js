@@ -2013,6 +2013,155 @@ export const github = $root.github = (() => {
               return Param
             })()
 
+            proto.Pod = (function() {
+              function Pod(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              Pod.prototype.name = ''
+              Pod.prototype.namespace = ''
+              Pod.prototype.resourceVersion = ''
+              Pod.prototype.status = null
+
+              Pod.create = function create(properties) {
+                return new Pod(properties)
+              }
+
+              Pod.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
+                if (message.namespace != null && Object.hasOwnProperty.call(message, 'namespace')) { writer.uint32(18).string(message.namespace) }
+                if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(26).string(message.resourceVersion) }
+                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.encode(message.status, writer.uint32(34).fork()).ldelim() }
+                return writer
+              }
+
+              Pod.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              Pod.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Pod()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.name = reader.string()
+                      break
+                    case 2:
+                      message.namespace = reader.string()
+                      break
+                    case 3:
+                      message.resourceVersion = reader.string()
+                      break
+                    case 4:
+                      message.status = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.decode(reader, reader.uint32())
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              Pod.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              Pod.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.name != null && message.hasOwnProperty('name')) {
+                  if (!$util.isString(message.name)) { return 'name: string expected' }
+                }
+                if (message.namespace != null && message.hasOwnProperty('namespace')) {
+                  if (!$util.isString(message.namespace)) { return 'namespace: string expected' }
+                }
+                if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
+                  if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
+                if (message.status != null && message.hasOwnProperty('status')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.verify(message.status)
+                  if (error) { return 'status.' + error }
+                }
+                return null
+              }
+
+              return Pod
+            })()
+
+            proto.PodList = (function() {
+              function PodList(properties) {
+                this.items = []
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              PodList.prototype.items = $util.emptyArray
+
+              PodList.create = function create(properties) {
+                return new PodList(properties)
+              }
+
+              PodList.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.items != null && message.items.length) {
+                  for (let i = 0; i < message.items.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Pod.encode(message.items[i], writer.uint32(10).fork()).ldelim() }
+                }
+                return writer
+              }
+
+              PodList.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              PodList.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodList()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      if (!(message.items && message.items.length)) { message.items = [] }
+                      message.items.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Pod.decode(reader, reader.uint32()))
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              PodList.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              PodList.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.items != null && message.hasOwnProperty('items')) {
+                  if (!Array.isArray(message.items)) { return 'items: array expected' }
+                  for (let i = 0; i < message.items.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Pod.verify(message.items[i])
+                    if (error) { return 'items.' + error }
+                  }
+                }
+                return null
+              }
+
+              return PodList
+            })()
+
             proto.PodResourceRequirements = (function() {
               function PodResourceRequirements(properties) {
                 this.limits = {}
@@ -2099,6 +2248,80 @@ export const github = $root.github = (() => {
               }
 
               return PodResourceRequirements
+            })()
+
+            proto.PodStatus = (function() {
+              function PodStatus(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              PodStatus.prototype.phase = ''
+              PodStatus.prototype.hostIP = ''
+              PodStatus.prototype.podIP = ''
+
+              PodStatus.create = function create(properties) {
+                return new PodStatus(properties)
+              }
+
+              PodStatus.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.phase != null && Object.hasOwnProperty.call(message, 'phase')) { writer.uint32(10).string(message.phase) }
+                if (message.hostIP != null && Object.hasOwnProperty.call(message, 'hostIP')) { writer.uint32(18).string(message.hostIP) }
+                if (message.podIP != null && Object.hasOwnProperty.call(message, 'podIP')) { writer.uint32(26).string(message.podIP) }
+                return writer
+              }
+
+              PodStatus.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              PodStatus.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.phase = reader.string()
+                      break
+                    case 2:
+                      message.hostIP = reader.string()
+                      break
+                    case 3:
+                      message.podIP = reader.string()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              PodStatus.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              PodStatus.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.phase != null && message.hasOwnProperty('phase')) {
+                  if (!$util.isString(message.phase)) { return 'phase: string expected' }
+                }
+                if (message.hostIP != null && message.hasOwnProperty('hostIP')) {
+                  if (!$util.isString(message.hostIP)) { return 'hostIP: string expected' }
+                }
+                if (message.podIP != null && message.hasOwnProperty('podIP')) {
+                  if (!$util.isString(message.podIP)) { return 'podIP: string expected' }
+                }
+                return null
+              }
+
+              return PodStatus
             })()
 
             proto.RedisCrd = (function() {
