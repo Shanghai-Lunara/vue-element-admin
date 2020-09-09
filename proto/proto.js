@@ -1778,6 +1778,7 @@ export const github = $root.github = (() => {
               NodeSpec.prototype.podResource = null
               NodeSpec.prototype.containerPorts = $util.emptyArray
               NodeSpec.prototype.servicePorts = $util.emptyArray
+              NodeSpec.prototype.serviceType = ''
               NodeSpec.prototype.env = $util.emptyArray
               NodeSpec.prototype.status = null
 
@@ -1799,10 +1800,11 @@ export const github = $root.github = (() => {
                 if (message.servicePorts != null && message.servicePorts.length) {
                   for (let i = 0; i < message.servicePorts.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.encode(message.servicePorts[i], writer.uint32(66).fork()).ldelim() }
                 }
+                if (message.serviceType != null && Object.hasOwnProperty.call(message, 'serviceType')) { writer.uint32(74).string(message.serviceType) }
                 if (message.env != null && message.env.length) {
-                  for (let i = 0; i < message.env.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.encode(message.env[i], writer.uint32(74).fork()).ldelim() }
+                  for (let i = 0; i < message.env.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.encode(message.env[i], writer.uint32(82).fork()).ldelim() }
                 }
-                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.encode(message.status, writer.uint32(82).fork()).ldelim() }
+                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.encode(message.status, writer.uint32(90).fork()).ldelim() }
                 return writer
               }
 
@@ -1843,10 +1845,13 @@ export const github = $root.github = (() => {
                       message.servicePorts.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.decode(reader, reader.uint32()))
                       break
                     case 9:
+                      message.serviceType = reader.string()
+                      break
+                    case 10:
                       if (!(message.env && message.env.length)) { message.env = [] }
                       message.env.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.decode(reader, reader.uint32()))
                       break
-                    case 10:
+                    case 11:
                       message.status = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Status.decode(reader, reader.uint32())
                       break
                     default:
@@ -1896,6 +1901,9 @@ export const github = $root.github = (() => {
                     const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.verify(message.servicePorts[i])
                     if (error) { return 'servicePorts.' + error }
                   }
+                }
+                if (message.serviceType != null && message.hasOwnProperty('serviceType')) {
+                  if (!$util.isString(message.serviceType)) { return 'serviceType: string expected' }
                 }
                 if (message.env != null && message.hasOwnProperty('env')) {
                   if (!Array.isArray(message.env)) { return 'env: array expected' }
