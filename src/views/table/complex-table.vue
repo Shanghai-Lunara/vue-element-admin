@@ -120,8 +120,9 @@ const HelixSagaOperatorTable = {
 
 const ServiceTable = {
   name: 'Name',
+  type: 'type',
   clusterIP: 'clusterIP',
-  port: 'port'
+  ports: 'ports'
 }
 
 const SecretTable = {
@@ -483,11 +484,22 @@ export default {
         case 'Service':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceList.decode(result.result)
           list = []
+
           dataStr.items.forEach(function(item, index) {
             var one = []
             one.name = item.Name
             one.clusterIP = item.clusterIP
-            one.port = item.ports[0].port
+
+            one.ports = ''
+
+            item.ports.forEach(element => {
+              if (one.ports === '') {
+                one.ports = element.port + ':' + element.nodePort + '/' + element.protocol
+              } else {
+                one.ports = one.ports + ',' + element.port + ':' + element.nodePort + '/' + element.protocol
+              }
+            })
+            one.type = item.type
 
             list.push(one)
           })
@@ -495,6 +507,8 @@ export default {
           isTiny = true
 
           _self.showFlag = false
+
+          // console.log(list)
 
           break
 
