@@ -2015,6 +2015,7 @@ export const github = $root.github = (() => {
 
             proto.Pod = (function() {
               function Pod(properties) {
+                this.containerNames = []
                 if (properties) {
                   for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
                     if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
@@ -2025,6 +2026,7 @@ export const github = $root.github = (() => {
               Pod.prototype.name = ''
               Pod.prototype.namespace = ''
               Pod.prototype.resourceVersion = ''
+              Pod.prototype.containerNames = $util.emptyArray
               Pod.prototype.status = null
 
               Pod.create = function create(properties) {
@@ -2036,7 +2038,10 @@ export const github = $root.github = (() => {
                 if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
                 if (message.namespace != null && Object.hasOwnProperty.call(message, 'namespace')) { writer.uint32(18).string(message.namespace) }
                 if (message.resourceVersion != null && Object.hasOwnProperty.call(message, 'resourceVersion')) { writer.uint32(26).string(message.resourceVersion) }
-                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.encode(message.status, writer.uint32(34).fork()).ldelim() }
+                if (message.containerNames != null && message.containerNames.length) {
+                  for (let i = 0; i < message.containerNames.length; ++i) { writer.uint32(34).string(message.containerNames[i]) }
+                }
+                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.encode(message.status, writer.uint32(42).fork()).ldelim() }
                 return writer
               }
 
@@ -2060,6 +2065,10 @@ export const github = $root.github = (() => {
                       message.resourceVersion = reader.string()
                       break
                     case 4:
+                      if (!(message.containerNames && message.containerNames.length)) { message.containerNames = [] }
+                      message.containerNames.push(reader.string())
+                      break
+                    case 5:
                       message.status = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.decode(reader, reader.uint32())
                       break
                     default:
@@ -2085,6 +2094,12 @@ export const github = $root.github = (() => {
                 }
                 if (message.resourceVersion != null && message.hasOwnProperty('resourceVersion')) {
                   if (!$util.isString(message.resourceVersion)) { return 'resourceVersion: string expected' }
+                }
+                if (message.containerNames != null && message.hasOwnProperty('containerNames')) {
+                  if (!Array.isArray(message.containerNames)) { return 'containerNames: array expected' }
+                  for (let i = 0; i < message.containerNames.length; ++i) {
+                    if (!$util.isString(message.containerNames[i])) { return 'containerNames: string[] expected' }
+                  }
                 }
                 if (message.status != null && message.hasOwnProperty('status')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodStatus.verify(message.status)
