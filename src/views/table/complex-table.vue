@@ -47,7 +47,7 @@
               log
             </el-button>
 
-            <el-button size="mini" type="primary">
+            <el-button size="mini" type="primary" @click="openTerm()">
               bash
             </el-button>
           </div>
@@ -91,6 +91,13 @@
         </div>
       </template>
 
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="dialogVisible"
+      :before-close="handleClose"
+    >
+      <Term ref="Term" />
     </el-dialog>
 
   </div>
@@ -210,7 +217,8 @@ export default {
       nowRow: '', // 当前选中对象
       createFlag: false,
       oneData: {},
-      configList: []
+      configList: [],
+      dialogVisible: false
     }
   },
   computed: {
@@ -226,7 +234,7 @@ export default {
       this.selectNameSpace()
     },
     permission_routes() {
-      if (this.permission_routes[5]['children'].length === 1) {
+      if (this.permission_routes[6]['children'].length === 1) {
         this.itemList()
       }
     }
@@ -234,7 +242,10 @@ export default {
   mounted() {
     // this.getList()
 
-    if (this.permission_routes[5]['children'].length === 1) {
+    console.log(11111111)
+    console.log(this.permission_routes)
+
+    if (this.permission_routes[6]['children'].length === 1) {
       // console.log('itemlist')
       this.itemList()
     }
@@ -554,6 +565,8 @@ export default {
 
           var arr = spaceList.items
 
+          console.log(_self.permission_routes)
+
           arr.forEach(element => {
             var now_list = { 'path': 'complex-table' }
             now_list['name'] = element['Name']
@@ -563,7 +576,7 @@ export default {
             now_arr.push(now_list)
           })
 
-          _self.permission_routes[5]['children'] = now_arr
+          _self.permission_routes[6]['children'] = now_arr
 
           break
         case 'Pod':
@@ -574,6 +587,7 @@ export default {
 
           podList.items.forEach(element => {
             var one = []
+            // console.log(element)
 
             one.name = element.name
             one.namespace = element.namespace
@@ -1115,6 +1129,26 @@ export default {
         return true
       }
       return false
+    },
+    openTerm() {
+      // console.log(1111111)
+      // this.dialogVisible = true
+
+      const routeData = this.$router.resolve({
+        path: '/term',
+        query: { id: '000' }
+      })
+
+      console.log(this.$router)
+      window.open(routeData.href, '_blank')
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done()
+          this.dialogVisible = false
+        })
+        .catch(_ => {})
     }
   }
 }

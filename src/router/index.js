@@ -67,6 +67,11 @@ export const constantRoutes = [
     path: '/401',
     component: () => import('@/views/error-page/401'),
     hidden: true
+  },
+  {
+    path: '/term',
+    component: () => import('@/views/table/term'),
+    hidden: true
   }
   // {
   //   path: '/profile',
