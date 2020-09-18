@@ -611,7 +611,7 @@ export default {
         case 'ping':
           console.log('ping')
           // 获取右边搜索的list
-          this.getTinyTableList()
+          // this.getTinyTableList()
           break
 
         case 'resource': {
@@ -713,9 +713,18 @@ export default {
       }
     },
     initWatch(res, _self) {
+      console.log('watch')
+      console.log(res)
       let one_data = ''
 
       //  排除无关watch
+      console.log(res.param.nameSpace + '______' + _self.nameSpace)
+      console.log(res.param.resourceType + '______' + _self.listQuery.type)
+
+      if (_self.nameSpace === 'undefined') {
+        return
+      }
+
       if (res.param.resourceType !== _self.listQuery.type || res.param.nameSpace !== _self.nameSpace) {
         return
       }
