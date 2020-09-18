@@ -38,13 +38,14 @@ function sendSock(data, callback) {
 
 function websockonmessage(e) {
   console.log('websocket_message:' + '222222')
-  // console.log(new Date().getTime() + '/' + '222222')
   var buffer = new Uint8Array(e.data)
-  globalCalback(buffer)
+
+  if (globalCalback !== null) {
+    globalCalback(buffer)
+  }
 }
 
 function websocketsend(data) {
-  // console.log(new Date().getTime() + '/' + '111111')
   console.log('websocket_send:' + '111111')
   websock.send(data)
 }

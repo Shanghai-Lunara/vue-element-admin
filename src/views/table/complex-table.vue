@@ -25,6 +25,11 @@
       <el-table-column v-for="(info,index) in table" :key="index" :label="info" align="center">
         <template slot-scope="{row}">
           <el-tag v-if="index === 'namespace'">{{ row[index] }}</el-tag>
+
+          <el-select v-else-if="index === 'containerNames'" v-model="row.modelValue" style="width: 180px;" @change="changeName">
+            <el-option v-for="item in row[index]" :key="item" :label="item" :value="item" />
+          </el-select>
+
           <span v-else>{{ row[index] }}</span>
         </template>
       </el-table-column>
@@ -43,11 +48,11 @@
           </div>
 
           <div v-else>
-            <el-button type="primary" size="mini">
+            <el-button type="primary" size="mini" @click="openTerm(row, 'log')">
               log
             </el-button>
 
-            <el-button size="mini" type="primary" @click="openTerm()">
+            <el-button size="mini" type="primary" @click="openTerm(row, 'bash')">
               bash
             </el-button>
           </div>
@@ -93,13 +98,6 @@
 
     </el-dialog>
 
-    <el-dialog
-      :visible.sync="dialogVisible"
-      :before-close="handleClose"
-    >
-      <Term ref="Term" />
-    </el-dialog>
-
   </div>
 </template>
 
@@ -112,6 +110,9 @@ import FormData from '@/components/FormData'
 
 // 挂载
 import { mapGetters } from 'vuex'
+
+// axios
+import axios from 'axios'
 
 const configMapTable = {
   Name: 'Name',
@@ -154,7 +155,8 @@ const PodTable = {
   namespace: 'Namespace',
   hostIP: 'hostIP',
   podIP: 'podIP',
-  phase: 'Phase'
+  phase: 'Phase',
+  containerNames: 'containerNames'
 }
 
 const table = {
@@ -217,8 +219,7 @@ export default {
       nowRow: '', // 当前选中对象
       createFlag: false,
       oneData: {},
-      configList: [],
-      dialogVisible: false
+      configList: []
     }
   },
   computed: {
@@ -241,9 +242,6 @@ export default {
   },
   mounted() {
     // this.getList()
-
-    console.log(11111111)
-    console.log(this.permission_routes)
 
     if (this.permission_routes[6]['children'].length === 1) {
       // console.log('itemlist')
@@ -420,16 +418,11 @@ export default {
 
       let isTiny = false // service时为true, 存贮侧边栏数据
 
-      // console.log(5555555)
-      // console.log(result)
-
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
           list = []
           var config_list = []
-          // console.log('map')
-          // console.log(dataStr.items)
           dataStr.items.forEach(function(item, index) {
             var one = []
             var tmp = ''
@@ -466,8 +459,6 @@ export default {
           _self.list = list
           _self.showFlag = true
 
-          // console.log(99999999)
-          // console.log(list)
           break
         case 'RedisOperator':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.RedisCrdList.decode(result.result)
@@ -540,8 +531,6 @@ export default {
 
           _self.showFlag = false
 
-          // console.log(list)
-
           break
 
         case 'Secret':
@@ -565,8 +554,6 @@ export default {
 
           var arr = spaceList.items
 
-          console.log(_self.permission_routes)
-
           arr.forEach(element => {
             var now_list = { 'path': 'complex-table' }
             now_list['name'] = element['Name']
@@ -587,7 +574,6 @@ export default {
 
           podList.items.forEach(element => {
             var one = []
-            // console.log(element)
 
             one.name = element.name
             one.namespace = element.namespace
@@ -595,6 +581,11 @@ export default {
             one.hostIP = element.status.hostIP
             one.podIP = element.status.podIP
             one.phase = element.status.phase
+
+            one.containerNames = []
+
+            one.modelValue = element.containerNames[0]
+            one.containerNames = element.containerNames
 
             list.push(one)
           })
@@ -751,9 +742,7 @@ export default {
           break
 
         case 'HelixSagaOperator':
-          // console.log('watch')
           one_data = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaCrd.decode(res.result)
-          // console.log(one_data)
 
           _self.watchEventType(res.param.watchEventType, one_data, _self)
 
@@ -878,7 +867,6 @@ export default {
           })
           break
         case 'DELETED':
-          // console.log('delete')
           _self.list.forEach((element, key) => {
             if (element.name === one_data.name && one_data.resourceVersion >= element.resourceVersion) {
               _self.list.splice(key, 1)
@@ -961,9 +949,6 @@ export default {
     },
     // configmap 内容展示
     handleUpdate(row) {
-      // console.log('config 1111')
-      // console.log(row)
-
       this.nowRow = row
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
@@ -1002,8 +987,6 @@ export default {
         this.$refs.yamlEditor.value.data[key] = editValue
       }
 
-      // console.log(this.$refs.yamlEditor.value)
-
       // 取消弹框
       this.dialogFormVisible = false
 
@@ -1025,8 +1008,6 @@ export default {
         this.checkData()
       }
 
-      // console.log(this.oneData)
-
       delete this.oneData.typename
       if (this.oneData.type) {
         delete this.oneData.type
@@ -1038,7 +1019,6 @@ export default {
     },
     // 处理helixsaga 数据
     checkSaga() {
-      // console.log(this.oneData)
       delete this.oneData.configList
 
       if (this.oneData.configMap.volume.volumeSource.configMap.items !== '') {
@@ -1130,26 +1110,27 @@ export default {
       }
       return false
     },
-    openTerm() {
-      // console.log(1111111)
-      // this.dialogVisible = true
+    openTerm(data, type) {
+      console.log(type)
 
-      const routeData = this.$router.resolve({
-        path: '/term',
-        query: { id: '000' }
-      })
+      // http://47.111.225.60:9090/namespace/develop/pod/hso-develop-campaign-0/shell/hso-develop-campaign/bash
 
-      console.log(this.$router)
-      window.open(routeData.href, '_blank')
-    },
-    handleClose(done) {
-      this.$confirm('确认关闭？')
-        .then(_ => {
-          done()
-          this.dialogVisible = false
+      const url = 'http://47.111.225.60:9090/namespace/' + data.namespace + '/pod/' + data.name + '/shell/' + data.modelValue + '/' + type
+
+      var _self = this
+
+      axios.get(url).then(function(res) {
+        const routeData = _self.$router.resolve({
+          path: '/term',
+          query: { token: res.data.token }
         })
-        .catch(_ => {})
-    }
+
+        window.open(routeData.href, '_blank')
+      }).catch(function(error) {
+        console.log(error)
+      })
+    },
+    changeName(value) {}
   }
 }
 </script>
