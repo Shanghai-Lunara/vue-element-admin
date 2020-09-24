@@ -1125,7 +1125,7 @@ export default {
       axios.get(url).then(function(res) {
         const routeData = _self.$router.resolve({
           path: '/term',
-          query: { token: res.data.token }
+          query: { token: res.data.token, type: type }
         })
 
         window.open(routeData.href, '_blank')
