@@ -713,13 +713,9 @@ export default {
       }
     },
     initWatch(res, _self) {
-      console.log('watch')
-      console.log(res)
       let one_data = ''
 
       //  排除无关watch
-      console.log(res.param.nameSpace + '______' + _self.nameSpace)
-      console.log(res.param.resourceType + '______' + _self.listQuery.type)
 
       if (_self.nameSpace === 'undefined') {
         return
@@ -1120,11 +1116,9 @@ export default {
       return false
     },
     openTerm(data, type) {
-      console.log(type)
-
       // http://47.111.225.60:9090/namespace/develop/pod/hso-develop-campaign-0/shell/hso-develop-campaign/bash
 
-      const url = 'http://47.111.225.60:9090/namespace/' + data.namespace + '/pod/' + data.name + '/shell/' + data.modelValue + '/' + type
+      const url = process.env.VUE_APP_BASH_URL + '/namespace/' + data.namespace + '/pod/' + data.name + '/shell/' + data.modelValue + '/' + type
 
       var _self = this
 

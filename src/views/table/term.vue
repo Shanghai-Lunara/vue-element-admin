@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <div id="terminal-container" />
+    <div id="terminal-container" style="width: 100%;" />
   </div>
 </template>
 
@@ -16,10 +16,6 @@ export default {
   data() {
     return {
       terminal: Object,
-      termOptions: {
-        rows: 40,
-        scrollback: 800
-      },
       input: '',
       prefix: '',
       // 历史指令
@@ -33,14 +29,19 @@ export default {
   },
   methods: {
     initTerm() {
+      const rows = Math.floor((document.body.clientHeight - 100) / 15)
+      console.log(rows)
+
       Terminal.applyAddon(fit)
       Terminal.applyAddon(attach)
+
       const term = new Terminal({
         rendererType: 'canvas',
         cursorBlink: true,
         convertEol: true,
-        scrollback: this.termOptions.scrollback,
-        row: this.termOptions.rows,
+        scrollback: 200,
+        rows: rows,
+        fontSize: 15,
         theme: {
           foreground: 'white',
           background: '#060101'
@@ -48,12 +49,19 @@ export default {
       })
       const terminalContainer = document.querySelector('#terminal-container')
       term.open(terminalContainer)
+
+      window.addEventListener('resize', this.onWindowResize)
+
       term.fit()
       term.focus()
       term.writeln(`Hello from web terminal`)
       term.prompt = () => {
+        console.log('init')
         term.write(this.prefix)
       }
+
+      console.log(term.cols)
+      console.log(term.rows)
 
       // 实际需要使用socket来交互, 这里不做演示
       if ('WebSocket' in window) {
@@ -63,20 +71,26 @@ export default {
         // socket监听事件
 
         const token = this.$router.history.current.query.token
-        var url = 'ws://47.111.225.60:9090/ssh/' + token
+        var url = process.env.VUE_APP_BASH_SOCKET_URL + '/ssh/' + token
         this.init(url)
       } else {
         term.writeln('\x1b[1;1;31mThe Browser does not support websocket!\x1b[0m')
       }
 
       term.on('key', function(key, ev) {
+        console.log('key____' + key)
         const printable = !ev.altKey && !ev.altGraphKey && !ev.ctrlKey && !ev.metaKey
+
+        console.log('printable____' + printable)
         // 每行开头前缀长度 @ashinWu:$
         const threshold = this.prefix.length
+        console.log('threshold____' + threshold)
         // 总偏移(长度) = 输入+前缀
         const fixation = this.input.length + threshold
         // 当前x偏移量
         const offset = term._core.buffer.x
+        console.log('fixation____' + fixation)
+        console.log('offset____' + offset)
         this.currentOffset = fixation
         // 禁用Home、PgUp、PgDn、Ins、Del键
         if ([36, 33, 34, 45, 46].indexOf(ev.keyCode) !== -1) return
@@ -89,14 +103,16 @@ export default {
             break
           // 退格键
           case 8:
+
             if (offset > threshold) {
               term._core.buffer.x = offset - 1
+
               // \x1b[?K: 清除光标至行末的"可清除"字符
               term.write('\x1b[?K' + this.input.slice(offset - threshold))
               // 保留原来光标位置
               const cursor = this.bulidData(fixation - offset, '\x1b[D')
               term.write(cursor)
-              this.input = `${this.input.slice(0, offset - threshold - 1)}${this.input.slice(offset - threshold)}`
+              this.input = this.input.slice(0, this.input.length - 1)
             }
             break
           case 35:
@@ -105,19 +121,28 @@ export default {
             break
           // 方向盘上键
           case 38:
+            console.log(this.histCommandList)
+            console.log(this.histIndex)
             if (this.histCommandList[this.histIndex - 1]) {
+              console.log('上')
               // 将光标重置到末端
-              term._core.buffer.x = fixation
-              let b1 = ''; let b2 = ''; let b3 = ''
+              // term._core.buffer.x = fixation
+              var off = offset
+              // const b1 = ''
               // 构造退格(模拟替换效果) \b \b标识退一格; \b\b  \b\b表示退两格...
               for (let i = 0; i < this.input.length; i++) {
-                b1 = b1 + '\b'
-                b2 = b2 + ' '
-                b3 = b3 + '\b'
+                off--
+                // b1 = b1 + '\b'
+                // b2 = b2 + ' '
+                // b3 = b3 + '\b'
+                // b1 = b1 + '\b'
               }
-              term.write(b1 + b2 + b3)
-              this.input = this.histCommandList[this.histIndex - 1]
+
+              term._core.buffer.x = off
+
               term.write(this.histCommandList[this.histIndex - 1])
+              this.input += this.histCommandList[this.histIndex - 1]
+              // term.write(this.input)
               this.histIndex--
             }
             break
@@ -152,17 +177,20 @@ export default {
             }
             break
           default:
+            console.log('1111111____' + 'init')
             if (printable) {
               // 限制输入最大长度 防止换行bug
               if (fixation >= term.cols) return
 
               // 不在末尾插入时 要拼接
               if (offset < fixation) {
+                console.log('222222____' + 'init')
                 term.write('\x1b[?K' + `${key}${this.input.slice(offset - threshold)}`)
                 const cursor = this.bulidData(fixation - offset, '\x1b[D')
                 term.write(cursor)
                 this.input = `${this.input.slice(0, offset - threshold)}${key}${this.input.slice(offset - threshold)}`
               } else {
+                console.log('333333____' + 'init')
                 term.write(key)
                 this.input += key
               }
@@ -193,43 +221,46 @@ export default {
         }
       }.bind(this))
 
-      // 若需要中文输入, 使用on data监听
-      // term.on('data', function(data){
-      // todo something
-      // })
-
       return term
     },
     // 在这里处理自定义输入...
     handleInput() {
       // 判断空值
       this.terminal.write('\r\n')
-      if (this.input.trim()) {
-        // 记录历史命令
-        if (this.histCommandList[this.histCommandList.length - 1] !== this.input) {
-          this.histCommandList.push(this.input)
-          this.histIndex = this.histCommandList.length
-        }
-        const command = this.input.trim().split(' ')
-        // 可限制可用命令
-        // 这里进行socket交互 发送message
-        console.log('command')
-        console.log(command)
-
-        // {"type":"input","input":"pwd","rows":0,"cols":0}
-        var message = { 'type': 'input', 'input': command[0] + '\n', 'rows': 0, 'cols': 0 }
-
-        this.send(JSON.stringify(message))
-        // switch (command[0]) {
-        //   case 'help':
-        //     this.terminal.writeln('\x1b[40;33;1m\nthis is a web terminal demo based on xterm!\x1b[0m\n此demo模拟shell上下左右和退格键效果\n')
-        //     break
-        //   default:
-        //     this.terminal.writeln(this.input)
-        //     break
-        // }
+      // if (this.input.trim()) {
+      // 记录历史命令
+      if (this.histCommandList[this.histCommandList.length - 1] !== this.input) {
+        this.histCommandList.push(this.input)
+        this.histIndex = this.histCommandList.length
       }
+      const command = this.input.trim()
+      // 可限制可用命令
+      // 这里进行socket交互 发送message
+      console.log('command')
+      console.log(command)
+
+      // {"type":"input","input":"pwd","rows":0,"cols":0}
+      const rows = Math.floor((document.body.clientHeight - 100) / 15)
+      var message = { 'type': 'input', 'input': command + '\n', 'rows': 0, 'cols': rows }
+
+      this.send(JSON.stringify(message))
       this.terminal.prompt()
+    },
+
+    onWindowResize() {
+      try {
+        this.terminal.fit()
+
+        // 窗口大小改变时触发xterm的resize方法，向后端发送行列数，格式由后端决定
+        // 这里不使用size默认参数，因为改变窗口大小只会改变size中的列数而不能改变行数，所以这里不使用size.clos,而直接使用获取我们根据窗口大小计算出来的行列数
+        this.terminal.on('resize', function() {
+          const rows = Math.floor((document.body.clientHeight - 100) / 15)
+          var message = { 'Op': 'resize', 'rows': 0, 'cols': rows }
+          this.send(JSON.stringify(message))
+        })
+      } catch (e) {
+        console.log('e', e.message)
+      }
     },
 
     bulidData(length, subString) {
@@ -268,17 +299,13 @@ export default {
       // console.log("socket已经关闭");
     },
     getMessage: function(event) {
-      console.log('message')
-
       var reader = new FileReader()
 
       var _self = this
       reader.onload = function(event) {
-        console.log(33333333333)
-        console.log(reader)
-        console.log(reader.result)
         _self.terminal.write(reader.result)
       }
+
       reader.readAsText(event.data)
     },
     send: function(order) {
@@ -287,3 +314,9 @@ export default {
   }
 }
 </script>
+
+<style>
+  .xterm-screen {
+    height: 100%
+  }
+</style>
