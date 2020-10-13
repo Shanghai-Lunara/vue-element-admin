@@ -44,7 +44,7 @@ export default {
     const term = new Terminal({
       rendererType: 'canvas', // 渲染类型
       rows: parseInt(_this.rows), // 行数
-      cols: parseInt(_this.cols), // 不指定行数，自动回车后光标从下一行开始
+      // cols: parseInt(_this.cols),
       convertEol: true, // 启用时，光标将设置为下一行的开头
       //   scrollback: 50, //终端中的回滚量
       disableStdin: false, // 是否应禁用输入。
