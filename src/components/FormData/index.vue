@@ -325,6 +325,10 @@ export default {
           spec: form
         }
 
+        if (this.oneData.typename === 'HelixSagaOperator') {
+          app.watchPolicy = ''
+        }
+
         this.oneData.applications.push(app)
       }
       this.inputVisible = false

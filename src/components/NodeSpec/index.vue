@@ -153,6 +153,17 @@
       </el-select>
     </el-form-item>
 
+    <el-form-item v-if="policyFlag" label="watchPolicy">
+      <el-select v-model="watchPolicy" @change="watchPolicyType">
+        <el-option
+          v-for="item in watchPolicy_list"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="servicePorts">
 
       <!-- servicePorts -->
@@ -241,7 +252,13 @@ export default {
         'ClusterIP',
         'NodePort',
         'LoadBalance'
-      ]
+      ],
+      watchPolicy_list: [
+        'auto',
+        'manual'
+      ],
+      watchPolicy: '',
+      policyFlag: true
     }
   },
   watch: {
@@ -264,6 +281,8 @@ export default {
     // 初始化form数据
     initForm() {
       this.form = this.specData.data
+
+      this.policyFlag = false
 
       if (this.form.containerPorts !== {}) {
         this.form.containerPorts.forEach(value => {
@@ -298,6 +317,10 @@ export default {
 
       this.form = this.specData.data.spec
 
+      this.watchPolicy = this.specData.data.watchPolicy
+
+      this.policyFlag = true
+
       if (this.form.env !== '') {
         this.form.env.forEach(value => {
           value.isSet = false
@@ -328,6 +351,9 @@ export default {
     },
     changesecre(value) {},
     changeServiceType() {},
+    watchPolicyType(value) {
+      this.specData.data.watchPolicy = value
+    },
     // 修改 | 保存
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
