@@ -292,7 +292,17 @@ export default {
         },
         replicas: 0,
         servicePorts: [],
-        volumePath: ''
+        volumePath: '',
+        status: {
+          collisionCount: 0,
+          currentReplicas: 0,
+          currentRevision: 'mo-dev-master-69f598988c',
+          observedGeneration: 0,
+          readyReplicas: 0,
+          replicas: 0,
+          updateRevision: '',
+          updatedReplicas: 0
+        }
       }
 
       return form

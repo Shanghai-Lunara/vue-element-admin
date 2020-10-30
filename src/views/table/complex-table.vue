@@ -498,6 +498,8 @@ export default {
             list.push(item)
           })
 
+          console.log(list)
+
           total = dataStr.items.length
           _self.list = list
           _self.showFlag = true
@@ -1016,6 +1018,7 @@ export default {
       delete this.oneData.typename
       if (this.oneData.type) {
         delete this.oneData.type
+        this.oneData.name = this.oneData.master.name
         this.updateConfigMapList(this.oneData, 'create')
       } else {
         delete this.oneData.type
