@@ -1018,7 +1018,11 @@ export default {
       delete this.oneData.typename
       if (this.oneData.type) {
         delete this.oneData.type
-        this.oneData.name = this.oneData.master.name
+
+        if (this.listQuery.type !== 'HelixSagaOperator') {
+          this.oneData.name = this.oneData.master.name
+        }
+
         this.updateConfigMapList(this.oneData, 'create')
       } else {
         delete this.oneData.type

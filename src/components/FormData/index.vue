@@ -199,6 +199,10 @@ export default {
         this.oneData.master.name = this.typeName + this.project_name
         this.oneData.slave.name = this.typeName + this.project_name
       }
+
+      if (this.oneData.typename === 'HelixSagaOperator') {
+        this.oneData.name = this.typeName + this.project_name
+      }
     }
   },
   mounted() {
