@@ -9,16 +9,10 @@
 </template>
 
 <script>
+import 'xterm/css/xterm.css'
+import 'xterm/lib/xterm.js'
 import { Terminal } from 'xterm'
-import 'xterm/dist/xterm.css'
-import * as fit from 'xterm/lib/addons/fit/fit'
-
-import * as fullscreen from 'xterm/lib/addons/fullscreen/fullscreen'
-import * as attach from 'xterm/lib/addons/attach/attach'
-
-Terminal.applyAddon(fit)
-Terminal.applyAddon(attach)
-Terminal.applyAddon(fullscreen) // Apply the `fullscreen` addon
+import { FitAddon } from 'xterm-addon-fit'
 
 export default {
   name: 'Shell',
@@ -33,24 +27,25 @@ export default {
 
   created() {
     this.wsShell()
+    // this.initTerm()
   },
 
   mounted() {
-    const _this = this
-
+    //  111111
     this.rows = Math.floor(document.getElementById('indexContainer').clientHeight / 16 - 6)
     this.cols = document.getElementById('indexContainer').clientWidth / 14
+
+    const _this = this
 
     const term = new Terminal({
       rendererType: 'canvas', // 渲染类型
       rows: parseInt(_this.rows), // 行数
-      // cols: parseInt(_this.cols),
+      cols: parseInt(_this.cols), // 不指定行数，自动回车后光标从下一行开始
       convertEol: true, // 启用时，光标将设置为下一行的开头
       //   scrollback: 50, //终端中的回滚量
       disableStdin: false, // 是否应禁用输入。
       cursorStyle: 'underline', // 光标样式
       cursorBlink: true, // 光标闪烁
-      fontSize: 16,
       theme: {
         foreground: '#7e9192', // 字体
         background: '#002833', // 背景色
@@ -58,83 +53,90 @@ export default {
         lineHeight: 16
       }
     })
+
+    // 创建terminal实例
+    term.open(this.$refs['terminal'])
+
     // 换行并输入起始符“$”
     term.prompt = () => {
-      term.write('\r\n$ ')
+      term.write('\r ')
     }
-    // Load WebLinksAddon on terminal, this is all that's needed to get web links
-    // working in the terminal.
-    // term.loadAddon(new WebLinksAddon());
+    term.prompt()
 
-    term.open(this.$refs['terminal'])
-    term.toggleFullScreen() // 全屏
+    // // canvas背景全屏
+    var fitAddon = new FitAddon()
+    term.loadAddon(fitAddon)
+    fitAddon.fit()
 
-    window.onresize = function() {
-      term.fit()
-      term.toggleFullScreen() // 全屏
-      term.prompt()
+    window.addEventListener('resize', resizeScreen)
+
+    _this.term = term
+
+    // 内容全屏显示
+    function resizeScreen() {
+      // 不传size
+
+      try {
+        fitAddon.fit()
+
+        // 窗口大小改变时触发xterm的resize方法，向后端发送行列数，格式由后端决定
+        // 这里不使用size默认参数，因为改变窗口大小只会改变size中的列数而不能改变行数，所以这里不使用size.clos,而直接使用获取我们根据窗口大小计算出来的行列数
+        term.onResize(() => {
+          _this.send({ type: 'resize', cols: term.cols, rows: term.rows, input: '' })
+        })
+      } catch (e) {
+        console.log('e', e.message)
+      }
     }
 
     function runFakeTerminal(_this) {
       if (term._initialized) {
         return
       }
-
+      // 初始化
       term._initialized = true
-
-      term.prompt = () => {
-        term.write('\r\n')
-      }
-
-      //   term.writeln('Welcome to use Superman.')
 
       term.prompt()
 
-      // 监控键盘输入事件
       // / **
       //     *添加事件监听器，用于按下键时的事件。事件值包含
       //     *将在data事件以及DOM事件中发送的字符串
       //     *触发了它。
       //     * @返回一个IDisposable停止监听。
       //  * /
-
-      term.on('key', function(key, ev) {
-        // console.log(key)
-        if (ev.keyCode === 13) {
-          key = '\n'
-        }
-        const order = { 'type': 'input', 'input': key, 'rows': term.rows, 'cols': term.cols }
-        // console.log(order)
-        _this.send(JSON.stringify(order))
-      })
-
-      term.on('paste', function(data) {
-        _this.order = data
-        const order = { 'type': 'input', 'input': data, 'rows': Math.floor(term.rows), 'cols': Math.floor(term.cols) }
-        // console.log(order)
-        _this.send(JSON.stringify(order))
-        // term.write(data)
-      })
-
-      term.on('resize', size => {
-        // console.log(size)
+      //   / ** 更新：xterm 4.x（新增）
+      //  *为数据事件触发时添加事件侦听器。发生这种情况
+      //  *用户输入或粘贴到终端时的示例。事件值
+      //  *是`string`结果的结果，在典型的设置中，应该通过
+      //  *到支持pty。
+      //  * @返回一个IDisposable停止监听。
+      //  * /
+      // 支持输入与粘贴方法
+      term.onData(function(key) {
         const order = {
-          rows: Math.floor(size.rows),
-          cols: Math.floor(size.cols),
-          type: 'resize',
-          input: ''
+          // type: "resize", cols: term.cols, rows: term.rows, input: ''
+          input: key,
+          type: 'input',
+          cols: term.cols,
+          rows: term.rows
         }
-
-        _this.send(order)
+        _this.send(JSON.stringify(order))
+        // 为解决窗体resize方法才会向后端发送列数和行数，所以页面加载时也要触发此方法
+        _this.send(JSON.stringify({
+          input: '',
+          type: 'resize',
+          cols: term.cols,
+          rows: term.rows
+        }))
       })
-
-      _this.term = term
     }
-
     runFakeTerminal(_this)
   },
 
   methods: {
+    initTerm() {
+
+    },
     wsShell() {
       const token = this.$router.history.current.query.token
 
@@ -188,6 +190,7 @@ export default {
       var reader = new FileReader()
 
       var _self = this
+
       reader.onload = function(event) {
         _self.term.write(reader.result)
       }
