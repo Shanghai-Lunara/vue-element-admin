@@ -4,14 +4,14 @@
 
     <!-- command -->
     <el-form-item v-if="specData.flag" label="command">
-      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["php",""]</div>
+      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/server/publisher"]</div>
       <el-input v-model="commandStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
     </el-form-item>
 
     <!-- args -->
 
     <el-form-item v-if="specData.flag" label="args">
-      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["/var/www/app/extensions/queue_server.php","debug"]</div>
+      <div class="sub-title" style="color: blue;margin-left: 20px;font-size: 15px;">以(,)分割参数 示例: ["-alsologtostderr=true","-v=4","-configPath=/var/conf/conf.yaml"]</div>
       <el-input v-model="argsStr" type="textarea" :autosize="{ minRows: 1, maxRows: 4}" placeholder="请输入内容" />
     </el-form-item>
 
