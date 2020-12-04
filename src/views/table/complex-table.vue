@@ -10,6 +10,11 @@
       <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
         {{ $t('table.add') }}
       </el-button>
+
+      <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="leadData">
+        导入
+      </el-button>
+
     </div>
 
     <el-table
@@ -42,9 +47,14 @@
               {{ $t('table.edit') }}
             </el-button>
 
+            <el-button type="primary" size="mini" @click="educeData(row)">
+              导出
+            </el-button>
+
             <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
               {{ $t('table.delete') }}
             </el-button>
+
           </div>
 
           <div v-else>
@@ -219,7 +229,8 @@ export default {
       nowRow: '', // 当前选中对象
       createFlag: false,
       oneData: {},
-      configList: []
+      configList: [],
+      cloneData: ''
     }
   },
   computed: {
@@ -421,6 +432,7 @@ export default {
       switch (result.param.resourceType) {
         case 'ConfigMap':
           dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ConfigMapList.decode(result.result)
+
           list = []
           var config_list = []
           dataStr.items.forEach(function(item, index) {
@@ -497,8 +509,6 @@ export default {
 
             list.push(item)
           })
-
-          console.log(list)
 
           total = dataStr.items.length
           _self.list = list
@@ -902,7 +912,17 @@ export default {
       }
       this.getList(data)
     },
+    initConfig() {
+      const data = {
+        'nameSpace': this.nameSpace,
+        'service': 'list',
+        'resourceType': 'ConfigMap'
+      }
+
+      this.getList(data)
+    },
     selectResource() {
+      this.initConfig()
       if (this.namespace !== '') {
         const data = {
           'nameSpace': this.nameSpace,
@@ -1123,8 +1143,6 @@ export default {
       return false
     },
     openTerm(data, type) {
-      // http://47.111.225.60:9090/namespace/develop/pod/hso-develop-campaign-0/shell/hso-develop-campaign/bash
-
       const url = process.env.VUE_APP_BASH_URL + '/namespace/' + data.namespace + '/pod/' + data.name + '/shell/' + data.modelValue + '/' + type
 
       var _self = this
@@ -1140,7 +1158,47 @@ export default {
         console.log(error)
       })
     },
-    changeName(value) {}
+    changeName(value) {},
+    educeData(value) {
+      this.cloneData = value
+
+      this.$notify({
+        title: '成功',
+        message: '导出数据成功',
+        type: 'success',
+        duration: 2000
+      })
+    },
+    leadData() {
+      delete this.cloneData.resourceVersion
+      delete this.cloneData.status
+
+      delete this.cloneData.resourceVersion
+      delete this.cloneData.resourceVersion
+
+      if (this.listQuery.type === 'ConfigMap') {
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
+
+        this.yamlData = {
+          Name: '',
+          data: this.cloneData['data']
+        }
+      } else {
+        this.oneData = this.cloneData
+        this.createFlag = true
+        this.dialogFormVisible = true
+        this.oneData.type = 1
+        this.oneData.typename = this.listQuery.type
+
+        if (this.listQuery.type === 'HelixSagaOperator') {
+          this.oneData.configList = this.configList
+        }
+
+        this.dialogStatus = 'create'
+        this.dialogFormVisible = true
+      }
+    }
   }
 }
 </script>

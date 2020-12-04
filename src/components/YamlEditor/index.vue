@@ -130,8 +130,12 @@ export default {
       })
     },
     handleClose(tag) {
-      this.list.splice(this.list.indexOf(tag), 1)
-      delete this.value.data[tag]
+      this.list.forEach((element, key) => {
+        if (element['name'] === tag) {
+          this.list.splice(key, 1)
+          delete this.value.data[tag]
+        }
+      })
     },
 
     showInput() {

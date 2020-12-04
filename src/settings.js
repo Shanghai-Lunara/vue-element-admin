@@ -1,5 +1,5 @@
 module.exports = {
-  title: 'Vue Element Admin',
+  title: 'Shanghai Lunara Kubernetes Dashboard',
 
   /**
    * @type {boolean} true | false
