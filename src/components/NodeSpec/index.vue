@@ -18,7 +18,7 @@
     <!-- spec -->
 
     <el-form-item label="Name">
-      <el-input v-model="form.name" disabled />
+      <el-input v-model="form.name" />
       <!-- <el-input v-if="specData.flag === false" v-model="form.name" disabled /> -->
       <!-- <el-input v-else v-model="form.name" /> -->
     </el-form-item>

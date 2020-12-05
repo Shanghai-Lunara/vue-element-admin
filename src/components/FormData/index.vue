@@ -104,6 +104,7 @@
           title="内容"
           :visible.sync="dialogVisible"
           append-to-body
+          @close="setName"
         >
           <NodeSpec ref="NodeSpec" :spec-data="specData" />
         </el-dialog>
@@ -635,6 +636,11 @@ export default {
 
           row.isSet = true
         }
+      }
+    },
+    setName() {
+      if (this.oneData.typename === 'HelixSagaOperator') {
+        this.tagsList = JSON.parse(JSON.stringify(this.getAppList()))
       }
     }
   }
