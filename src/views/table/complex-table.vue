@@ -14,7 +14,7 @@
       <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="leadData">
         导入
       </el-button>
-      <el-input v-model="schfilter" placeholder="" class="search-input" style="position: absolute;margin-left: 10px;width: 250px;" />
+      <el-input v-model="schfilter" placeholder="filter words" class="search-input" style="position: absolute;margin-left: 10px;width: 250px;" />
     </div>
 
     <el-table
@@ -266,8 +266,8 @@ export default {
           _this.list = storeList.filter(data => data.Name.toLowerCase().includes(this.schfilter.toLowerCase()))
           // console.log(_list[0].Name)
           // console.log(_this.storeList)
-    }
-    }
+        }
+      }
     }
   },
   mounted() {
