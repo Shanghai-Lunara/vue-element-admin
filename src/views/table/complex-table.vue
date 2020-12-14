@@ -14,7 +14,7 @@
       <el-button v-if="showFlag" class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="leadData">
         导入
       </el-button>
-
+      <el-input v-model="schfilter" placeholder="" class="search-input" style="position: absolute;margin-left: 10px;width: 250px;" />
     </div>
 
     <el-table
@@ -230,7 +230,9 @@ export default {
       createFlag: false,
       oneData: {},
       configList: [],
-      cloneData: ''
+      cloneData: '',
+      schfilter: '',
+      storeList: []
     }
   },
   computed: {
@@ -249,6 +251,23 @@ export default {
       if (this.permission_routes[6]['children'].length === 1) {
         this.itemList()
       }
+    },
+    schfilter() {
+      var _this = this
+      var storeList = this.storeList
+      var search = this.schfilter
+      this.list = storeList
+      if (search) {
+        if (storeList[0].name !== undefined) {
+          // console.log(11111)
+          // console.log(storeList[0].name)
+          _this.list = storeList.filter(data => data.name.toLowerCase().includes(this.schfilter.toLowerCase()))
+        } else {
+          _this.list = storeList.filter(data => data.Name.toLowerCase().includes(this.schfilter.toLowerCase()))
+          // console.log(_list[0].Name)
+          // console.log(_this.storeList)
+    }
+    }
     }
   },
   mounted() {
@@ -664,6 +683,7 @@ export default {
 
           this.list = obj.list
           this.total = obj.total
+          _self.storeList = this.list
           break
         case 'watch':
           _self.initWatch(result, _self)

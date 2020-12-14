@@ -287,12 +287,12 @@ export default {
         imagePullSecrets: '',
         podResource: {
           limits: {
-            cpu: '100m',
-            memory: '1Gi'
+            cpu: '0',
+            memory: '0'
           },
           requests: {
-            cpu: '10m',
-            memory: '512Mi'
+            cpu: '0',
+            memory: '0'
           }
         },
         replicas: 0,
