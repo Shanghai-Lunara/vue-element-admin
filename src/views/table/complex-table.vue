@@ -649,7 +649,7 @@ export default {
           var calendarTypeOptions = _self.calendarTypeOptions
           var dataStr = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ResourceList.decode(result.result)
           dataStr.items.forEach(function(item, index) {
-            if (item !== 'NameSpace') {
+            if (item !== 'NameSpace' && item !== 'ServiceAccount') {
               calendarTypeOptions.push(item)
             }
           })
@@ -669,6 +669,7 @@ export default {
 
           break
         case 'list':
+
           if (_self.nameSpace !== undefined) {
             if (result.param.resourceType !== _self.listQuery.type || result.param.nameSpace !== _self.nameSpace) {
               return
@@ -1178,7 +1179,8 @@ export default {
         console.log(error)
       })
     },
-    changeName(value) {},
+    changeName(value) {
+    },
     educeData(value) {
       this.cloneData = value
 

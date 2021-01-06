@@ -214,6 +214,7 @@ export default {
       // public data
       this.getCreateData()
       this.secret()
+      this.serviceAccount()
 
       var i = 0
 
@@ -431,6 +432,45 @@ export default {
       this.$socketApi(senddata, function(res) {
         _self.responseData(res, _self)
       })
+    },
+    serviceAccount() {
+      var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
+
+      var param = {
+        'nameSpace': this.oneData.namespace,
+        'service': 'list',
+        'resourceType': 'ServiceAccount'
+      }
+
+      var errData = Proto.Param.verify(param)
+
+      if (errData) { throw Error(errData) }
+
+      var msg = {
+        'param': param,
+        'data': ''
+      }
+
+      var message = Proto.Request.create(msg)
+
+      var senddata = Proto.Request.encode(message).finish()
+
+      var _self = this
+      this.$socketApi(senddata, function(res) {
+        _self.returnResource(res, _self)
+      })
+    },
+    returnResource(service, _self) {
+      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+
+      switch (result.param.resourceType) {
+        case 'ServiceAccount':
+          var ServiceAccountList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceAccountList.decode(result.result)
+
+          _self.specData.serviceList = ServiceAccountList.items
+
+          break
+      }
     },
     secret() {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto

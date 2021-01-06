@@ -164,6 +164,17 @@
       </el-select>
     </el-form-item>
 
+    <el-form-item label="serviceAccountList">
+      <el-select v-model="form.serviceAccountName" clearable @change="changeServiceAccount">
+        <el-option
+          v-for="(item,key) in specData.serviceList"
+          :key="key"
+          :label="item.name"
+          :value="item.name"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="servicePorts">
 
       <!-- servicePorts -->
@@ -351,6 +362,7 @@ export default {
     },
     changesecre(value) {},
     changeServiceType() {},
+    changeServiceAccount(value) {},
     watchPolicyType(value) {
       this.specData.data.watchPolicy = value
     },
