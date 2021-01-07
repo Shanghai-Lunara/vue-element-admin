@@ -259,13 +259,9 @@ export default {
       this.list = storeList
       if (search) {
         if (storeList[0].name !== undefined) {
-          // console.log(11111)
-          // console.log(storeList[0].name)
           _this.list = storeList.filter(data => data.name.toLowerCase().includes(this.schfilter.toLowerCase()))
         } else {
           _this.list = storeList.filter(data => data.Name.toLowerCase().includes(this.schfilter.toLowerCase()))
-          // console.log(_list[0].Name)
-          // console.log(_this.storeList)
         }
       }
     }
@@ -274,7 +270,6 @@ export default {
     // this.getList()
 
     if (this.permission_routes[6]['children'].length === 1) {
-      // console.log('itemlist')
       this.itemList()
     }
 
@@ -528,6 +523,8 @@ export default {
 
             list.push(item)
           })
+
+          // console.log(list)
 
           total = dataStr.items.length
           _self.list = list
@@ -1050,6 +1047,8 @@ export default {
       delete this.oneData.namespace
       delete this.oneData.status
 
+      // console.log(this.oneData)
+
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()
       } else {
@@ -1090,6 +1089,12 @@ export default {
 
           if (element.spec.servicePorts !== '') {
             element.spec.servicePorts.forEach(value => [
+              delete value.isSet
+            ])
+          }
+
+          if (element.tolerations !== '') {
+            element.tolerations.forEach(value => [
               delete value.isSet
             ])
           }

@@ -164,7 +164,7 @@
       </el-select>
     </el-form-item>
 
-    <el-form-item label="serviceAccountList">
+    <el-form-item label="serviceAccount">
       <el-select v-model="form.serviceAccountName" clearable @change="changeServiceAccount">
         <el-option
           v-for="(item,key) in specData.serviceList"
@@ -174,6 +174,10 @@
         />
       </el-select>
     </el-form-item>
+
+    <!-- tolerations -->
+    <!-- nodeSelector -->
+    <!-- affinity -->
 
     <el-form-item label="servicePorts">
 
@@ -209,6 +213,58 @@
         </el-col>
         <el-col>
           <div class="el-table-add-row" style="width: 99.2%;" @click="addServicePort()"><span>+ 添加</span></div>
+        </el-col>
+      </el-row>
+    </el-form-item>
+
+    <el-form-item label="tolerations">
+      <!-- toleation  5555 -->
+      <el-row>
+        <el-col>
+          <el-table size="mini" :data="specData.data.tolerations" border style="width: 100%" highlight-current-row>
+
+            <el-table-column v-for="v in tolerationColumn" :key="v.field" :label="v.title" :width="v.width">
+              <template slot-scope="scope">
+                <span v-if="scope.row.isSet">
+                  <el-input v-if="v.title === 'key' || v.title === 'value'" v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                  <el-select v-else-if="v.title === 'operator'" v-model="scope.row['operator']">
+                    <el-option
+                      v-for="item in TolerationOperator"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    />
+                  </el-select>
+                  <el-select v-else-if="v.title === 'effect'" v-model="scope.row['effect']">
+                    <el-option
+                      v-for="item in TaintEffect"
+                      :key="item"
+                      :label="item"
+                      :value="item"
+                    />
+                  </el-select>
+                </span>
+                <span v-else>{{ scope.row[v.field] }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="操作">
+              <template slot-scope="scope">
+                <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,5)">
+                  {{ scope.row.isSet?'保存':"修改" }}
+                </span>
+                <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,5)">
+                  删除
+                </span>
+                <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,5)">
+                  取消
+                </span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-col>
+        <el-col>
+          <div class="el-table-add-row" style="width: 99.2%;" @click="addToleation()"><span>+ 添加</span></div>
         </el-col>
       </el-row>
 
@@ -254,6 +310,13 @@ export default {
         { field: 'name', title: 'name' },
         { field: 'value', title: 'value' }
       ],
+      // tolerationColumn
+      tolerationColumn: [
+        { field: 'key', title: 'key', width: 150 },
+        { field: 'value', title: 'value', width: 150 },
+        { field: 'operator', title: 'operator', width: 150 },
+        { field: 'effect', title: 'effect', width: 150 }
+      ],
       argsStr: '',
       commandStr: '',
       form: [],
@@ -267,6 +330,16 @@ export default {
       watchPolicy_list: [
         'auto',
         'manual'
+      ],
+      TolerationOperator: [
+        'Exists',
+        'Equal'
+      ],
+      // effect
+      TaintEffect: [
+        'NoSchedule',
+        'PreferNoSchedule',
+        'NoExecute'
       ],
       watchPolicy: '',
       policyFlag: true
@@ -329,6 +402,15 @@ export default {
       this.form = this.specData.data.spec
 
       this.watchPolicy = this.specData.data.watchPolicy
+      // 最新添加
+
+      if (this.specData.data.tolerations !== '') {
+        this.specData.data.tolerations.forEach(value => {
+          value.isSet = false
+        })
+
+        this.specData.data.tolerations = JSON.parse(JSON.stringify(this.specData.data.tolerations))
+      }
 
       this.policyFlag = true
 
@@ -378,8 +460,10 @@ export default {
         param = 'servicePorts'
       } else if (type === 3) {
         param = 'volumn'
-      } else {
+      } else if (type === 4) {
         param = 'env'
+      } else {
+        param = 'tolerations'
       }
 
       var flag = 0
@@ -387,6 +471,13 @@ export default {
       if (type === 3) {
         // volume_map.volume.volumeSource.configMap.items
         this.volume_map.volume.volumeSource.configMap.items.forEach((element, key) => {
+          if (element.isSet && key !== index) {
+            this.$message.warning('请先保存当前编辑项')
+            flag = 1
+          }
+        })
+      } else if (type === 5) {
+        this.specData.data.tolerations.forEach((element, key) => {
           if (element.isSet && key !== index) {
             this.$message.warning('请先保存当前编辑项')
             flag = 1
@@ -409,6 +500,8 @@ export default {
       if (!cg) {
         if (type === 3) {
           this.volume_map.volume.volumeSource.configMap.items.splice(index, 1)
+        } else if (type === 5) {
+          this.specData.data.tolerations.splice(index, 1)
         } else {
           if (this.form[param][index]) {
             this.form[param].splice(index, 1)
@@ -511,6 +604,29 @@ export default {
           isSet: true
         }
         this.form.env.push(envTmp)
+      }
+    },
+    addToleation() {
+      var mark = true
+      this.specData.data.tolerations.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        const tolerationTmp = {
+          key: '',
+          value: '',
+          operator: '',
+          effect: '',
+          isSet: true
+        }
+        this.specData.data.tolerations.push(tolerationTmp)
       }
     }
 
