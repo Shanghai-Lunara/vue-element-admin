@@ -345,7 +345,7 @@ export default {
           app.watchPolicy = ''
           app.serviceAccountName = ''
           app.tolerations = []
-          app.nodeSelector = {}
+          app.nodeSelector = []
         }
 
         this.oneData.applications.push(app)
