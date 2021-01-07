@@ -65,10 +65,10 @@
       <el-input v-model="form.volumePath" />
     </el-form-item>
 
-    <!-- <el-form-item label="nodeSelector">
-      <el-input v-model="nodeSelectorKey" style="width:200px" @change="changeNodeKey" />
-      <el-input v-model="nodeSelectorVal" style="width:200px" @change="changeNodeVal" />
-    </el-form-item> -->
+    <el-form-item label="nodeSelector">
+      <el-input v-model="nodeSelectorKey" placeholder="nodeSelector的key" style="width:200px" @change="changeNodeKey" />
+      <el-input v-model="nodeSelectorVal" placeholder="nodeSelector的val" style="width:200px" @change="changeNodeVal" />
+    </el-form-item>
 
     <el-form-item v-if="specData.flag === true" label="env">
       <!-- env -->
@@ -421,12 +421,10 @@ export default {
 
       // specData.data.nodeSelector
 
-      // if (this.specData.data.nodeSelector !== '') {
-      //   this.specData.data.nodeSelector.forEach(value => {
-      //     this.nodeSelectorKey = key
-      //     this.nodeSelectorVal = value
-      //   })
-      // }
+      if (this.specData.data.nodeSelector.length !== 0) {
+        this.nodeSelectorKey = this.specData.data.nodeSelector[0]
+        this.nodeSelectorVal = this.specData.data.nodeSelector[1]
+      }
 
       this.policyFlag = true
 
@@ -465,14 +463,10 @@ export default {
       this.specData.data.watchPolicy = value
     },
     changeNodeKey(val) {
-      console.log(val)
-      this.specData.data.nodeSelector[this.nodeSelectorKey] = this.nodeSelectorVal
-      console.log(this.specData.data.nodeSelector)
+      this.specData.data.nodeSelector[0] = this.nodeSelectorKey
     },
     changeNodeVal(val) {
-      console.log(val)
-      this.specData.data.nodeSelector[this.nodeSelectorKey] = this.nodeSelectorVal
-      console.log(this.specData.data.nodeSelector)
+      this.specData.data.nodeSelector[1] = this.nodeSelectorVal
     },
     // 修改 | 保存
     edit(row, index, cg, type) {
