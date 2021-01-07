@@ -343,6 +343,9 @@ export default {
 
         if (this.oneData.typename === 'HelixSagaOperator') {
           app.watchPolicy = ''
+          app.serviceAccountName = ''
+          app.tolerations = []
+          app.nodeSelector = {}
         }
 
         this.oneData.applications.push(app)

@@ -524,7 +524,7 @@ export default {
             list.push(item)
           })
 
-          // console.log(list)
+          console.log(list)
 
           total = dataStr.items.length
           _self.list = list

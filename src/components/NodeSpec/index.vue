@@ -46,6 +46,17 @@
       </el-select>
     </el-form-item>
 
+    <el-form-item label="serviceAccount">
+      <el-select v-model="form.serviceAccountName" clearable @change="changeServiceAccount">
+        <el-option
+          v-for="(item,key) in specData.serviceList"
+          :key="key"
+          :label="item.name"
+          :value="item.name"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="replicas">
       <el-input v-model="form.replicas" />
     </el-form-item>
@@ -53,6 +64,11 @@
     <el-form-item label="volumePath">
       <el-input v-model="form.volumePath" />
     </el-form-item>
+
+    <!-- <el-form-item label="nodeSelector">
+      <el-input v-model="nodeSelectorKey" style="width:200px" @change="changeNodeKey" />
+      <el-input v-model="nodeSelectorVal" style="width:200px" @change="changeNodeVal" />
+    </el-form-item> -->
 
     <el-form-item v-if="specData.flag === true" label="env">
       <!-- env -->
@@ -160,17 +176,6 @@
           :key="item"
           :label="item"
           :value="item"
-        />
-      </el-select>
-    </el-form-item>
-
-    <el-form-item label="serviceAccount">
-      <el-select v-model="form.serviceAccountName" clearable @change="changeServiceAccount">
-        <el-option
-          v-for="(item,key) in specData.serviceList"
-          :key="key"
-          :label="item.name"
-          :value="item.name"
         />
       </el-select>
     </el-form-item>
@@ -342,7 +347,9 @@ export default {
         'NoExecute'
       ],
       watchPolicy: '',
-      policyFlag: true
+      policyFlag: true,
+      nodeSelectorKey: '',
+      nodeSelectorVal: ''
     }
   },
   watch: {
@@ -412,6 +419,15 @@ export default {
         this.specData.data.tolerations = JSON.parse(JSON.stringify(this.specData.data.tolerations))
       }
 
+      // specData.data.nodeSelector
+
+      // if (this.specData.data.nodeSelector !== '') {
+      //   this.specData.data.nodeSelector.forEach(value => {
+      //     this.nodeSelectorKey = key
+      //     this.nodeSelectorVal = value
+      //   })
+      // }
+
       this.policyFlag = true
 
       if (this.form.env !== '') {
@@ -447,6 +463,16 @@ export default {
     changeServiceAccount(value) {},
     watchPolicyType(value) {
       this.specData.data.watchPolicy = value
+    },
+    changeNodeKey(val) {
+      console.log(val)
+      this.specData.data.nodeSelector[this.nodeSelectorKey] = this.nodeSelectorVal
+      console.log(this.specData.data.nodeSelector)
+    },
+    changeNodeVal(val) {
+      console.log(val)
+      this.specData.data.nodeSelector[this.nodeSelectorKey] = this.nodeSelectorVal
+      console.log(this.specData.data.nodeSelector)
     },
     // 修改 | 保存
     edit(row, index, cg, type) {
