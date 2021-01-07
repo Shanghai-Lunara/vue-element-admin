@@ -1103,7 +1103,7 @@ export const github = $root.github = (() => {
               function HelixSagaApp(properties) {
                 this.command = []
                 this.args = []
-                this.nodeSelector = {}
+                this.nodeSelector = []
                 this.tolerations = []
                 if (properties) {
                   for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
@@ -1116,7 +1116,7 @@ export const github = $root.github = (() => {
               HelixSagaApp.prototype.command = $util.emptyArray
               HelixSagaApp.prototype.args = $util.emptyArray
               HelixSagaApp.prototype.watchPolicy = ''
-              HelixSagaApp.prototype.nodeSelector = $util.emptyObject
+              HelixSagaApp.prototype.nodeSelector = $util.emptyArray
               HelixSagaApp.prototype.serviceAccountName = ''
               HelixSagaApp.prototype.affinity = null
               HelixSagaApp.prototype.tolerations = $util.emptyArray
@@ -1135,8 +1135,8 @@ export const github = $root.github = (() => {
                   for (let i = 0; i < message.args.length; ++i) { writer.uint32(26).string(message.args[i]) }
                 }
                 if (message.watchPolicy != null && Object.hasOwnProperty.call(message, 'watchPolicy')) { writer.uint32(34).string(message.watchPolicy) }
-                if (message.nodeSelector != null && Object.hasOwnProperty.call(message, 'nodeSelector')) {
-                  for (let keys = Object.keys(message.nodeSelector), i = 0; i < keys.length; ++i) { writer.uint32(42).fork().uint32(10).string(keys[i]).uint32(18).string(message.nodeSelector[keys[i]]).ldelim() }
+                if (message.nodeSelector != null && message.nodeSelector.length) {
+                  for (let i = 0; i < message.nodeSelector.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.encode(message.nodeSelector[i], writer.uint32(42).fork()).ldelim() }
                 }
                 if (message.serviceAccountName != null && Object.hasOwnProperty.call(message, 'serviceAccountName')) { writer.uint32(50).string(message.serviceAccountName) }
                 if (message.affinity != null && Object.hasOwnProperty.call(message, 'affinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Affinity.encode(message.affinity, writer.uint32(58).fork()).ldelim() }
@@ -1152,7 +1152,7 @@ export const github = $root.github = (() => {
 
               HelixSagaApp.decode = function decode(reader, length) {
                 if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
-                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp(); let key
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaApp()
                 while (reader.pos < end) {
                   const tag = reader.uint32()
                   switch (tag >>> 3) {
@@ -1171,11 +1171,8 @@ export const github = $root.github = (() => {
                       message.watchPolicy = reader.string()
                       break
                     case 5:
-                      reader.skip().pos++
-                      if (message.nodeSelector === $util.emptyObject) { message.nodeSelector = {} }
-                      key = reader.string()
-                      reader.pos++
-                      message.nodeSelector[key] = reader.string()
+                      if (!(message.nodeSelector && message.nodeSelector.length)) { message.nodeSelector = [] }
+                      message.nodeSelector.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.decode(reader, reader.uint32()))
                       break
                     case 6:
                       message.serviceAccountName = reader.string()
@@ -1222,10 +1219,10 @@ export const github = $root.github = (() => {
                   if (!$util.isString(message.watchPolicy)) { return 'watchPolicy: string expected' }
                 }
                 if (message.nodeSelector != null && message.hasOwnProperty('nodeSelector')) {
-                  if (!$util.isObject(message.nodeSelector)) { return 'nodeSelector: object expected' }
-                  const key = Object.keys(message.nodeSelector)
-                  for (let i = 0; i < key.length; ++i) {
-                    if (!$util.isString(message.nodeSelector[key[i]])) { return 'nodeSelector: string{k:string} expected' }
+                  if (!Array.isArray(message.nodeSelector)) { return 'nodeSelector: array expected' }
+                  for (let i = 0; i < message.nodeSelector.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.verify(message.nodeSelector[i])
+                    if (error) { return 'nodeSelector.' + error }
                   }
                 }
                 if (message.serviceAccountName != null && message.hasOwnProperty('serviceAccountName')) {
@@ -2200,6 +2197,72 @@ export const github = $root.github = (() => {
               }
 
               return NodeSelector
+            })()
+
+            proto.NodeSelectorElement = (function() {
+              function NodeSelectorElement(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              NodeSelectorElement.prototype.key = ''
+              NodeSelectorElement.prototype.value = ''
+
+              NodeSelectorElement.create = function create(properties) {
+                return new NodeSelectorElement(properties)
+              }
+
+              NodeSelectorElement.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.key != null && Object.hasOwnProperty.call(message, 'key')) { writer.uint32(10).string(message.key) }
+                if (message.value != null && Object.hasOwnProperty.call(message, 'value')) { writer.uint32(18).string(message.value) }
+                return writer
+              }
+
+              NodeSelectorElement.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              NodeSelectorElement.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.key = reader.string()
+                      break
+                    case 2:
+                      message.value = reader.string()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              NodeSelectorElement.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              NodeSelectorElement.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.key != null && message.hasOwnProperty('key')) {
+                  if (!$util.isString(message.key)) { return 'key: string expected' }
+                }
+                if (message.value != null && message.hasOwnProperty('value')) {
+                  if (!$util.isString(message.value)) { return 'value: string expected' }
+                }
+                return null
+              }
+
+              return NodeSelectorElement
             })()
 
             proto.NodeSelectorRequirement = (function() {
