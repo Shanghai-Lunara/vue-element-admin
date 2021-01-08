@@ -33,8 +33,6 @@ export const github = $root.github = (() => {
               }
 
               Affinity.prototype.nodeAffinity = null
-              Affinity.prototype.podAffinity = null
-              Affinity.prototype.podAntiAffinity = null
 
               Affinity.create = function create(properties) {
                 return new Affinity(properties)
@@ -43,8 +41,6 @@ export const github = $root.github = (() => {
               Affinity.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
                 if (message.nodeAffinity != null && Object.hasOwnProperty.call(message, 'nodeAffinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeAffinity.encode(message.nodeAffinity, writer.uint32(10).fork()).ldelim() }
-                if (message.podAffinity != null && Object.hasOwnProperty.call(message, 'podAffinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAffinity.encode(message.podAffinity, writer.uint32(18).fork()).ldelim() }
-                if (message.podAntiAffinity != null && Object.hasOwnProperty.call(message, 'podAntiAffinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAntiAffinity.encode(message.podAntiAffinity, writer.uint32(26).fork()).ldelim() }
                 return writer
               }
 
@@ -60,12 +56,6 @@ export const github = $root.github = (() => {
                   switch (tag >>> 3) {
                     case 1:
                       message.nodeAffinity = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeAffinity.decode(reader, reader.uint32())
-                      break
-                    case 2:
-                      message.podAffinity = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAffinity.decode(reader, reader.uint32())
-                      break
-                    case 3:
-                      message.podAntiAffinity = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAntiAffinity.decode(reader, reader.uint32())
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -85,14 +75,6 @@ export const github = $root.github = (() => {
                 if (message.nodeAffinity != null && message.hasOwnProperty('nodeAffinity')) {
                   const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeAffinity.verify(message.nodeAffinity)
                   if (error) { return 'nodeAffinity.' + error }
-                }
-                if (message.podAffinity != null && message.hasOwnProperty('podAffinity')) {
-                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAffinity.verify(message.podAffinity)
-                  if (error) { return 'podAffinity.' + error }
-                }
-                if (message.podAntiAffinity != null && message.hasOwnProperty('podAntiAffinity')) {
-                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodAntiAffinity.verify(message.podAntiAffinity)
-                  if (error) { return 'podAntiAffinity.' + error }
                 }
                 return null
               }

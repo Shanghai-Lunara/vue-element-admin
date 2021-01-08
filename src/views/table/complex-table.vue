@@ -524,7 +524,7 @@ export default {
             list.push(item)
           })
 
-          console.log(list)
+          // console.log(list)
 
           total = dataStr.items.length
           _self.list = list
@@ -1047,8 +1047,6 @@ export default {
       delete this.oneData.namespace
       delete this.oneData.status
 
-      // console.log(this.oneData)
-
       if (this.oneData.typename === 'HelixSagaOperator') {
         this.checkSaga()
       } else {
@@ -1056,6 +1054,8 @@ export default {
       }
 
       delete this.oneData.typename
+
+      // console.log(this.oneData)
       if (this.oneData.type) {
         delete this.oneData.type
 
@@ -1098,6 +1098,18 @@ export default {
               delete value.isSet
             ])
           }
+
+          if (element.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms !== '') {
+            element.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach(value => {
+              delete value.title
+              delete value.name
+              value.matchExpressions.forEach(v => {
+                delete v.isSet
+              })
+            })
+          }
+
+          // console.log(element)
         })
       }
     },

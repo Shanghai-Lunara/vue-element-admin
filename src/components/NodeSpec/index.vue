@@ -228,6 +228,13 @@
         <el-col>
           <el-table size="mini" :data="specData.data.tolerations" border style="width: 100%" highlight-current-row>
 
+            <!-- matchExpressions: Array(1)
+              matchFields -->
+
+            <!-- key: "kubernetes.io/hostname"
+              operator: "In"
+              values -->
+
             <el-table-column v-for="v in tolerationColumn" :key="v.field" :label="v.title" :width="v.width">
               <template slot-scope="scope">
                 <span v-if="scope.row.isSet">
@@ -272,6 +279,64 @@
           <div class="el-table-add-row" style="width: 99.2%;" @click="addToleation()"><span>+ 添加</span></div>
         </el-col>
       </el-row>
+
+    </el-form-item>
+
+    <!-- affinity  6666 -->
+    <el-form-item label="affinity">
+
+      <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
+        <el-tab-pane
+          v-for="item in specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms"
+          :key="item.name"
+          :label="item.title"
+          :name="item.name"
+        >
+
+          <el-row>
+            <el-col>
+              <el-table size="mini" :data="item.matchExpressions" border style="width: 100%" highlight-current-row>
+
+                <el-table-column v-for="v in affinityColumn" :key="v.field" :label="v.title" :width="v.width">
+                  <template slot-scope="scope">
+                    <span v-if="scope.row.isSet">
+                      <el-input v-if="v.title === 'key'" v-model="scope.row['key']" size="mini" placeholder="请输入内容" />
+                      <el-input v-else-if="v.title === 'values'" v-model="scope.row[v.field]" size="mini" placeholder="请输入内容" />
+                      <el-select v-else-if="v.title === 'operator'" v-model="scope.row['operator']">
+                        <el-option
+                          v-for="affVal in affinityList"
+                          :key="affVal"
+                          :label="affVal"
+                          :value="affVal"
+                        />
+                      </el-select>
+                    </span>
+                    <span v-else>{{ scope.row[v.field] }}</span>
+                  </template>
+                </el-table-column>
+
+                <el-table-column label="操作">
+                  <template slot-scope="scope">
+                    <span class="el-tag el-tag--info el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,true,6)">
+                      {{ scope.row.isSet?'保存':"修改" }}
+                    </span>
+                    <span v-if="!scope.row.isSet" class="el-tag el-tag--danger el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,6)">
+                      删除
+                    </span>
+                    <span v-else class="el-tag  el-tag--mini" style="cursor: pointer;" @click="edit(scope.row,scope.$index,false,6)">
+                      取消
+                    </span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </el-col>
+            <el-col>
+              <div class="el-table-add-row" style="width: 99.2%;" @click="addAffinity()"><span>+ 添加</span></div>
+            </el-col>
+          </el-row>
+
+        </el-tab-pane>
+      </el-tabs>
 
     </el-form-item>
 
@@ -322,6 +387,18 @@ export default {
         { field: 'operator', title: 'operator', width: 150 },
         { field: 'effect', title: 'effect', width: 150 }
       ],
+
+      //  affinity
+      affinityColumn: [
+        { field: 'key', title: 'key', width: 210 },
+        { field: 'values', title: 'values', width: 280 },
+        { field: 'operator', title: 'operator', width: 180 }
+      ],
+      editableTabsValue: '1',
+      editableTabs: [],
+      tabIndex: 0,
+      // -------
+
       argsStr: '',
       commandStr: '',
       form: [],
@@ -345,6 +422,15 @@ export default {
         'NoSchedule',
         'PreferNoSchedule',
         'NoExecute'
+      ],
+      // aff
+      affinityList: [
+        'In',
+        'NotIn',
+        'Exists',
+        'DoesNotExist',
+        'Gt',
+        'Lt'
       ],
       watchPolicy: '',
       policyFlag: true,
@@ -450,6 +536,38 @@ export default {
         })
         this.form.servicePorts = JSON.parse(JSON.stringify(this.form.servicePorts))
       }
+
+      //       affinity: Affinity
+
+      var tmp = {}
+      this.editableTabs = []
+
+      if (this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length === 0) {
+        var tmp1 = {}
+        tmp1.matchExpressions = []
+        tmp1.matchFields = []
+
+        tmp.title = 'matchExpressions1'
+        tmp.name = '1'
+        tmp.element = tmp1
+
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(tmp)
+        // this.editableTabs.push(tmp)
+      } else {
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach((element, key) => {
+          var tmpkey = key + 1
+          element.title = 'matchExpressions' + tmpkey.toString()
+          element.name = tmpkey.toString()
+          element.matchExpressions.forEach(v => {
+            v.isSet = false
+          })
+        })
+
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = JSON.parse(JSON.stringify(this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms))
+      }
+
+      this.tabIndex = this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length
+      this.editableTabsValue = '1'
     },
     handleChange(value) {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
@@ -471,7 +589,6 @@ export default {
     // 修改 | 保存
     edit(row, index, cg, type) {
       // 点击修改 判断是否已经保存所有操作
-
       var param = ''
 
       if (type === 1) {
@@ -482,8 +599,10 @@ export default {
         param = 'volumn'
       } else if (type === 4) {
         param = 'env'
-      } else {
+      } else if (type === 5) {
         param = 'tolerations'
+      } else {
+        param = 'affinity'
       }
 
       var flag = 0
@@ -498,6 +617,16 @@ export default {
         })
       } else if (type === 5) {
         this.specData.data.tolerations.forEach((element, key) => {
+          if (element.isSet && key !== index) {
+            this.$message.warning('请先保存当前编辑项')
+            flag = 1
+          }
+        })
+      } else if (type === 6) {
+        // console.log(888888)
+        var tmpKey = parseInt(this.editableTabsValue - 1)
+        //  修改编辑
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[tmpKey].matchExpressions.forEach((element, key) => {
           if (element.isSet && key !== index) {
             this.$message.warning('请先保存当前编辑项')
             flag = 1
@@ -522,6 +651,9 @@ export default {
           this.volume_map.volume.volumeSource.configMap.items.splice(index, 1)
         } else if (type === 5) {
           this.specData.data.tolerations.splice(index, 1)
+        } else if (type === 6) {
+          var tmpKey1 = parseInt(this.editableTabsValue - 1)
+          this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[tmpKey1].matchExpressions.splice(index, 1)
         } else {
           if (this.form[param][index]) {
             this.form[param].splice(index, 1)
@@ -534,14 +666,23 @@ export default {
             this.form[param][index]['targetPort'] = JSON.parse(this.form[param][index]['targetPort'])
           }
 
+          if (type === 6) {
+            row.values = JSON.parse(row.values)
+          }
+
           row.isSet = false
         } else {
           if (type === 2) {
             this.form[param][index]['targetPort'] = JSON.stringify(this.form[param][index]['targetPort'])
           }
 
+          if (type === 6) {
+            row.values = JSON.stringify(row.values)
+          }
+
           row.isSet = true
         }
+        // console.log(row.isSet)
       }
     },
     // 添加 containport
@@ -648,9 +789,68 @@ export default {
         }
         this.specData.data.tolerations.push(tolerationTmp)
       }
-    }
+    },
+    handleTabsEdit(targetName, action) {
+      if (action === 'add') {
+        const newTabName = ++this.tabIndex + ''
 
+        // 初始化
+        var tmp = {}
+        tmp.matchExpressions = []
+        tmp.matchFields = []
+        tmp.title = 'matchExpressions' + newTabName
+        tmp.name = newTabName
+
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(tmp)
+
+        this.editableTabsValue = newTabName
+      }
+      if (action === 'remove') {
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.splice(index, 1)
+          }
+        })
+
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach((v, k) => {
+          var tmpkey = k + 1
+          v.title = 'matchExpressions' + tmpkey.toString()
+          v.name = tmpkey.toString()
+          v.matchExpressions.forEach(v => {
+            v.isSet = false
+          })
+        })
+
+        this.editableTabsValue = '1'
+        this.tabIndex = this.editableTabs.length
+      }
+    },
+    addAffinity() {
+      var tmpKey = parseInt(this.editableTabsValue - 1)
+
+      var mark = true
+      this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[tmpKey].matchExpressions.forEach((element, key) => {
+        if (element.isSet) {
+          mark = false
+          this.$message({
+            message: '请先保存当前修改项',
+            type: 'warning'
+          })
+        }
+      })
+
+      if (mark) {
+        const affinityTmp = {
+          key: '',
+          values: '[]',
+          operator: '',
+          isSet: true
+        }
+        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[tmpKey].matchExpressions.push(affinityTmp)
+      }
+    }
   }
+
 }
 
 </script>
