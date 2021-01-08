@@ -346,6 +346,10 @@ export default {
           app.serviceAccountName = ''
           app.tolerations = []
           app.nodeSelector = []
+          app.affinity = {}
+          app.affinity.nodeAffinity = {}
+          app.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution = {}
+          app.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = []
         }
 
         this.oneData.applications.push(app)
