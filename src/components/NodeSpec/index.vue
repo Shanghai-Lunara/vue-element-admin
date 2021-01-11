@@ -47,12 +47,12 @@
     </el-form-item>
 
     <el-form-item label="serviceAccount">
-      <el-select v-model="form.serviceAccountName" clearable @change="changeServiceAccount">
+      <el-select v-model="specData.data.serviceAccountName" clearable @change="changeServiceAccount">
         <el-option
-          v-for="(item,key) in specData.serviceList"
+          v-for="(itemV,key) in specData.serviceList"
           :key="key"
-          :label="item.name"
-          :value="item.name"
+          :label="itemV.name"
+          :value="itemV.name"
         />
       </el-select>
     </el-form-item>
@@ -539,20 +539,23 @@ export default {
 
       //       affinity: Affinity
 
-      var tmp = {}
+      // var tmp = {}
       this.editableTabs = []
 
+      // console.log(this.specData.data.affinity)
+
       if (this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length === 0) {
-        var tmp1 = {}
-        tmp1.matchExpressions = []
-        tmp1.matchFields = []
+        // var tmp1 = {}
+        // tmp1.matchExpressions = []
+        // tmp1.matchFields = []
 
-        tmp.title = 'matchExpressions1'
-        tmp.name = '1'
-        tmp.element = tmp1
+        // tmp.title = 'matchExpressions1'
+        // tmp.name = '1'
+        // tmp.element = tmp1
 
-        this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(tmp)
+        // this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.push(tmp)
         // this.editableTabs.push(tmp)
+        this.editableTabsValue = '0'
       } else {
         this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach((element, key) => {
           var tmpkey = key + 1
@@ -564,10 +567,10 @@ export default {
         })
 
         this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = JSON.parse(JSON.stringify(this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms))
+        this.editableTabsValue = '1'
       }
 
       this.tabIndex = this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.length
-      this.editableTabsValue = '1'
     },
     handleChange(value) {
       var str = value[0].slice(7) + '/' + value[2] + ':' + value[3]
@@ -623,7 +626,6 @@ export default {
           }
         })
       } else if (type === 6) {
-        // console.log(888888)
         var tmpKey = parseInt(this.editableTabsValue - 1)
         //  修改编辑
         this.specData.data.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms[tmpKey].matchExpressions.forEach((element, key) => {
@@ -682,7 +684,6 @@ export default {
 
           row.isSet = true
         }
-        // console.log(row.isSet)
       }
     },
     // 添加 containport

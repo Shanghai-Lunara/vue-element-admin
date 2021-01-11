@@ -381,6 +381,7 @@ export default {
             this.$refs.NodeSpec.initForm()
           })
           break
+
         case 'HelixSagaOperator':
 
           this.oneData.applications.forEach(element => {
@@ -464,21 +465,21 @@ export default {
 
       var _self = this
       this.$socketApi(senddata, function(res) {
-        _self.returnResource(res, _self)
+        _self.responseData(res, _self)
       })
     },
-    returnResource(service, _self) {
-      var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
+    // returnResource(service, _self) {
+    //   var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
 
-      switch (result.param.resourceType) {
-        case 'ServiceAccount':
-          var ServiceAccountList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceAccountList.decode(result.result)
+    //   switch (result.param.resourceType) {
+    //     case 'ServiceAccount':
+    //       var ServiceAccountList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceAccountList.decode(result.result)
 
-          _self.specData.serviceList = ServiceAccountList.items
+    //       _self.specData.serviceList = ServiceAccountList.items
 
-          break
-      }
-    },
+    //       break
+    //   }
+    // },
     secret() {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
 
@@ -509,10 +510,16 @@ export default {
     responseData(res, _self) {
       var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(res)
 
-      if (result.param.service === 'list') {
+      if (result.param.service === 'list' && result.param.resourceType !== 'ServiceAccount') {
         var list = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.SecretList.decode(result.result)
 
         _self.specData.secretData = list.items
+      }
+
+      if (result.param.resourceType === 'ServiceAccount') {
+        var ServiceAccountList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceAccountList.decode(result.result)
+
+        _self.specData.serviceList = ServiceAccountList.items
       }
 
       switch (result.param.harborRequest.command) {
