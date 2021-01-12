@@ -222,7 +222,7 @@
       </el-row>
     </el-form-item>
 
-    <el-form-item label="tolerations">
+    <el-form-item v-if="specData.flag === true" label="tolerations">
       <!-- toleation  5555 -->
       <el-row>
         <el-col>
@@ -283,7 +283,7 @@
     </el-form-item>
 
     <!-- affinity  6666 -->
-    <el-form-item label="affinity">
+    <el-form-item v-if="specData.flag === true" label="affinity">
 
       <el-tabs v-model="editableTabsValue" type="card" editable @edit="handleTabsEdit">
         <el-tab-pane
