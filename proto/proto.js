@@ -405,6 +405,112 @@ export const github = $root.github = (() => {
               return ContainerPort
             })()
 
+            proto.DeploymentStatus = (function() {
+              function DeploymentStatus(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              DeploymentStatus.prototype.observedGeneration = $util.Long ? $util.Long.fromBits(0, 0, false) : 0
+              DeploymentStatus.prototype.replicas = 0
+              DeploymentStatus.prototype.updatedReplicas = 0
+              DeploymentStatus.prototype.readyReplicas = 0
+              DeploymentStatus.prototype.availableReplicas = 0
+              DeploymentStatus.prototype.unavailableReplicas = 0
+              DeploymentStatus.prototype.collisionCount = 0
+
+              DeploymentStatus.create = function create(properties) {
+                return new DeploymentStatus(properties)
+              }
+
+              DeploymentStatus.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.observedGeneration != null && Object.hasOwnProperty.call(message, 'observedGeneration')) { writer.uint32(8).int64(message.observedGeneration) }
+                if (message.replicas != null && Object.hasOwnProperty.call(message, 'replicas')) { writer.uint32(16).int32(message.replicas) }
+                if (message.updatedReplicas != null && Object.hasOwnProperty.call(message, 'updatedReplicas')) { writer.uint32(24).int32(message.updatedReplicas) }
+                if (message.availableReplicas != null && Object.hasOwnProperty.call(message, 'availableReplicas')) { writer.uint32(32).int32(message.availableReplicas) }
+                if (message.unavailableReplicas != null && Object.hasOwnProperty.call(message, 'unavailableReplicas')) { writer.uint32(40).int32(message.unavailableReplicas) }
+                if (message.readyReplicas != null && Object.hasOwnProperty.call(message, 'readyReplicas')) { writer.uint32(56).int32(message.readyReplicas) }
+                if (message.collisionCount != null && Object.hasOwnProperty.call(message, 'collisionCount')) { writer.uint32(64).int32(message.collisionCount) }
+                return writer
+              }
+
+              DeploymentStatus.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              DeploymentStatus.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.observedGeneration = reader.int64()
+                      break
+                    case 2:
+                      message.replicas = reader.int32()
+                      break
+                    case 3:
+                      message.updatedReplicas = reader.int32()
+                      break
+                    case 7:
+                      message.readyReplicas = reader.int32()
+                      break
+                    case 4:
+                      message.availableReplicas = reader.int32()
+                      break
+                    case 5:
+                      message.unavailableReplicas = reader.int32()
+                      break
+                    case 8:
+                      message.collisionCount = reader.int32()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              DeploymentStatus.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              DeploymentStatus.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.observedGeneration != null && message.hasOwnProperty('observedGeneration')) {
+                  if (!$util.isInteger(message.observedGeneration) && !(message.observedGeneration && $util.isInteger(message.observedGeneration.low) && $util.isInteger(message.observedGeneration.high))) { return 'observedGeneration: integer|Long expected' }
+                }
+                if (message.replicas != null && message.hasOwnProperty('replicas')) {
+                  if (!$util.isInteger(message.replicas)) { return 'replicas: integer expected' }
+                }
+                if (message.updatedReplicas != null && message.hasOwnProperty('updatedReplicas')) {
+                  if (!$util.isInteger(message.updatedReplicas)) { return 'updatedReplicas: integer expected' }
+                }
+                if (message.readyReplicas != null && message.hasOwnProperty('readyReplicas')) {
+                  if (!$util.isInteger(message.readyReplicas)) { return 'readyReplicas: integer expected' }
+                }
+                if (message.availableReplicas != null && message.hasOwnProperty('availableReplicas')) {
+                  if (!$util.isInteger(message.availableReplicas)) { return 'availableReplicas: integer expected' }
+                }
+                if (message.unavailableReplicas != null && message.hasOwnProperty('unavailableReplicas')) {
+                  if (!$util.isInteger(message.unavailableReplicas)) { return 'unavailableReplicas: integer expected' }
+                }
+                if (message.collisionCount != null && message.hasOwnProperty('collisionCount')) {
+                  if (!$util.isInteger(message.collisionCount)) { return 'collisionCount: integer expected' }
+                }
+                return null
+              }
+
+              return DeploymentStatus
+            })()
+
             proto.EnvVar = (function() {
               function EnvVar(properties) {
                 if (properties) {
@@ -1083,10 +1189,6 @@ export const github = $root.github = (() => {
 
             proto.HelixSagaApp = (function() {
               function HelixSagaApp(properties) {
-                this.command = []
-                this.args = []
-                this.nodeSelector = []
-                this.tolerations = []
                 if (properties) {
                   for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
                     if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
@@ -1095,13 +1197,7 @@ export const github = $root.github = (() => {
               }
 
               HelixSagaApp.prototype.spec = null
-              HelixSagaApp.prototype.command = $util.emptyArray
-              HelixSagaApp.prototype.args = $util.emptyArray
-              HelixSagaApp.prototype.watchPolicy = ''
-              HelixSagaApp.prototype.nodeSelector = $util.emptyArray
-              HelixSagaApp.prototype.serviceAccountName = ''
-              HelixSagaApp.prototype.affinity = null
-              HelixSagaApp.prototype.tolerations = $util.emptyArray
+              HelixSagaApp.prototype.status = null
 
               HelixSagaApp.create = function create(properties) {
                 return new HelixSagaApp(properties)
@@ -1109,22 +1205,8 @@ export const github = $root.github = (() => {
 
               HelixSagaApp.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
-                if (message.spec != null && Object.hasOwnProperty.call(message, 'spec')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.encode(message.spec, writer.uint32(10).fork()).ldelim() }
-                if (message.command != null && message.command.length) {
-                  for (let i = 0; i < message.command.length; ++i) { writer.uint32(18).string(message.command[i]) }
-                }
-                if (message.args != null && message.args.length) {
-                  for (let i = 0; i < message.args.length; ++i) { writer.uint32(26).string(message.args[i]) }
-                }
-                if (message.watchPolicy != null && Object.hasOwnProperty.call(message, 'watchPolicy')) { writer.uint32(34).string(message.watchPolicy) }
-                if (message.nodeSelector != null && message.nodeSelector.length) {
-                  for (let i = 0; i < message.nodeSelector.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.encode(message.nodeSelector[i], writer.uint32(42).fork()).ldelim() }
-                }
-                if (message.serviceAccountName != null && Object.hasOwnProperty.call(message, 'serviceAccountName')) { writer.uint32(50).string(message.serviceAccountName) }
-                if (message.affinity != null && Object.hasOwnProperty.call(message, 'affinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Affinity.encode(message.affinity, writer.uint32(58).fork()).ldelim() }
-                if (message.tolerations != null && message.tolerations.length) {
-                  for (let i = 0; i < message.tolerations.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Toleration.encode(message.tolerations[i], writer.uint32(66).fork()).ldelim() }
-                }
+                if (message.spec != null && Object.hasOwnProperty.call(message, 'spec')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppSpec.encode(message.spec, writer.uint32(10).fork()).ldelim() }
+                if (message.status != null && Object.hasOwnProperty.call(message, 'status')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppStatus.encode(message.status, writer.uint32(90).fork()).ldelim() }
                 return writer
               }
 
@@ -1139,32 +1221,10 @@ export const github = $root.github = (() => {
                   const tag = reader.uint32()
                   switch (tag >>> 3) {
                     case 1:
-                      message.spec = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.decode(reader, reader.uint32())
+                      message.spec = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppSpec.decode(reader, reader.uint32())
                       break
-                    case 2:
-                      if (!(message.command && message.command.length)) { message.command = [] }
-                      message.command.push(reader.string())
-                      break
-                    case 3:
-                      if (!(message.args && message.args.length)) { message.args = [] }
-                      message.args.push(reader.string())
-                      break
-                    case 4:
-                      message.watchPolicy = reader.string()
-                      break
-                    case 5:
-                      if (!(message.nodeSelector && message.nodeSelector.length)) { message.nodeSelector = [] }
-                      message.nodeSelector.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.decode(reader, reader.uint32()))
-                      break
-                    case 6:
-                      message.serviceAccountName = reader.string()
-                      break
-                    case 7:
-                      message.affinity = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Affinity.decode(reader, reader.uint32())
-                      break
-                    case 8:
-                      if (!(message.tolerations && message.tolerations.length)) { message.tolerations = [] }
-                      message.tolerations.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Toleration.decode(reader, reader.uint32()))
+                    case 11:
+                      message.status = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppStatus.decode(reader, reader.uint32())
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -1182,8 +1242,203 @@ export const github = $root.github = (() => {
               HelixSagaApp.verify = function verify(message) {
                 if (typeof message !== 'object' || message === null) { return 'object expected' }
                 if (message.spec != null && message.hasOwnProperty('spec')) {
-                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSpec.verify(message.spec)
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppSpec.verify(message.spec)
                   if (error) { return 'spec.' + error }
+                }
+                if (message.status != null && message.hasOwnProperty('status')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppStatus.verify(message.status)
+                  if (error) { return 'status.' + error }
+                }
+                return null
+              }
+
+              return HelixSagaApp
+            })()
+
+            proto.HelixSagaAppSpec = (function() {
+              function HelixSagaAppSpec(properties) {
+                this.env = []
+                this.command = []
+                this.args = []
+                this.containerPorts = []
+                this.servicePorts = []
+                this.nodeSelector = []
+                this.tolerations = []
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              HelixSagaAppSpec.prototype.name = ''
+              HelixSagaAppSpec.prototype.replicas = 0
+              HelixSagaAppSpec.prototype.image = ''
+              HelixSagaAppSpec.prototype.imagePullSecrets = ''
+              HelixSagaAppSpec.prototype.env = $util.emptyArray
+              HelixSagaAppSpec.prototype.podResource = null
+              HelixSagaAppSpec.prototype.command = $util.emptyArray
+              HelixSagaAppSpec.prototype.args = $util.emptyArray
+              HelixSagaAppSpec.prototype.containerPorts = $util.emptyArray
+              HelixSagaAppSpec.prototype.servicePorts = $util.emptyArray
+              HelixSagaAppSpec.prototype.serviceType = ''
+              HelixSagaAppSpec.prototype.volumePath = ''
+              HelixSagaAppSpec.prototype.watchPolicy = ''
+              HelixSagaAppSpec.prototype.nodeSelector = $util.emptyArray
+              HelixSagaAppSpec.prototype.serviceAccountName = ''
+              HelixSagaAppSpec.prototype.affinity = null
+              HelixSagaAppSpec.prototype.tolerations = $util.emptyArray
+              HelixSagaAppSpec.prototype.template = ''
+
+              HelixSagaAppSpec.create = function create(properties) {
+                return new HelixSagaAppSpec(properties)
+              }
+
+              HelixSagaAppSpec.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.name != null && Object.hasOwnProperty.call(message, 'name')) { writer.uint32(10).string(message.name) }
+                if (message.replicas != null && Object.hasOwnProperty.call(message, 'replicas')) { writer.uint32(16).int32(message.replicas) }
+                if (message.image != null && Object.hasOwnProperty.call(message, 'image')) { writer.uint32(26).string(message.image) }
+                if (message.imagePullSecrets != null && Object.hasOwnProperty.call(message, 'imagePullSecrets')) { writer.uint32(34).string(message.imagePullSecrets) }
+                if (message.env != null && message.env.length) {
+                  for (let i = 0; i < message.env.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.encode(message.env[i], writer.uint32(42).fork()).ldelim() }
+                }
+                if (message.podResource != null && Object.hasOwnProperty.call(message, 'podResource')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.encode(message.podResource, writer.uint32(50).fork()).ldelim() }
+                if (message.command != null && message.command.length) {
+                  for (let i = 0; i < message.command.length; ++i) { writer.uint32(66).string(message.command[i]) }
+                }
+                if (message.args != null && message.args.length) {
+                  for (let i = 0; i < message.args.length; ++i) { writer.uint32(74).string(message.args[i]) }
+                }
+                if (message.containerPorts != null && message.containerPorts.length) {
+                  for (let i = 0; i < message.containerPorts.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort.encode(message.containerPorts[i], writer.uint32(82).fork()).ldelim() }
+                }
+                if (message.servicePorts != null && message.servicePorts.length) {
+                  for (let i = 0; i < message.servicePorts.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.encode(message.servicePorts[i], writer.uint32(90).fork()).ldelim() }
+                }
+                if (message.serviceType != null && Object.hasOwnProperty.call(message, 'serviceType')) { writer.uint32(98).string(message.serviceType) }
+                if (message.volumePath != null && Object.hasOwnProperty.call(message, 'volumePath')) { writer.uint32(106).string(message.volumePath) }
+                if (message.watchPolicy != null && Object.hasOwnProperty.call(message, 'watchPolicy')) { writer.uint32(114).string(message.watchPolicy) }
+                if (message.nodeSelector != null && message.nodeSelector.length) {
+                  for (let i = 0; i < message.nodeSelector.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.encode(message.nodeSelector[i], writer.uint32(122).fork()).ldelim() }
+                }
+                if (message.serviceAccountName != null && Object.hasOwnProperty.call(message, 'serviceAccountName')) { writer.uint32(130).string(message.serviceAccountName) }
+                if (message.affinity != null && Object.hasOwnProperty.call(message, 'affinity')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Affinity.encode(message.affinity, writer.uint32(138).fork()).ldelim() }
+                if (message.tolerations != null && message.tolerations.length) {
+                  for (let i = 0; i < message.tolerations.length; ++i) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Toleration.encode(message.tolerations[i], writer.uint32(146).fork()).ldelim() }
+                }
+                if (message.template != null && Object.hasOwnProperty.call(message, 'template')) { writer.uint32(154).string(message.template) }
+                return writer
+              }
+
+              HelixSagaAppSpec.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              HelixSagaAppSpec.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppSpec()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.name = reader.string()
+                      break
+                    case 2:
+                      message.replicas = reader.int32()
+                      break
+                    case 3:
+                      message.image = reader.string()
+                      break
+                    case 4:
+                      message.imagePullSecrets = reader.string()
+                      break
+                    case 5:
+                      if (!(message.env && message.env.length)) { message.env = [] }
+                      message.env.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.decode(reader, reader.uint32()))
+                      break
+                    case 6:
+                      message.podResource = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.decode(reader, reader.uint32())
+                      break
+                    case 8:
+                      if (!(message.command && message.command.length)) { message.command = [] }
+                      message.command.push(reader.string())
+                      break
+                    case 9:
+                      if (!(message.args && message.args.length)) { message.args = [] }
+                      message.args.push(reader.string())
+                      break
+                    case 10:
+                      if (!(message.containerPorts && message.containerPorts.length)) { message.containerPorts = [] }
+                      message.containerPorts.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort.decode(reader, reader.uint32()))
+                      break
+                    case 11:
+                      if (!(message.servicePorts && message.servicePorts.length)) { message.servicePorts = [] }
+                      message.servicePorts.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.decode(reader, reader.uint32()))
+                      break
+                    case 12:
+                      message.serviceType = reader.string()
+                      break
+                    case 13:
+                      message.volumePath = reader.string()
+                      break
+                    case 14:
+                      message.watchPolicy = reader.string()
+                      break
+                    case 15:
+                      if (!(message.nodeSelector && message.nodeSelector.length)) { message.nodeSelector = [] }
+                      message.nodeSelector.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.NodeSelectorElement.decode(reader, reader.uint32()))
+                      break
+                    case 16:
+                      message.serviceAccountName = reader.string()
+                      break
+                    case 17:
+                      message.affinity = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Affinity.decode(reader, reader.uint32())
+                      break
+                    case 18:
+                      if (!(message.tolerations && message.tolerations.length)) { message.tolerations = [] }
+                      message.tolerations.push($root.github.com.nevercase.k8s_controller_custom_resource.api.proto.Toleration.decode(reader, reader.uint32()))
+                      break
+                    case 19:
+                      message.template = reader.string()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              HelixSagaAppSpec.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              HelixSagaAppSpec.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.name != null && message.hasOwnProperty('name')) {
+                  if (!$util.isString(message.name)) { return 'name: string expected' }
+                }
+                if (message.replicas != null && message.hasOwnProperty('replicas')) {
+                  if (!$util.isInteger(message.replicas)) { return 'replicas: integer expected' }
+                }
+                if (message.image != null && message.hasOwnProperty('image')) {
+                  if (!$util.isString(message.image)) { return 'image: string expected' }
+                }
+                if (message.imagePullSecrets != null && message.hasOwnProperty('imagePullSecrets')) {
+                  if (!$util.isString(message.imagePullSecrets)) { return 'imagePullSecrets: string expected' }
+                }
+                if (message.env != null && message.hasOwnProperty('env')) {
+                  if (!Array.isArray(message.env)) { return 'env: array expected' }
+                  for (let i = 0; i < message.env.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.EnvVar.verify(message.env[i])
+                    if (error) { return 'env.' + error }
+                  }
+                }
+                if (message.podResource != null && message.hasOwnProperty('podResource')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.PodResourceRequirements.verify(message.podResource)
+                  if (error) { return 'podResource.' + error }
                 }
                 if (message.command != null && message.hasOwnProperty('command')) {
                   if (!Array.isArray(message.command)) { return 'command: array expected' }
@@ -1196,6 +1451,26 @@ export const github = $root.github = (() => {
                   for (let i = 0; i < message.args.length; ++i) {
                     if (!$util.isString(message.args[i])) { return 'args: string[] expected' }
                   }
+                }
+                if (message.containerPorts != null && message.hasOwnProperty('containerPorts')) {
+                  if (!Array.isArray(message.containerPorts)) { return 'containerPorts: array expected' }
+                  for (let i = 0; i < message.containerPorts.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ContainerPort.verify(message.containerPorts[i])
+                    if (error) { return 'containerPorts.' + error }
+                  }
+                }
+                if (message.servicePorts != null && message.hasOwnProperty('servicePorts')) {
+                  if (!Array.isArray(message.servicePorts)) { return 'servicePorts: array expected' }
+                  for (let i = 0; i < message.servicePorts.length; ++i) {
+                    const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServicePort.verify(message.servicePorts[i])
+                    if (error) { return 'servicePorts.' + error }
+                  }
+                }
+                if (message.serviceType != null && message.hasOwnProperty('serviceType')) {
+                  if (!$util.isString(message.serviceType)) { return 'serviceType: string expected' }
+                }
+                if (message.volumePath != null && message.hasOwnProperty('volumePath')) {
+                  if (!$util.isString(message.volumePath)) { return 'volumePath: string expected' }
                 }
                 if (message.watchPolicy != null && message.hasOwnProperty('watchPolicy')) {
                   if (!$util.isString(message.watchPolicy)) { return 'watchPolicy: string expected' }
@@ -1221,10 +1496,81 @@ export const github = $root.github = (() => {
                     if (error) { return 'tolerations.' + error }
                   }
                 }
+                if (message.template != null && message.hasOwnProperty('template')) {
+                  if (!$util.isString(message.template)) { return 'template: string expected' }
+                }
                 return null
               }
 
-              return HelixSagaApp
+              return HelixSagaAppSpec
+            })()
+
+            proto.HelixSagaAppStatus = (function() {
+              function HelixSagaAppStatus(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              HelixSagaAppStatus.prototype.deployment = null
+              HelixSagaAppStatus.prototype.statefulSet = null
+
+              HelixSagaAppStatus.create = function create(properties) {
+                return new HelixSagaAppStatus(properties)
+              }
+
+              HelixSagaAppStatus.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.deployment != null && Object.hasOwnProperty.call(message, 'deployment')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.encode(message.deployment, writer.uint32(10).fork()).ldelim() }
+                if (message.statefulSet != null && Object.hasOwnProperty.call(message, 'statefulSet')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.encode(message.statefulSet, writer.uint32(18).fork()).ldelim() }
+                return writer
+              }
+
+              HelixSagaAppStatus.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              HelixSagaAppStatus.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.HelixSagaAppStatus()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.deployment = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.decode(reader, reader.uint32())
+                      break
+                    case 2:
+                      message.statefulSet = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.decode(reader, reader.uint32())
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              HelixSagaAppStatus.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              HelixSagaAppStatus.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.deployment != null && message.hasOwnProperty('deployment')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.verify(message.deployment)
+                  if (error) { return 'deployment.' + error }
+                }
+                if (message.statefulSet != null && message.hasOwnProperty('statefulSet')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.verify(message.statefulSet)
+                  if (error) { return 'statefulSet.' + error }
+                }
+                return null
+              }
+
+              return HelixSagaAppStatus
             })()
 
             proto.HelixSagaConfigMapVolume = (function() {
@@ -4185,6 +4531,120 @@ export const github = $root.github = (() => {
               }
 
               return ServicePort
+            })()
+
+            proto.StatefulSetStatus = (function() {
+              function StatefulSetStatus(properties) {
+                if (properties) {
+                  for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i) {
+                    if (properties[keys[i]] != null) { this[keys[i]] = properties[keys[i]] }
+                  }
+                }
+              }
+
+              StatefulSetStatus.prototype.observedGeneration = $util.Long ? $util.Long.fromBits(0, 0, false) : 0
+              StatefulSetStatus.prototype.replicas = 0
+              StatefulSetStatus.prototype.readyReplicas = 0
+              StatefulSetStatus.prototype.currentReplicas = 0
+              StatefulSetStatus.prototype.updatedReplicas = 0
+              StatefulSetStatus.prototype.currentRevision = ''
+              StatefulSetStatus.prototype.updateRevision = ''
+              StatefulSetStatus.prototype.collisionCount = 0
+
+              StatefulSetStatus.create = function create(properties) {
+                return new StatefulSetStatus(properties)
+              }
+
+              StatefulSetStatus.encode = function encode(message, writer) {
+                if (!writer) { writer = $Writer.create() }
+                if (message.observedGeneration != null && Object.hasOwnProperty.call(message, 'observedGeneration')) { writer.uint32(8).int64(message.observedGeneration) }
+                if (message.replicas != null && Object.hasOwnProperty.call(message, 'replicas')) { writer.uint32(16).int32(message.replicas) }
+                if (message.readyReplicas != null && Object.hasOwnProperty.call(message, 'readyReplicas')) { writer.uint32(24).int32(message.readyReplicas) }
+                if (message.currentReplicas != null && Object.hasOwnProperty.call(message, 'currentReplicas')) { writer.uint32(32).int32(message.currentReplicas) }
+                if (message.updatedReplicas != null && Object.hasOwnProperty.call(message, 'updatedReplicas')) { writer.uint32(40).int32(message.updatedReplicas) }
+                if (message.currentRevision != null && Object.hasOwnProperty.call(message, 'currentRevision')) { writer.uint32(50).string(message.currentRevision) }
+                if (message.updateRevision != null && Object.hasOwnProperty.call(message, 'updateRevision')) { writer.uint32(58).string(message.updateRevision) }
+                if (message.collisionCount != null && Object.hasOwnProperty.call(message, 'collisionCount')) { writer.uint32(72).int32(message.collisionCount) }
+                return writer
+              }
+
+              StatefulSetStatus.encodeDelimited = function encodeDelimited(message, writer) {
+                return this.encode(message, writer).ldelim()
+              }
+
+              StatefulSetStatus.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader)) { reader = $Reader.create(reader) }
+                const end = length === undefined ? reader.len : reader.pos + length; const message = new $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus()
+                while (reader.pos < end) {
+                  const tag = reader.uint32()
+                  switch (tag >>> 3) {
+                    case 1:
+                      message.observedGeneration = reader.int64()
+                      break
+                    case 2:
+                      message.replicas = reader.int32()
+                      break
+                    case 3:
+                      message.readyReplicas = reader.int32()
+                      break
+                    case 4:
+                      message.currentReplicas = reader.int32()
+                      break
+                    case 5:
+                      message.updatedReplicas = reader.int32()
+                      break
+                    case 6:
+                      message.currentRevision = reader.string()
+                      break
+                    case 7:
+                      message.updateRevision = reader.string()
+                      break
+                    case 9:
+                      message.collisionCount = reader.int32()
+                      break
+                    default:
+                      reader.skipType(tag & 7)
+                      break
+                  }
+                }
+                return message
+              }
+
+              StatefulSetStatus.decodeDelimited = function decodeDelimited(reader) {
+                if (!(reader instanceof $Reader)) { reader = new $Reader(reader) }
+                return this.decode(reader, reader.uint32())
+              }
+
+              StatefulSetStatus.verify = function verify(message) {
+                if (typeof message !== 'object' || message === null) { return 'object expected' }
+                if (message.observedGeneration != null && message.hasOwnProperty('observedGeneration')) {
+                  if (!$util.isInteger(message.observedGeneration) && !(message.observedGeneration && $util.isInteger(message.observedGeneration.low) && $util.isInteger(message.observedGeneration.high))) { return 'observedGeneration: integer|Long expected' }
+                }
+                if (message.replicas != null && message.hasOwnProperty('replicas')) {
+                  if (!$util.isInteger(message.replicas)) { return 'replicas: integer expected' }
+                }
+                if (message.readyReplicas != null && message.hasOwnProperty('readyReplicas')) {
+                  if (!$util.isInteger(message.readyReplicas)) { return 'readyReplicas: integer expected' }
+                }
+                if (message.currentReplicas != null && message.hasOwnProperty('currentReplicas')) {
+                  if (!$util.isInteger(message.currentReplicas)) { return 'currentReplicas: integer expected' }
+                }
+                if (message.updatedReplicas != null && message.hasOwnProperty('updatedReplicas')) {
+                  if (!$util.isInteger(message.updatedReplicas)) { return 'updatedReplicas: integer expected' }
+                }
+                if (message.currentRevision != null && message.hasOwnProperty('currentRevision')) {
+                  if (!$util.isString(message.currentRevision)) { return 'currentRevision: string expected' }
+                }
+                if (message.updateRevision != null && message.hasOwnProperty('updateRevision')) {
+                  if (!$util.isString(message.updateRevision)) { return 'updateRevision: string expected' }
+                }
+                if (message.collisionCount != null && message.hasOwnProperty('collisionCount')) {
+                  if (!$util.isInteger(message.collisionCount)) { return 'collisionCount: integer expected' }
+                }
+                return null
+              }
+
+              return StatefulSetStatus
             })()
 
             proto.Status = (function() {
