@@ -298,17 +298,7 @@ export default {
         },
         replicas: 0,
         servicePorts: [],
-        volumePath: '',
-        status: {
-          collisionCount: 0,
-          currentReplicas: 0,
-          currentRevision: 'mo-dev-master-69f598988c',
-          observedGeneration: 0,
-          readyReplicas: 0,
-          replicas: 0,
-          updateRevision: '',
-          updatedReplicas: 0
-        }
+        volumePath: ''
       }
 
       return form
@@ -342,14 +332,36 @@ export default {
         }
 
         if (this.oneData.typename === 'HelixSagaOperator') {
-          app.watchPolicy = ''
-          app.serviceAccountName = ''
-          app.tolerations = []
-          app.nodeSelector = []
-          app.affinity = {}
-          app.affinity.nodeAffinity = {}
-          app.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution = {}
-          app.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = []
+          app.spec.watchPolicy = ''
+          app.spec.template = 'Deployment'
+          app.spec.serviceAccountName = ''
+          app.spec.tolerations = []
+          app.spec.nodeSelector = []
+          app.spec.affinity = {}
+          app.spec.affinity.nodeAffinity = {}
+          app.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution = {}
+          app.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms = []
+          app.status = {
+            Deployment: {
+              availableReplicas: 0,
+              collisionCount: 0,
+              observedGeneration: 0,
+              readyReplicas: 0,
+              replicas: 0,
+              unavailableReplicas: 0,
+              updatedReplicas: 0
+            },
+            StatefulSet: {
+              collisionCount: 0,
+              currentReplicas: 0,
+              currentRevision: 'mo-dev-master-69f598988c',
+              observedGeneration: 0,
+              readyReplicas: 0,
+              replicas: 0,
+              updateRevision: '',
+              updatedReplicas: 0
+            }
+          }
         }
 
         this.oneData.applications.push(app)
@@ -383,10 +395,9 @@ export default {
           break
 
         case 'HelixSagaOperator':
-
           this.oneData.applications.forEach(element => {
             if (element.spec.name === tag) {
-              this.specData.data = element
+              this.specData.data = element.spec
             }
           })
 
@@ -468,18 +479,6 @@ export default {
         _self.responseData(res, _self)
       })
     },
-    // returnResource(service, _self) {
-    //   var result = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.Response.decode(service)
-
-    //   switch (result.param.resourceType) {
-    //     case 'ServiceAccount':
-    //       var ServiceAccountList = _self.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto.ServiceAccountList.decode(result.result)
-
-    //       _self.specData.serviceList = ServiceAccountList.items
-
-    //       break
-    //   }
-    // },
     secret() {
       var Proto = this.$proto.github.com.nevercase.k8s_controller_custom_resource.api.proto
 

@@ -512,10 +512,12 @@ export default {
             item.typename = 'HelixSagaOperator'
 
             var arr = ''
-
             if (item.applications !== '') {
               item.applications.forEach(value => {
-                arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                // template: "Deployment"
+                if (value.spec.template !== 'Deployment') {
+                  arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                }
               })
             }
 
@@ -889,7 +891,10 @@ export default {
 
                 if (one_data.applications !== '') {
                   one_data.applications.forEach(value => {
-                    arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                    if (value.spec.template !== 'Deployment') {
+                      arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                    }
+                    // arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
                   })
                 }
 
@@ -1055,7 +1060,6 @@ export default {
 
       delete this.oneData.typename
 
-      // console.log(this.oneData)
       if (this.oneData.type) {
         delete this.oneData.type
 
@@ -1072,6 +1076,7 @@ export default {
     // 处理helixsaga 数据
     checkSaga() {
       delete this.oneData.configList
+      // console.log(this.oneData)
 
       if (this.oneData.configMap.volume.volumeSource.configMap.items !== '') {
         this.oneData.configMap.volume.volumeSource.configMap.items.forEach(element => {
@@ -1093,14 +1098,14 @@ export default {
             ])
           }
 
-          if (element.tolerations !== '') {
-            element.tolerations.forEach(value => [
+          if (element.spec.tolerations !== '') {
+            element.spec.tolerations.forEach(value => [
               delete value.isSet
             ])
           }
 
-          if (element.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms !== '') {
-            element.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach(value => {
+          if (element.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms !== '') {
+            element.spec.affinity.nodeAffinity.requiredDuringSchedulingIgnoredDuringExecution.nodeSelectorTerms.forEach(value => {
               delete value.title
               delete value.name
               value.matchExpressions.forEach(v => {

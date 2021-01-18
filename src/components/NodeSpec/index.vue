@@ -169,6 +169,17 @@
       </el-select>
     </el-form-item>
 
+    <el-form-item label="template">
+      <el-select v-model="form.template" @change="changeServiceType">
+        <el-option
+          v-for="item in template_list"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item v-if="policyFlag" label="watchPolicy">
       <el-select v-model="watchPolicy" @change="watchPolicyType">
         <el-option
@@ -409,6 +420,10 @@ export default {
         'NodePort',
         'LoadBalance'
       ],
+      template_list: [
+        'Deployment',
+        'StatefulSet'
+      ],
       watchPolicy_list: [
         'auto',
         'manual'
@@ -484,15 +499,27 @@ export default {
       }
     },
     initHelixSaga() {
-      if (this.specData.data.args !== '') {
-        this.argsStr = JSON.stringify(this.specData.data.args)
+      // console.log(this.specData.data)
+
+      if (this.specData.data.hasOwnProperty('args')) {
+        if (this.specData.data.args !== '') {
+          this.argsStr = JSON.stringify(this.specData.data.args)
+        }
+      } else {
+        this.specData.data.args = []
+        this.argsStr = ''
       }
 
-      if (this.specData.data.command !== '') {
-        this.commandStr = JSON.stringify(this.specData.data.command)
+      if (this.specData.data.hasOwnProperty('command')) {
+        if (this.specData.data.command !== '') {
+          this.commandStr = JSON.stringify(this.specData.data.command)
+        }
+      } else {
+        this.specData.data.command = []
+        this.commandStr = ''
       }
 
-      this.form = this.specData.data.spec
+      this.form = this.specData.data
 
       this.watchPolicy = this.specData.data.watchPolicy
       // 最新添加
