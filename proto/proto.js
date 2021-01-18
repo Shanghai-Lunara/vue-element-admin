@@ -1514,8 +1514,8 @@ export const github = $root.github = (() => {
                 }
               }
 
-              HelixSagaAppStatus.prototype.deployment = null
-              HelixSagaAppStatus.prototype.statefulSet = null
+              HelixSagaAppStatus.prototype.Deployment = null
+              HelixSagaAppStatus.prototype.StatefulSet = null
 
               HelixSagaAppStatus.create = function create(properties) {
                 return new HelixSagaAppStatus(properties)
@@ -1523,8 +1523,8 @@ export const github = $root.github = (() => {
 
               HelixSagaAppStatus.encode = function encode(message, writer) {
                 if (!writer) { writer = $Writer.create() }
-                if (message.deployment != null && Object.hasOwnProperty.call(message, 'deployment')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.encode(message.deployment, writer.uint32(10).fork()).ldelim() }
-                if (message.statefulSet != null && Object.hasOwnProperty.call(message, 'statefulSet')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.encode(message.statefulSet, writer.uint32(18).fork()).ldelim() }
+                if (message.Deployment != null && Object.hasOwnProperty.call(message, 'Deployment')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.encode(message.Deployment, writer.uint32(10).fork()).ldelim() }
+                if (message.StatefulSet != null && Object.hasOwnProperty.call(message, 'StatefulSet')) { $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.encode(message.StatefulSet, writer.uint32(18).fork()).ldelim() }
                 return writer
               }
 
@@ -1539,10 +1539,10 @@ export const github = $root.github = (() => {
                   const tag = reader.uint32()
                   switch (tag >>> 3) {
                     case 1:
-                      message.deployment = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.decode(reader, reader.uint32())
+                      message.Deployment = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.decode(reader, reader.uint32())
                       break
                     case 2:
-                      message.statefulSet = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.decode(reader, reader.uint32())
+                      message.StatefulSet = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.decode(reader, reader.uint32())
                       break
                     default:
                       reader.skipType(tag & 7)
@@ -1559,13 +1559,13 @@ export const github = $root.github = (() => {
 
               HelixSagaAppStatus.verify = function verify(message) {
                 if (typeof message !== 'object' || message === null) { return 'object expected' }
-                if (message.deployment != null && message.hasOwnProperty('deployment')) {
-                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.verify(message.deployment)
-                  if (error) { return 'deployment.' + error }
+                if (message.Deployment != null && message.hasOwnProperty('Deployment')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.DeploymentStatus.verify(message.Deployment)
+                  if (error) { return 'Deployment.' + error }
                 }
-                if (message.statefulSet != null && message.hasOwnProperty('statefulSet')) {
-                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.verify(message.statefulSet)
-                  if (error) { return 'statefulSet.' + error }
+                if (message.StatefulSet != null && message.hasOwnProperty('StatefulSet')) {
+                  const error = $root.github.com.nevercase.k8s_controller_custom_resource.api.proto.StatefulSetStatus.verify(message.StatefulSet)
+                  if (error) { return 'StatefulSet.' + error }
                 }
                 return null
               }
