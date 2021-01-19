@@ -23,6 +23,17 @@
       <!-- <el-input v-else v-model="form.name" /> -->
     </el-form-item>
 
+    <el-form-item label="template">
+      <el-select v-model="form.template" @change="changeServiceType">
+        <el-option
+          v-for="item in template_list"
+          :key="item"
+          :label="item"
+          :value="item"
+        />
+      </el-select>
+    </el-form-item>
+
     <el-form-item label="image">
       <el-input v-model="form.image" style="width: 400px;" />
 
@@ -162,17 +173,6 @@
       <el-select v-model="form.serviceType" @change="changeServiceType">
         <el-option
           v-for="item in serviceType_list"
-          :key="item"
-          :label="item"
-          :value="item"
-        />
-      </el-select>
-    </el-form-item>
-
-    <el-form-item label="template">
-      <el-select v-model="form.template" @change="changeServiceType">
-        <el-option
-          v-for="item in template_list"
           :key="item"
           :label="item"
           :value="item"

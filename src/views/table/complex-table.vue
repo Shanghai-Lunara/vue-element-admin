@@ -517,11 +517,11 @@ export default {
                 // template: "Deployment"
                 // console.log(value)
                 if (value.spec.template !== 'Deployment') {
-                  arr = 'sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
-                  value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas
+                  arr = arr + value.spec.name + '\xa0\xa0sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
+                  value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas + '\n'
                 } else {
-                  arr = 'dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
-                  value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas
+                  arr = arr + value.spec.name + '\xa0\xa0dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
+                  value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas + '\n'
                 }
               })
             }
@@ -849,7 +849,13 @@ export default {
 
                 if (one_data.applications !== '') {
                   one_data.applications.forEach(value => {
-                    arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                    if (value.spec.template !== 'Deployment') {
+                      arr = arr + value.spec.name + '\xa0\xa0sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
+                  value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas + '\n'
+                    } else {
+                      arr = arr + value.spec.name + '\xa0\xa0dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
+                  value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas + '\n'
+                    }
                   })
                 }
 
@@ -871,7 +877,13 @@ export default {
 
               if (one_data.applications !== '') {
                 one_data.applications.forEach(value => {
-                  arr = arr + value.spec.name + '\xa0\xa0\xa0pods: ' + value.spec.status.currentReplicas + ' / ' + value.spec.status.replicas + ' \n '
+                  if (value.spec.template !== 'Deployment') {
+                    arr = arr + value.spec.name + '\xa0\xa0sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
+                  value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas + '\n'
+                  } else {
+                    arr = arr + value.spec.name + '\xa0\xa0dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
+                  value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas + '\n'
+                  }
                 })
               }
 
@@ -895,11 +907,11 @@ export default {
                 if (one_data.applications !== '') {
                   one_data.applications.forEach(value => {
                     if (value.spec.template !== 'Deployment') {
-                      arr = 'sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
-                      value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas
+                      arr = arr + value.spec.name + '\xa0\xa0sts' + '\xa0\xa0replicas:' + value.status.StatefulSet.replicas + '\xa0\xa0ready:' + value.status.StatefulSet.readyReplicas + '\xa0\xa0current:' +
+                      value.status.StatefulSet.currentReplicas + '\xa0\xa0updated:' + value.status.StatefulSet.updatedReplicas + '\n'
                     } else {
-                      arr = 'dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
-                      value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas
+                      arr = arr + value.spec.name + '\xa0\xa0dp' + '\xa0\xa0replicas:' + value.status.Deployment.replicas + '\xa0\xa0ready:' + value.status.Deployment.readyReplicas + '\xa0\xa0updated:' + value.status.Deployment.updatedReplicas + '\xa0\xa0ava:' +
+                      value.status.Deployment.availableReplicas + '\xa0\xa0unava:' + value.status.Deployment.unavailableReplicas + '\n'
                     }
                   })
                 }
