@@ -23,7 +23,7 @@
       <!-- <el-input v-else v-model="form.name" /> -->
     </el-form-item>
 
-    <el-form-item label="template">
+    <el-form-item v-if="specData.flag === true" label="template">
       <el-select v-model="form.template" @change="changeServiceType">
         <el-option
           v-for="item in template_list"
